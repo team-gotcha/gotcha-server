@@ -1,5 +1,7 @@
 package com.gotcha.server.auth.security;
 
+import com.gotcha.server.global.exception.AppException;
+import com.gotcha.server.global.exception.ErrorCode;
 import com.gotcha.server.member.domain.Member;
 import com.gotcha.server.member.domain.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +18,7 @@ public class MemberDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String id) throws UsernameNotFoundException {
         Member member = memberRepository.findBySocialId(id)
-                .orElseThrow(() -> new UsernameNotFoundException("존재하지 않는 유저입니다"));
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
         return new MemberDetails(member);
     }
 }

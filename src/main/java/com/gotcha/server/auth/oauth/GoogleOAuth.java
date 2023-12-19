@@ -6,6 +6,8 @@ import com.gotcha.server.auth.dto.GoogleTokenResponse;
 import com.gotcha.server.auth.dto.GoogleUserResponse;
 import com.gotcha.server.auth.dto.TokenInfoResponse;
 import com.gotcha.server.auth.security.MemberDetailsService;
+import com.gotcha.server.global.exception.AppException;
+import com.gotcha.server.global.exception.ErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -61,7 +63,7 @@ public class GoogleOAuth {
         String url = GoogleUri.TOKEN_INFO_REQUEST.getUri("?access_token=", accessToken);
         ResponseEntity<String> responseEntity = restTemplate.getForEntity(url, String.class);
         if(responseEntity.getStatusCode() != HttpStatus.OK) {
-            throw new OAuth2AuthenticationException("유효하지 않은 토큰입니다.");
+            throw new AppException(ErrorCode.INVALID_TOKEN);
         }
         return objectMapper.readValue(responseEntity.getBody(), TokenInfoResponse.class);
     }
