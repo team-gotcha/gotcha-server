@@ -44,18 +44,22 @@ public class GoogleOAuth {
         return GoogleUri.LOGIN.getUri(REDIRECT_URI, CLIENT_ID, DATA_SCOPE);
     }
 
-    public GoogleTokenResponse requestAccessToken(String code) throws JsonProcessingException{
+    public GoogleTokenResponse requestTokens(String code) throws JsonProcessingException{
         Map<String, Object> params = GoogleUri.getTokenRequestParams(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, code);
         ResponseEntity<String> responseEntity=restTemplate.postForEntity(
                 GoogleUri.TOKEN_REQUEST.getUri(), params, String.class);
-        // Todo: responseEntity의 status code가 200이 아닐 때 예외 처리
+        if(responseEntity.getStatusCode() != HttpStatus.OK) {
+            throw new AppException(ErrorCode.INVALID_TOKEN_REQUEST);
+        }
        return objectMapper.readValue(responseEntity.getBody(), GoogleTokenResponse.class);
     }
 
     public GoogleUserResponse requestUserInfo(GoogleTokenResponse tokenResponse) throws JsonProcessingException {
         String url = GoogleUri.TOKEN_INFO_REQUEST.getUri("?id_token=", tokenResponse.id_token());
         ResponseEntity<String> responseEntity = restTemplate.getForEntity(url, String.class);
-        // Todo: responseEntity의 status code가 200이 아닐 때 예외 처리
+        if(responseEntity.getStatusCode() != HttpStatus.OK) {
+            throw new AppException(ErrorCode.INVALID_ID_TOKEN);
+        }
         return objectMapper.readValue(responseEntity.getBody(), GoogleUserResponse.class);
     }
 
@@ -63,7 +67,7 @@ public class GoogleOAuth {
         String url = GoogleUri.TOKEN_INFO_REQUEST.getUri("?access_token=", accessToken);
         ResponseEntity<String> responseEntity = restTemplate.getForEntity(url, String.class);
         if(responseEntity.getStatusCode() != HttpStatus.OK) {
-            throw new AppException(ErrorCode.INVALID_TOKEN);
+            throw new AppException(ErrorCode.INVALID_ACCESS_TOKEN);
         }
         return objectMapper.readValue(responseEntity.getBody(), TokenInfoResponse.class);
     }

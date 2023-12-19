@@ -30,7 +30,7 @@ public class MemberService {
 
     @Transactional
     public LoginResponse login(String code) throws JsonProcessingException {
-        GoogleTokenResponse googleToken = googleOAuth.requestAccessToken(code);
+        GoogleTokenResponse googleToken = googleOAuth.requestTokens(code);
         GoogleUserResponse googleUser = googleOAuth.requestUserInfo(googleToken);
         Member member = memberRepository.findByEmail(googleUser.email()).orElse(null);
         if(member != null) {
