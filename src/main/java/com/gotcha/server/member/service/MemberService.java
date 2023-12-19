@@ -1,13 +1,17 @@
 package com.gotcha.server.member.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.gotcha.server.auth.dto.RefreshTokenResponse;
 import com.gotcha.server.auth.oauth.GoogleOAuth;
+import com.gotcha.server.global.exception.AppException;
+import com.gotcha.server.global.exception.ErrorCode;
 import com.gotcha.server.member.domain.Member;
 import com.gotcha.server.member.domain.MemberRepository;
 import com.gotcha.server.auth.dto.GoogleTokenResponse;
 import com.gotcha.server.auth.dto.GoogleUserResponse;
 import com.gotcha.server.member.dto.JoinRequest;
 import com.gotcha.server.member.dto.LoginResponse;
+import com.gotcha.server.member.dto.RefreshTokenRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +25,12 @@ public class MemberService {
 
     public String getLoginUrl() {
         return googleOAuth.getLoginUrl();
+    }
+
+    public RefreshTokenResponse refresh(RefreshTokenRequest request) throws JsonProcessingException {
+        Member member = memberRepository.findById(request.userId())
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        return googleOAuth.requestRefresh(member.getRefreshToken());
     }
 
     @Transactional

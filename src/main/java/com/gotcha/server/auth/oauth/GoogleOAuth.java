@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gotcha.server.auth.dto.GoogleTokenResponse;
 import com.gotcha.server.auth.dto.GoogleUserResponse;
+import com.gotcha.server.auth.dto.RefreshTokenResponse;
 import com.gotcha.server.auth.dto.TokenInfoResponse;
 import com.gotcha.server.auth.security.MemberDetailsService;
 import com.gotcha.server.global.exception.AppException;
@@ -17,7 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -44,7 +44,7 @@ public class GoogleOAuth {
         return GoogleUri.LOGIN.getUri(REDIRECT_URI, CLIENT_ID, DATA_SCOPE);
     }
 
-    public GoogleTokenResponse requestTokens(String code) throws JsonProcessingException{
+    public GoogleTokenResponse requestTokens(String code) throws JsonProcessingException {
         Map<String, Object> params = GoogleUri.getTokenRequestParams(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, code);
         ResponseEntity<String> responseEntity=restTemplate.postForEntity(
                 GoogleUri.TOKEN_REQUEST.getUri(), params, String.class);
@@ -52,6 +52,16 @@ public class GoogleOAuth {
             throw new AppException(ErrorCode.INVALID_TOKEN_REQUEST);
         }
        return objectMapper.readValue(responseEntity.getBody(), GoogleTokenResponse.class);
+    }
+
+    public RefreshTokenResponse requestRefresh(String refreshToken) throws JsonProcessingException {
+        Map<String, Object> params = GoogleUri.getRefreshRequestParams(CLIENT_ID, CLIENT_SECRET, refreshToken);
+        ResponseEntity<String> responseEntity=restTemplate.postForEntity(
+                GoogleUri.REFRESH_TOKEN.getUri(), params, String.class);
+        if(responseEntity.getStatusCode() != HttpStatus.OK) {
+            throw new AppException(ErrorCode.INVALID_REFRESH_TOKEN);
+        }
+        return objectMapper.readValue(responseEntity.getBody(), RefreshTokenResponse.class);
     }
 
     public GoogleUserResponse requestUserInfo(GoogleTokenResponse tokenResponse) throws JsonProcessingException {
@@ -76,7 +86,7 @@ public class GoogleOAuth {
         return request.getHeader("Authorization");
     }
 
-    public Authentication getAuthentication(TokenInfoResponse tokenInfo) throws JsonProcessingException {
+    public Authentication getAuthentication(TokenInfoResponse tokenInfo) {
         UserDetails userDetails = memberDetailsService.loadUserByUsername(tokenInfo.socialId());
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }

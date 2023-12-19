@@ -6,7 +6,8 @@ import java.util.stream.Collectors;
 public enum GoogleUri {
     LOGIN("https://accounts.google.com/o/oauth2/v2/auth"),
     TOKEN_REQUEST("https://oauth2.googleapis.com/token"),
-    TOKEN_INFO_REQUEST("https://oauth2.googleapis.com/tokeninfo");
+    TOKEN_INFO_REQUEST("https://oauth2.googleapis.com/tokeninfo"),
+    REFRESH_TOKEN("https://oauth2.googleapis.com/token");
 
     private final String uri;
 
@@ -55,5 +56,16 @@ public enum GoogleUri {
     /* TOKEN_INFO_REQUEST */
     public String getUri(final String tokenKey, final String token) {
         return uri + tokenKey + token;
+    }
+
+    /* REFRESH_TOKEN */
+    public static Map<String, Object> getRefreshRequestParams(
+            final String clientId, final String clientSecret, final String refreshToken) {
+        return Map.of(
+                "client_id", clientId,
+                "client_secret", clientSecret,
+                "refresh_token", refreshToken,
+                "grant_type", "refresh_token"
+        );
     }
 }

@@ -1,8 +1,10 @@
 package com.gotcha.server.member.controller;
 
+import com.gotcha.server.auth.dto.RefreshTokenResponse;
 import com.gotcha.server.auth.security.MemberDetails;
 import com.gotcha.server.member.dto.JoinRequest;
 import com.gotcha.server.member.dto.LoginResponse;
+import com.gotcha.server.member.dto.RefreshTokenRequest;
 import com.gotcha.server.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +27,7 @@ public class MemberController {
     }
 
     @GetMapping("/auth/callback/google")
-    public ResponseEntity<LoginResponse> callbackGoogleLogin(@RequestParam String code) throws Exception{
+    public ResponseEntity<LoginResponse> callbackGoogleLogin(@RequestParam String code) throws Exception {
         return ResponseEntity.ok(memberService.login(code));
     }
 
@@ -33,6 +35,11 @@ public class MemberController {
     public ResponseEntity<Void> join(@RequestBody JoinRequest request) {
         memberService.join(request);
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/auth/refresh")
+    public ResponseEntity<RefreshTokenResponse> refreshToken(@RequestBody RefreshTokenRequest request) throws Exception {
+        return ResponseEntity.ok(memberService.refresh(request));
     }
 
     @GetMapping("/test")
