@@ -1,7 +1,15 @@
 package com.gotcha.server.auth.dto;
 
+import com.gotcha.server.member.domain.Member;
+
 public record GoogleUserResponse(String sub, String email, String name, String picture) {
-    public String socialId() {
-        return sub;
+    public Member toEntity(String refreshToken) {
+        return Member.builder()
+                .socialId(sub)
+                .email(email)
+                .name(name)
+                .profileUrl(picture)
+                .refreshToken(refreshToken)
+                .build();
     }
 }
