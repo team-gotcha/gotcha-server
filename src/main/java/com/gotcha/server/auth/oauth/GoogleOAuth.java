@@ -1,7 +1,5 @@
 package com.gotcha.server.auth.oauth;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gotcha.server.auth.dto.GoogleTokenResponse;
 import com.gotcha.server.auth.dto.GoogleUserResponse;
 import com.gotcha.server.auth.dto.RefreshTokenResponse;
@@ -13,13 +11,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 
 @Component
 @RequiredArgsConstructor
@@ -36,50 +33,66 @@ public class GoogleOAuth {
     @Value("${oauth.google.scope}")
     private String DATA_SCOPE;
 
-    private final RestTemplate restTemplate;
-    private final ObjectMapper objectMapper;
+    private final WebClient webClient;
     private final MemberDetailsService memberDetailsService;
 
     public String getLoginUrl() {
         return GoogleUri.LOGIN.getUri(REDIRECT_URI, CLIENT_ID, DATA_SCOPE);
     }
 
-    public GoogleTokenResponse requestTokens(String code) throws JsonProcessingException {
+    public GoogleTokenResponse requestTokens(String code) {
         Map<String, Object> params = GoogleUri.getTokenRequestParams(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, code);
-        ResponseEntity<String> responseEntity=restTemplate.postForEntity(
-                GoogleUri.TOKEN_REQUEST.getUri(), params, String.class);
-        if(responseEntity.getStatusCode() != HttpStatus.OK) {
-            throw new AppException(ErrorCode.INVALID_TOKEN_REQUEST);
-        }
-       return objectMapper.readValue(responseEntity.getBody(), GoogleTokenResponse.class);
+        return webClient.post()
+                .uri(GoogleUri.TOKEN_REQUEST.getUri())
+                .accept(MediaType.APPLICATION_JSON)
+                .bodyValue(params)
+                .retrieve()
+                .onStatus(status -> status.is4xxClientError(), response -> {
+                    throw new AppException(ErrorCode.INVALID_TOKEN_REQUEST);
+                })
+                .bodyToMono(GoogleTokenResponse.class)
+                .block();
     }
 
-    public RefreshTokenResponse requestRefresh(String refreshToken) throws JsonProcessingException {
+    public RefreshTokenResponse requestRefresh(String refreshToken) {
         Map<String, Object> params = GoogleUri.getRefreshRequestParams(CLIENT_ID, CLIENT_SECRET, refreshToken);
-        ResponseEntity<String> responseEntity=restTemplate.postForEntity(
-                GoogleUri.REFRESH_TOKEN.getUri(), params, String.class);
-        if(responseEntity.getStatusCode() != HttpStatus.OK) {
-            throw new AppException(ErrorCode.INVALID_REFRESH_TOKEN);
-        }
-        return objectMapper.readValue(responseEntity.getBody(), RefreshTokenResponse.class);
+        return webClient.post()
+                .uri(GoogleUri.TOKEN_REQUEST.getUri()).accept(MediaType.APPLICATION_JSON)
+                .bodyValue(params)
+                .retrieve()
+                .onStatus(status -> status.is4xxClientError(), response -> {
+                    throw new AppException(ErrorCode.INVALID_REFRESH_TOKEN);
+                })
+                .bodyToMono(RefreshTokenResponse.class)
+                .block();
     }
 
-    public GoogleUserResponse requestUserInfo(GoogleTokenResponse tokenResponse) throws JsonProcessingException {
-        String url = GoogleUri.TOKEN_INFO_REQUEST.getUri("?id_token=", tokenResponse.id_token());
-        ResponseEntity<String> responseEntity = restTemplate.getForEntity(url, String.class);
-        if(responseEntity.getStatusCode() != HttpStatus.OK) {
-            throw new AppException(ErrorCode.INVALID_ID_TOKEN);
-        }
-        return objectMapper.readValue(responseEntity.getBody(), GoogleUserResponse.class);
+    public GoogleUserResponse requestUserInfo(GoogleTokenResponse tokenResponse) {
+        return webClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path(GoogleUri.TOKEN_INFO_REQUEST.getUri())
+                        .queryParam("id_token", tokenResponse.id_token())
+                        .build())
+                .retrieve()
+                .onStatus(status -> status.is4xxClientError(), response -> {
+                    throw new AppException(ErrorCode.INVALID_ID_TOKEN);
+                })
+                .bodyToMono(GoogleUserResponse.class)
+                .block();
     }
 
-    public TokenInfoResponse requestTokenInfo(String accessToken) throws JsonProcessingException {
-        String url = GoogleUri.TOKEN_INFO_REQUEST.getUri("?access_token=", accessToken);
-        ResponseEntity<String> responseEntity = restTemplate.getForEntity(url, String.class);
-        if(responseEntity.getStatusCode() != HttpStatus.OK) {
-            throw new AppException(ErrorCode.INVALID_ACCESS_TOKEN);
-        }
-        return objectMapper.readValue(responseEntity.getBody(), TokenInfoResponse.class);
+    public TokenInfoResponse requestTokenInfo(String accessToken) {
+        return webClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path(GoogleUri.TOKEN_INFO_REQUEST.getUri())
+                        .queryParam("access_token", accessToken)
+                        .build())
+                .retrieve()
+                .onStatus(status -> status.is4xxClientError(), response -> {
+                    throw new AppException(ErrorCode.INVALID_ACCESS_TOKEN);
+                })
+                .bodyToMono(TokenInfoResponse.class)
+                .block();
     }
 
     public String resolveToken(HttpServletRequest request) {

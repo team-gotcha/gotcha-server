@@ -1,21 +1,26 @@
 package com.gotcha.server.global.config;
 
-import java.nio.charset.Charset;
-import org.springframework.boot.web.client.RestTemplateBuilder;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.client.BufferingClientHttpRequestFactory;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
-import org.springframework.http.converter.StringHttpMessageConverter;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.http.codec.LoggingCodecSupport;
+import org.springframework.web.reactive.function.client.ExchangeStrategies;
+import org.springframework.web.reactive.function.client.WebClient;
 
+@Slf4j
 @Configuration
 public class AppConfig {
     @Bean
-    public RestTemplate restTemplate(RestTemplateBuilder restTemplateBuilder) {
-        return restTemplateBuilder
-                .requestFactory(() -> new BufferingClientHttpRequestFactory(new SimpleClientHttpRequestFactory()))
-                .additionalMessageConverters(new StringHttpMessageConverter(Charset.forName("UTF-8")))
+    public WebClient webClient(){
+        ExchangeStrategies strategies = ExchangeStrategies.builder()
+                .codecs(configurer -> configurer.defaultCodecs()) // in-memory buffer의 기본 크기 256KB
+                .build();
+        strategies.messageWriters().stream()
+                .filter(LoggingCodecSupport.class::isInstance)
+                .forEach(writer -> ((LoggingCodecSupport)writer).setEnableLoggingRequestDetails(true));
+        return WebClient.builder()
+                .baseUrl("https://oauth2.googleapis.com")
+                .exchangeStrategies(strategies)
                 .build();
     }
 }
