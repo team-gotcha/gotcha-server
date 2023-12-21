@@ -1,4 +1,4 @@
-package com.gotcha.server.auth.dto;
+package com.gotcha.server.auth.dto.response;
 
 import com.gotcha.server.member.domain.Member;
 

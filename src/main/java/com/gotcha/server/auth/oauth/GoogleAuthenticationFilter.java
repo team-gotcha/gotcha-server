@@ -1,7 +1,7 @@
 package com.gotcha.server.auth.oauth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gotcha.server.auth.dto.TokenInfoResponse;
+import com.gotcha.server.auth.dto.response.TokenInfoResponse;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

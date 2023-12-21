@@ -1,9 +1,9 @@
 package com.gotcha.server.member.controller;
 
-import com.gotcha.server.auth.dto.RefreshTokenResponse;
+import com.gotcha.server.auth.dto.response.RefreshTokenResponse;
 import com.gotcha.server.auth.security.MemberDetails;
-import com.gotcha.server.member.dto.LoginResponse;
-import com.gotcha.server.member.dto.RefreshTokenRequest;
+import com.gotcha.server.member.dto.response.LoginResponse;
+import com.gotcha.server.member.dto.request.RefreshTokenRequest;
 import com.gotcha.server.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
