@@ -20,6 +20,15 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'mysql:mysql-connector-java:8.0.33'
 
+	// web flux
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	if (isAppleSilicon()) {
+		runtimeOnly("io.netty:netty-resolver-dns-native-macos:4.1.94.Final:osx-aarch_64")
+	}
+
+	// security
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+
 	// lombok
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
@@ -27,10 +36,15 @@ dependencies {
 
 	// test
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.security:spring-security-test'
 	testCompileOnly 'org.projectlombok:lombok'
 	testAnnotationProcessor 'org.projectlombok:lombok'
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+def isAppleSilicon() {
+	System.getProperty("os.name") == "Mac OS X" && System.getProperty("os.arch") == "aarch64"
 }
