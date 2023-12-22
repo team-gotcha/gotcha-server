@@ -35,7 +35,7 @@ public class MemberService {
     public LoginResponse login(String code) {
         GoogleTokenResponse googleToken = googleOAuth.requestTokens(code);
         GoogleUserResponse googleUser = googleOAuth.requestUserInfo(googleToken);
-        Member member = memberRepository.findByEmail(googleUser.email()).orElse(null);
+        Member member = memberRepository.findBySocialId(googleUser.sub()).orElse(null);
         if(member == null) {
             member = memberRepository.save(googleUser.toEntity(googleToken.refresh_token()));
         }
