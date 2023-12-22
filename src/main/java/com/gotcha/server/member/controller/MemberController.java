@@ -25,12 +25,12 @@ public class MemberController {
     }
 
     @GetMapping("/auth/callback/google")
-    public ResponseEntity<LoginResponse> callbackGoogleLogin(@RequestParam String code) throws Exception {
+    public ResponseEntity<LoginResponse> callbackGoogleLogin(@RequestParam String code) {
         return ResponseEntity.ok(memberService.login(code));
     }
 
     @PostMapping("/auth/refresh")
-    public ResponseEntity<RefreshTokenResponse> refreshToken(@RequestBody RefreshTokenRequest request) throws Exception {
+    public ResponseEntity<RefreshTokenResponse> refreshToken(@RequestBody RefreshTokenRequest request) {
         return ResponseEntity.ok(memberService.refresh(request));
     }
 
