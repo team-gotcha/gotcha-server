@@ -4,8 +4,8 @@ import lombok.Getter;
 
 @Getter
 public enum LayoutType {
-    REGISTERED("지원자 등록 상태"),
-    IN_PROGRESS("진행 상태");
+    LIST("목록으로 정렬하기"),
+    BOARD("보드");
 
     private final String value;
 
