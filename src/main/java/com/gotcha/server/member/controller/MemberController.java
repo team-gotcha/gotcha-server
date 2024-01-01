@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MemberController {
     private final MemberService memberService;
 
-    @GetMapping("/auth/login/google")
+    @GetMapping("/api/login/google")
     public ResponseEntity<String> redirectGoogleLogin(){
         return ResponseEntity.ok(memberService.getLoginUrl());
     }
@@ -29,7 +29,7 @@ public class MemberController {
         return ResponseEntity.ok(memberService.login(code));
     }
 
-    @PostMapping("/auth/refresh")
+    @PostMapping("/api/refresh")
     public ResponseEntity<RefreshTokenResponse> refreshToken(@RequestBody RefreshTokenRequest request) {
         return ResponseEntity.ok(memberService.refresh(request));
     }
