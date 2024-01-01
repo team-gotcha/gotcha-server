@@ -13,7 +13,9 @@ public enum ErrorCode {
     INVALID_ID_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 id token 입니다."),
     INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 refresh token 입니다."),
 
-    NO_PARAMETER(HttpStatus.BAD_REQUEST, " 파라미터가 없습니다.");
+    NO_PARAMETER(HttpStatus.BAD_REQUEST, " 파라미터가 없습니다."),
+
+    PROJECT_NOT_FOUNT(HttpStatus.NOT_FOUND, "존재하지 않는 프로젝트입니다.");
 
     private HttpStatus httpStatus;
     private String message;

@@ -8,11 +8,11 @@ import lombok.Getter;
 @MappedSuperclass
 public abstract class Question {
     @Column(nullable = false)
-    private String content;
+    protected String content;
 
     @Column(nullable = false)
-    private Integer importance;
+    protected Integer importance;
 
     @Column(nullable = false)
-    private Integer questionOrder;
+    protected Integer questionOrder;
 }
