@@ -2,9 +2,7 @@ package com.gotcha.server.evaluation.domain;
 
 import com.gotcha.server.applicant.domain.Interviewer;
 import com.gotcha.server.global.domain.BaseTimeEntity;
-import com.gotcha.server.member.domain.Member;
 import com.gotcha.server.question.domain.IndividualQuestion;
-import com.gotcha.server.question.domain.Question;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -23,8 +21,9 @@ public class Evaluation extends BaseTimeEntity {
 
     private String content;
 
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_id")
-    private Long questionId;
+    private IndividualQuestion question;
 
     private Boolean type; // True(공통), False(개별)
 

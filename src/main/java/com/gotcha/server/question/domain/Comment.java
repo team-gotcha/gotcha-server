@@ -1,6 +1,7 @@
 package com.gotcha.server.question.domain;
 
-import com.gotcha.server.project.domain.Project;
+import com.gotcha.server.applicant.domain.Interviewer;
+import com.gotcha.server.global.domain.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -16,20 +17,19 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class CommonQuestion {
+public class Comment extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false, name = "project_id")
-    private Project project;
-
     @Column(nullable = false)
     protected String content;
 
-    public CommonQuestion(final String content, final Project project) {
-        this.content = content;
-        this.project = project;
-    }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "writer_id")
+    private Interviewer interviewer;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "question_id")
+    private IndividualQuestion question;
 }
