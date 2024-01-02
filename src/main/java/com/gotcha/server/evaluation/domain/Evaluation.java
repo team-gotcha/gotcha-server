@@ -25,8 +25,6 @@ public class Evaluation extends BaseTimeEntity {
     @JoinColumn(name = "question_id")
     private IndividualQuestion question;
 
-    private Boolean type; // True(공통), False(개별)
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "interviewer_id")
     private Interviewer interviewer;
