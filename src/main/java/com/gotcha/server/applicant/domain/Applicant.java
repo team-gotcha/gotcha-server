@@ -1,10 +1,14 @@
 package com.gotcha.server.applicant.domain;
 
+import com.gotcha.server.project.domain.Interview;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import java.time.LocalDate;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -18,7 +22,9 @@ public class Applicant {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Todo: 면접(Interview Entity) fk 추가하기
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false, name = "interview_id")
+    private Interview interview;
 
     private LocalDate date;
     private String name;
@@ -32,4 +38,14 @@ public class Applicant {
     private InterviewStatus interviewStatus;
     private String resumeLink;
     private String portfolio;
+
+    public Applicant(final Interview interview) {
+        this.interview = interview;
+        this.outcome = Outcome.PENDING;
+        this.interviewStatus = InterviewStatus.PREPARATION;
+    }
+
+    public void moveToNextStatus() {
+        interviewStatus = interviewStatus.moveToNextStatus();
+    }
 }

@@ -26,4 +26,9 @@ public class PreparedInterviewer {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, name = "interviewer_id")
     private Interviewer interviewer;
+
+    public PreparedInterviewer(final Applicant applicant, final Interviewer interviewer) {
+        this.applicant = applicant;
+        this.interviewer = interviewer;
+    }
 }
