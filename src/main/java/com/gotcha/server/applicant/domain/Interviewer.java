@@ -27,4 +27,9 @@ public class Interviewer {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, name = "member_id")
     private Member member;
+
+    public Interviewer(final Applicant applicant, final Member member) {
+        this.applicant = applicant;
+        this.member = member;
+    }
 }

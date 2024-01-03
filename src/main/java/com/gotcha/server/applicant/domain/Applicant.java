@@ -48,4 +48,8 @@ public class Applicant {
     public void moveToNextStatus() {
         interviewStatus = interviewStatus.moveToNextStatus();
     }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
 }

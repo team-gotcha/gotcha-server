@@ -5,6 +5,7 @@ import com.gotcha.server.applicant.domain.Interviewer;
 import com.gotcha.server.applicant.domain.PreparedInterviewer;
 import com.gotcha.server.applicant.dto.request.InterviewProceedRequest;
 import com.gotcha.server.applicant.dto.response.InterviewProceedResponse;
+import com.gotcha.server.applicant.dto.response.TodayInterviewResponse;
 import com.gotcha.server.applicant.repository.ApplicantRepository;
 import com.gotcha.server.applicant.repository.InterviewerRepository;
 import com.gotcha.server.applicant.repository.PreparedInterviewerRepository;
@@ -39,5 +40,10 @@ public class ApplicantService {
             applicant.moveToNextStatus();
         }
         return new InterviewProceedResponse(interviewerCount, preparedInterviewerCount);
+    }
+
+    public TodayInterviewResponse countTodayInterview(final MemberDetails details) {
+        long count = interviewerRepository.countTodayInterview(details.member());
+        return new TodayInterviewResponse(count);
     }
 }
