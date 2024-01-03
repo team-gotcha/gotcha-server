@@ -4,6 +4,7 @@ import com.gotcha.server.auth.dto.response.RefreshTokenResponse;
 import com.gotcha.server.auth.security.MemberDetails;
 import com.gotcha.server.member.dto.response.LoginResponse;
 import com.gotcha.server.member.dto.request.RefreshTokenRequest;
+import com.gotcha.server.member.dto.response.UserResponse;
 import com.gotcha.server.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -34,8 +35,8 @@ public class MemberController {
         return ResponseEntity.ok(memberService.refresh(request));
     }
 
-    @GetMapping("/test")
-    public ResponseEntity<String> test(@AuthenticationPrincipal MemberDetails details) {
-        return ResponseEntity.ok(details.member().getEmail());
+    @GetMapping("/api/user")
+    public ResponseEntity<UserResponse> getUserDetails(@AuthenticationPrincipal final MemberDetails details) {
+        return ResponseEntity.ok(memberService.getUserDetails(details));
     }
 }
