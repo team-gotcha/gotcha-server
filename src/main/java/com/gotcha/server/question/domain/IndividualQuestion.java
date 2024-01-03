@@ -38,4 +38,8 @@ public class IndividualQuestion {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "writer_id")
     private Interviewer interviewer;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "comment_target_id")
+    private IndividualQuestion commentTarget;
 }
