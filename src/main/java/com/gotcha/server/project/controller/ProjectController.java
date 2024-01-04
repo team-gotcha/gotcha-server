@@ -20,9 +20,8 @@ public class ProjectController {
 
     @PostMapping
     public ResponseEntity<String> createProject(
-            @RequestBody @Valid ProjectRequest request,
-            @AuthenticationPrincipal MemberDetails member) {
-        projectService.createProject(request, member.getUsername());
+            @RequestBody @Valid ProjectRequest request) {
+        projectService.createProject(request);
         return ResponseEntity.status(HttpStatus.CREATED).body("프로젝트가 생성되었습니다.");
     }
 }

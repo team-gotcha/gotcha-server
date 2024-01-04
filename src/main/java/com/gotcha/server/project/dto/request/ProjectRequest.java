@@ -6,26 +6,24 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @NoArgsConstructor
 @Getter
 public class ProjectRequest {
 
-    private String teamName;
     private String name;
-    private LayoutType layout;
+    private List<String> emails;
 
     @Builder
-    public ProjectRequest(String teamName, String name, LayoutType layout) {
-        this.teamName = teamName;
+    public ProjectRequest(String name, List<String> emails) {
         this.name = name;
-        this.layout = layout;
+        this.emails = emails;
     }
 
     public Project toEntity() {
         return Project.builder()
-                .teamName(teamName)
                 .name(name)
-                .layout(layout)
                 .build();
     }
 }
