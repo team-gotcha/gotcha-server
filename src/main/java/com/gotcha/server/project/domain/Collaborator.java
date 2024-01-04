@@ -17,17 +17,15 @@ public class Collaborator extends BaseTimeEntity {
     @Column(name = "collaborator_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
+    private String email;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
     private Project project;
 
     @Builder
-    public Collaborator(Member member, Project project) {
-        this.member = member;
+    public Collaborator(String email, Project project) {
+        this.email = email;
         this.project = project;
     }
 }

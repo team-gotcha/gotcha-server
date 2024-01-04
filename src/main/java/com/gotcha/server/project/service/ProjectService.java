@@ -3,11 +3,13 @@ package com.gotcha.server.project.service;
 import com.gotcha.server.project.domain.Collaborator;
 import com.gotcha.server.project.domain.Project;
 import com.gotcha.server.project.dto.request.ProjectRequest;
+import com.gotcha.server.project.dto.response.ProjectResponse;
 import com.gotcha.server.project.repository.CollaboratorRepository;
 import com.gotcha.server.project.repository.ProjectRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -31,5 +33,10 @@ public class ProjectService {
                     .build();
             collaboratorRepository.save(collaborator);
         }
+    }
+
+    public ProjectResponse getEmails(Long projectId){
+        List<String> emails = collaboratorRepository.findEmailsByProjectId(projectId);
+        return ProjectResponse.from(emails);
     }
 }
