@@ -1,6 +1,5 @@
 package com.gotcha.server.project.dto.request;
 
-import com.gotcha.server.project.domain.LayoutType;
 import com.gotcha.server.project.domain.Project;
 import lombok.Builder;
 import lombok.Getter;
