@@ -42,4 +42,8 @@ public class IndividualQuestion {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "comment_target_id")
     private IndividualQuestion commentTarget;
+
+    public void setApplicant(final Applicant applicant) {
+        this.applicant = applicant;
+    }
 }
