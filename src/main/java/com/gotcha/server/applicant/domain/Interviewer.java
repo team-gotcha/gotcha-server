@@ -32,4 +32,8 @@ public class Interviewer {
         this.applicant = applicant;
         this.member = member;
     }
+
+    public void setApplicant(Applicant applicant) {
+        this.applicant = applicant;
+    }
 }

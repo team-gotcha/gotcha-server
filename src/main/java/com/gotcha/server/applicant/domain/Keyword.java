@@ -28,4 +28,14 @@ public class Keyword {
 
     @Column(nullable = false)
     private KeywordType keywordType;
+
+    public Keyword(final Applicant applicant, final String name, final KeywordType keywordType) {
+        this.applicant = applicant;
+        this.name = name;
+        this.keywordType = keywordType;
+    }
+
+    public void setApplicant(Applicant applicant) {
+        this.applicant = applicant;
+    }
 }
