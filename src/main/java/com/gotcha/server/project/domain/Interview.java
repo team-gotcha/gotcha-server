@@ -20,7 +20,7 @@ public class Interview extends BaseTimeEntity {
     private String name;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_id")
+    @JoinColumn(name = "project_id", nullable = false)
     private Project project;
 
     @Enumerated(EnumType.STRING)
@@ -30,7 +30,7 @@ public class Interview extends BaseTimeEntity {
     private PositionType position;
 
     @Builder
-    public Interview(String name, Project project, AreaType area, PositionType position) {
+    public Interview(final String name, final Project project, final AreaType area, final PositionType position) {
         this.name = name;
         this.project = project;
         this.area = area;

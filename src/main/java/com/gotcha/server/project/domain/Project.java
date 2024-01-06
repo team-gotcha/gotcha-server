@@ -22,5 +22,6 @@ public class Project extends BaseTimeEntity {
     @Builder
     public Project(String name) {
         this.name = name;
+
     }
 }

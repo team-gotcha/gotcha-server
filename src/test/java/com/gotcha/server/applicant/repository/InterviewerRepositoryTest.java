@@ -1,0 +1,55 @@
+package com.gotcha.server.applicant.repository;
+
+import static com.gotcha.server.common.TestFixture.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import com.gotcha.server.applicant.domain.Applicant;
+import com.gotcha.server.common.TestRepository;
+import com.gotcha.server.member.domain.Member;
+import com.gotcha.server.project.domain.Interview;
+import com.gotcha.server.project.domain.Project;
+import java.time.LocalDate;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
+
+@Slf4j
+@DataJpaTest
+@Import(TestRepository.class)
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+class InterviewerRepositoryTest {
+    @Autowired
+    private TestRepository testRepository;
+    @Autowired
+    private InterviewerRepository interviewerRepository;
+
+    @Test
+    @DisplayName("면접관이 오늘 예정된 면접 건수를 조회한다.")
+    void 오늘_면접_개수_조회하기() {
+        //given
+        Member 종미 = 테스트유저("종미");
+        Project 테스트프로젝트 = 테스트프로젝트();
+        Interview 테스트면접 = 테스트면접(테스트프로젝트, "테스트면접");
+        testRepository.save(종미, 테스트프로젝트, 테스트면접);
+
+        Applicant 지원자A = 테스트지원자(테스트면접, "지원자A");
+        지원자A.setDate(LocalDate.now());
+        Applicant 지원자B = 테스트지원자(테스트면접, "지원자B");
+        지원자B.setDate(LocalDate.now());
+        Applicant 지원자C = 테스트지원자(테스트면접, "지원자C");
+        지원자C.setDate(LocalDate.now().plusDays(3L));
+        testRepository.save(지원자A, 지원자B, 지원자C);
+
+        testRepository.save(테스트면접관(지원자A, 종미), 테스트면접관(지원자B, 종미), 테스트면접관(지원자C, 종미));
+
+        // when
+        long 조회된_면접_개수 = interviewerRepository.countTodayInterview(종미);
+
+        // then
+        assertEquals(2L, 조회된_면접_개수);
+    }
+}
