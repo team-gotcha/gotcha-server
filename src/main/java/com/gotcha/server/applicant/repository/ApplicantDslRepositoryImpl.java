@@ -77,6 +77,7 @@ public class ApplicantDslRepositoryImpl implements ApplicantDslRepository {
     private List<ApplicantsResponse> convertToDto(final List<Applicant> applicants, final Map<Applicant, List<KeywordResponse>> keywordMap) {
         return applicants.stream()
                 .map(a -> ApplicantsResponse.builder()
+                        .id(a.getId())
                         .name(a.getName())
                         .status(a.getInterviewStatus())
                         .date(a.getDate())

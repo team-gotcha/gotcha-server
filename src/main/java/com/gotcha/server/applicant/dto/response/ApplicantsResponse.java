@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class ApplicantsResponse {
+    private Long id;
     private String name;
     private InterviewStatus status;
     private LocalDate date;
@@ -23,8 +24,9 @@ public class ApplicantsResponse {
 
     @Builder
     public ApplicantsResponse(
-            final String name, final InterviewStatus status, final LocalDate date,
+            final Long id, final String name, final InterviewStatus status, final LocalDate date,
             final List<String> interviewerProfiles, final Integer questionCount, final List<KeywordResponse> keywords) {
+        this.id = id;
         this.name = name;
         this.status = status;
         this.date = date;
