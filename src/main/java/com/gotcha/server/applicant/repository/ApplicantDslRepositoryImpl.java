@@ -1,6 +1,7 @@
 package com.gotcha.server.applicant.repository;
 
 import com.gotcha.server.applicant.domain.Applicant;
+import com.gotcha.server.applicant.domain.InterviewStatus;
 import com.gotcha.server.applicant.domain.KeywordType;
 import com.gotcha.server.applicant.domain.QApplicant;
 import com.gotcha.server.applicant.domain.QInterviewer;
@@ -57,7 +58,7 @@ public class ApplicantDslRepositoryImpl implements ApplicantDslRepository {
                 .innerJoin(qInterviewer.member, qMember)
                 .fetchJoin()
                 .leftJoin(qApplicant.questions, qQuestion)
-                .where(qApplicant.interview.eq(interview))
+                .where(qApplicant.interview.eq(interview), qApplicant.interviewStatus.ne(InterviewStatus.ANNOUNCED))
                 .orderBy(qApplicant.date.asc())
                 .fetch();
     }
