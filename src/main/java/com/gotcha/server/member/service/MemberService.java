@@ -2,6 +2,7 @@ package com.gotcha.server.member.service;
 
 import com.gotcha.server.auth.dto.response.RefreshTokenResponse;
 import com.gotcha.server.auth.oauth.GoogleOAuth;
+import com.gotcha.server.auth.security.MemberDetails;
 import com.gotcha.server.global.exception.AppException;
 import com.gotcha.server.global.exception.ErrorCode;
 import com.gotcha.server.member.domain.Member;
@@ -10,6 +11,7 @@ import com.gotcha.server.auth.dto.response.GoogleTokenResponse;
 import com.gotcha.server.auth.dto.response.GoogleUserResponse;
 import com.gotcha.server.member.dto.response.LoginResponse;
 import com.gotcha.server.member.dto.request.RefreshTokenRequest;
+import com.gotcha.server.member.dto.response.UserResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,4 +44,8 @@ public class MemberService {
         return googleToken.toLoginResponse(member.getId());
     }
 
+    public UserResponse getUserDetails(final MemberDetails details) {
+        Member member = details.member();
+        return new UserResponse(member.getProfileUrl(), member.getName(), member.getEmail());
+    }
 }

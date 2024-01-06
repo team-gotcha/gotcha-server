@@ -3,6 +3,7 @@ package com.gotcha.server.project.domain;
 import com.gotcha.server.global.domain.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -19,7 +20,7 @@ public class Interview extends BaseTimeEntity {
     private String name;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_id")
+    @JoinColumn(name = "project_id", nullable = false)
     private Project project;
 
     @Enumerated(EnumType.STRING)
@@ -27,4 +28,12 @@ public class Interview extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     private PositionType position;
+
+    @Builder
+    public Interview(final String name, final Project project, final AreaType area, final PositionType position) {
+        this.name = name;
+        this.project = project;
+        this.area = area;
+        this.position = position;
+    }
 }

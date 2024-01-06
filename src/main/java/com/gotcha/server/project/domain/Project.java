@@ -3,6 +3,7 @@ package com.gotcha.server.project.domain;
 import com.gotcha.server.global.domain.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -23,4 +24,11 @@ public class Project extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     private LayoutType layout;
+
+    @Builder
+    public Project(String teamName, String name, LayoutType layout) {
+        this.teamName = teamName;
+        this.name = name;
+        this.layout = layout;
+    }
 }

@@ -4,6 +4,7 @@ import com.gotcha.server.auth.dto.response.RefreshTokenResponse;
 import com.gotcha.server.auth.security.MemberDetails;
 import com.gotcha.server.member.dto.response.LoginResponse;
 import com.gotcha.server.member.dto.request.RefreshTokenRequest;
+import com.gotcha.server.member.dto.response.UserResponse;
 import com.gotcha.server.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MemberController {
     private final MemberService memberService;
 
-    @GetMapping("/auth/login/google")
+    @GetMapping("/api/login/google")
     public ResponseEntity<String> redirectGoogleLogin(){
         return ResponseEntity.ok(memberService.getLoginUrl());
     }
@@ -29,13 +30,13 @@ public class MemberController {
         return ResponseEntity.ok(memberService.login(code));
     }
 
-    @PostMapping("/auth/refresh")
+    @PostMapping("/api/refresh")
     public ResponseEntity<RefreshTokenResponse> refreshToken(@RequestBody RefreshTokenRequest request) {
         return ResponseEntity.ok(memberService.refresh(request));
     }
 
-    @GetMapping("/test")
-    public ResponseEntity<String> test(@AuthenticationPrincipal MemberDetails details) {
-        return ResponseEntity.ok(details.member().getEmail());
+    @GetMapping("/api/user")
+    public ResponseEntity<UserResponse> getUserDetails(@AuthenticationPrincipal final MemberDetails details) {
+        return ResponseEntity.ok(memberService.getUserDetails(details));
     }
 }
