@@ -1,5 +1,7 @@
 package com.gotcha.server.project.service;
 
+import com.gotcha.server.global.exception.AppException;
+import com.gotcha.server.global.exception.ErrorCode;
 import com.gotcha.server.project.domain.Collaborator;
 import com.gotcha.server.project.domain.Interview;
 import com.gotcha.server.project.domain.Project;
@@ -25,6 +27,8 @@ public class InterviewService {
     private final SubcollaboratorRepository subcollaboratorRepository;
 
     public void createInterview(InterviewRequest request){
+        validInterview(request);
+
         Interview interview = request.toEntity();
         interviewRepository.save(interview);
         createSubcollaborator(interview, request.getEmails());
@@ -37,6 +41,12 @@ public class InterviewService {
                     .interview(interview)
                     .build();
             subcollaboratorRepository.save(subcollaborator);
+        }
+    }
+
+    public void validInterview(InterviewRequest request){
+        if (request.getName() == null || request.getName().isEmpty()) {
+            throw new AppException(ErrorCode.NAME_IS_EMPTY);
         }
     }
 }

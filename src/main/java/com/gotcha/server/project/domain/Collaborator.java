@@ -17,6 +17,7 @@ public class Collaborator extends BaseTimeEntity {
     @Column(name = "collaborator_id")
     private Long id;
 
+    @Column(nullable = false)
     private String email;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -13,7 +13,9 @@ public enum ErrorCode {
     INVALID_ID_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 id token 입니다."),
     INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 refresh token 입니다."),
 
-    NO_PARAMETER(HttpStatus.BAD_REQUEST, " 파라미터가 없습니다.");
+    NO_PARAMETER(HttpStatus.BAD_REQUEST, " 파라미터가 없습니다."),
+    NAME_IS_EMPTY(HttpStatus.BAD_REQUEST, "면접 이름을 입력해주세요."),
+    INVALID_EMAIL(HttpStatus.BAD_REQUEST, "유효하지 않은 이메일 주소입니다.");
 
     private HttpStatus httpStatus;
     private String message;
