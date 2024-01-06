@@ -6,7 +6,7 @@ import com.gotcha.server.auth.security.MemberDetails;
 import com.gotcha.server.global.exception.AppException;
 import com.gotcha.server.global.exception.ErrorCode;
 import com.gotcha.server.member.domain.Member;
-import com.gotcha.server.member.domain.MemberRepository;
+import com.gotcha.server.member.repository.MemberRepository;
 import com.gotcha.server.auth.dto.response.GoogleTokenResponse;
 import com.gotcha.server.auth.dto.response.GoogleUserResponse;
 import com.gotcha.server.member.dto.response.LoginResponse;
@@ -42,6 +42,13 @@ public class MemberService {
             member = memberRepository.save(googleUser.toEntity(googleToken.refresh_token()));
         }
         return googleToken.toLoginResponse(member.getId());
+    }
+
+    public Member findByEmail(String email) {
+        return memberRepository
+                .findByEmail(email)
+                .orElseThrow(
+                        () -> new AppException(ErrorCode.USER_NOT_FOUND));
     }
 
     public UserResponse getUserDetails(final MemberDetails details) {

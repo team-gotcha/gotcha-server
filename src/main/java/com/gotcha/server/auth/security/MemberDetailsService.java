@@ -3,7 +3,7 @@ package com.gotcha.server.auth.security;
 import com.gotcha.server.global.exception.AppException;
 import com.gotcha.server.global.exception.ErrorCode;
 import com.gotcha.server.member.domain.Member;
-import com.gotcha.server.member.domain.MemberRepository;
+import com.gotcha.server.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

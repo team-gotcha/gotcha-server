@@ -16,19 +16,12 @@ public class Project extends BaseTimeEntity {
     @Column(name = "project_id")
     private Long id;
 
-    @Column(name = "team_name", nullable = false)
-    private String teamName;
-
     @Column(nullable = false)
     private String name;
 
-    @Enumerated(EnumType.STRING)
-    private LayoutType layout;
-
     @Builder
-    public Project(String teamName, String name, LayoutType layout) {
-        this.teamName = teamName;
+    public Project(String name) {
         this.name = name;
-        this.layout = layout;
+
     }
 }
