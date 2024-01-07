@@ -21,7 +21,7 @@ public class ProjectController {
     public ResponseEntity<String> createProject(
             @RequestBody @Valid ProjectRequest request) {
         projectService.createProject(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body("프로젝트가 생성되었습니다.");
+        return ResponseEntity.status(HttpStatus.CREATED).body("프로젝트 생성 및 초대 이메일 발송이 완료되었습니다.");
     }
 
     @GetMapping("{projectId}/emails")
