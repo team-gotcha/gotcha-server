@@ -4,6 +4,7 @@ import com.gotcha.server.global.domain.BaseTimeEntity;
 import com.gotcha.server.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -16,11 +17,16 @@ public class Collaborator extends BaseTimeEntity {
     @Column(name = "collaborator_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
+    @Column(nullable = false)
+    private String email;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
     private Project project;
+
+    @Builder
+    public Collaborator(String email, Project project) {
+        this.email = email;
+        this.project = project;
+    }
 }
