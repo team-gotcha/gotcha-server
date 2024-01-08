@@ -36,7 +36,7 @@ public class ApplicantController {
 
     @GetMapping("")
     public ResponseEntity<List<ApplicantsResponse>> findAllApplicantByInterview(@RequestParam(name = "interview-id") Long interviewId) {
-        return ResponseEntity.ok(applicantService.listApplicantByInterview(interviewId));
+        return ResponseEntity.ok(applicantService.listApplicantsByInterview(interviewId));
     }
 
     @GetMapping("/{applicant-id}")

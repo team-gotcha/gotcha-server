@@ -56,7 +56,7 @@ public class ApplicantService {
         return new TodayInterviewResponse(count);
     }
 
-    public List<ApplicantsResponse> listApplicantByInterview(final Long interviewId) {
+    public List<ApplicantsResponse> listApplicantsByInterview(final Long interviewId) {
         Interview interview = interviewRepository.findById(interviewId)
                 .orElseThrow(() -> new AppException(ErrorCode.INTERVIEW_NOT_FOUNT));
         return applicantRepository.findAllByInterviewWithKeywords(interview);
