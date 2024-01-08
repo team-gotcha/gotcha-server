@@ -5,6 +5,7 @@ import com.gotcha.server.global.domain.BaseTimeEntity;
 import com.gotcha.server.question.domain.IndividualQuestion;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -17,15 +18,25 @@ public class Evaluation extends BaseTimeEntity {
     @Column(name = "evaluation_id")
     private Long id;
 
+    @Column(nullable = false)
     private Integer score;
 
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "question_id")
+    @JoinColumn(name = "question_id", nullable = false)
     private IndividualQuestion question;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "interviewer_id")
+    @JoinColumn(name = "interviewer_id", nullable = false)
     private Interviewer interviewer;
+
+    @Builder
+    public Evaluation(final Integer score, final String content,
+            final IndividualQuestion question, final Interviewer interviewer) {
+        this.score = score;
+        this.content = content;
+        this.question = question;
+        this.interviewer = interviewer;
+    }
 }

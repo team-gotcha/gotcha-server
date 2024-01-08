@@ -9,6 +9,7 @@ import com.gotcha.server.project.domain.Collaborator;
 import com.gotcha.server.project.domain.Interview;
 import com.gotcha.server.project.domain.Project;
 import com.gotcha.server.project.domain.Subcollaborator;
+import com.gotcha.server.question.domain.IndividualQuestion;
 
 public class TestFixture {
     public static Member 테스트유저(String 이름) {
@@ -50,4 +51,12 @@ public class TestFixture {
         return new Subcollaborator(이메일, 인터뷰);
     }
 
+    public static IndividualQuestion 테스트개별질문(Applicant 지원자, String 내용, Integer 순서) {
+        IndividualQuestion question = IndividualQuestion.builder()
+                .applicant(지원자)
+                .content(내용)
+                .build();
+        question.setQuestionOrder(순서);
+        return question;
+    }
 }

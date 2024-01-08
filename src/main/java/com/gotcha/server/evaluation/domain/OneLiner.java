@@ -18,12 +18,18 @@ public class OneLiner extends BaseTimeEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "applicant_id")
+    @JoinColumn(name = "applicant_id", nullable = false)
     private Applicant applicant;
 
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "interviewer_id")
+    @JoinColumn(name = "interviewer_id", nullable = false)
     private Interviewer interviewer;
+
+    public OneLiner(final Applicant applicant, final String content, final Interviewer interviewer) {
+        this.applicant = applicant;
+        this.content = content;
+        this.interviewer = interviewer;
+    }
 }
