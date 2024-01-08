@@ -15,4 +15,6 @@ import java.util.Optional;
 public interface CollaboratorRepository extends JpaRepository<Collaborator, Long> {
     @Query("SELECT c.email FROM Collaborator c WHERE c.project.id = :projectId")
     List<String> findEmailsByProjectId(@Param("projectId") Long projectId);
+
+    List<Collaborator> findAllByEmail(String email);
 }
