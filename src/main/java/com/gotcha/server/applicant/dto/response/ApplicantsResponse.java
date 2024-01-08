@@ -5,7 +5,6 @@ import com.gotcha.server.applicant.domain.InterviewStatus;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -33,10 +32,10 @@ public class ApplicantsResponse {
                         .date(a.getDate())
                         .interviewerProfiles(a.getInterviewers().stream()
                                 .map(interviewer -> interviewer.getMember().getProfileUrl())
-                                .collect(Collectors.toList()))
+                                .toList())
                         .questionCount(a.getQuestions().size())
                         .keywords(keywordMap.get(a))
                         .build())
-                .collect(Collectors.toList());
+                .toList();
     }
 }

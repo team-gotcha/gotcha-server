@@ -61,7 +61,7 @@ public class ApplicantResponse {
         return interviewers.stream()
                 .map(Interviewer::getMember)
                 .map(Member::getName)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private static Map<KeywordType, List<String>> classifyByKeywordType(final List<Keyword> keywords) {
