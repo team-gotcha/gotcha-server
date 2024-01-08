@@ -29,7 +29,7 @@ public class ApplicantDslRepositoryImpl implements ApplicantDslRepository {
     public List<ApplicantsResponse> findAllByInterviewWithKeywords(final Interview interview) {
         QKeyword qKeyword = QKeyword.keyword;
 
-        List<Applicant> applicants = findAllApplicant(interview);
+        List<Applicant> applicants = findAllApplicants(interview);
         List<Tuple> keywords = findAllKeywordByApplicants(applicants);
 
         Map<Applicant, List<KeywordResponse>> keywordMap = applicants.stream()
@@ -41,10 +41,10 @@ public class ApplicantDslRepositoryImpl implements ApplicantDslRepository {
             keywordMap.get(applicant).add(new KeywordResponse(minName, keywordType));
         });
 
-        return convertToDto(applicants, keywordMap);
+        return ApplicantsResponse.generateList(applicants, keywordMap);
     }
 
-    private List<Applicant> findAllApplicant(final Interview interview) {
+    private List<Applicant> findAllApplicants(final Interview interview) {
         QApplicant qApplicant = QApplicant.applicant;
         QInterviewer qInterviewer = QInterviewer.interviewer;
         QMember qMember = QMember.member;
@@ -72,20 +72,5 @@ public class ApplicantDslRepositoryImpl implements ApplicantDslRepository {
                 .where(qKeyword.applicant.in(applicants))
                 .groupBy(qKeyword.keywordType, qKeyword.applicant)
                 .fetch();
-    }
-
-    private List<ApplicantsResponse> convertToDto(final List<Applicant> applicants, final Map<Applicant, List<KeywordResponse>> keywordMap) {
-        return applicants.stream()
-                .map(a -> ApplicantsResponse.builder()
-                        .name(a.getName())
-                        .status(a.getInterviewStatus())
-                        .date(a.getDate())
-                        .interviewerProfiles(a.getInterviewers().stream()
-                                .map(interviewer -> interviewer.getMember().getProfileUrl())
-                                .collect(Collectors.toList()))
-                        .questionCount(a.getQuestions().size())
-                        .keywords(keywordMap.get(a))
-                        .build())
-                .collect(Collectors.toList());
     }
 }

@@ -7,6 +7,7 @@ import com.gotcha.server.applicant.domain.KeywordType;
 import com.gotcha.server.member.domain.Member;
 import com.gotcha.server.project.domain.Interview;
 import com.gotcha.server.project.domain.Project;
+import com.gotcha.server.question.domain.IndividualQuestion;
 
 public class TestFixture {
     public static Member 테스트유저(String 이름) {
@@ -19,7 +20,7 @@ public class TestFixture {
     }
 
     public static Project 테스트프로젝트() {
-        return Project.builder().name("테스트프로젝트").teamName("CEOS").build();
+        return Project.builder().name("테스트프로젝트").build();
     }
 
     public static Interview 테스트면접(Project 프로젝트, String 면접이름) {
@@ -38,5 +39,14 @@ public class TestFixture {
 
     public static Keyword 테스트키워드(Applicant 지원자, String 내용, KeywordType 종류) {
         return new Keyword(지원자, 내용, 종류);
+    }
+
+    public static IndividualQuestion 테스트개별질문(Applicant 지원자, String 내용, Integer 순서) {
+        IndividualQuestion question = IndividualQuestion.builder()
+                .applicant(지원자)
+                .content(내용)
+                .build();
+        question.setQuestionOrder(순서);
+        return question;
     }
 }

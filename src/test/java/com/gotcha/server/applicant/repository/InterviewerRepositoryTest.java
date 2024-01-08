@@ -4,26 +4,16 @@ import static com.gotcha.server.common.TestFixture.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.gotcha.server.applicant.domain.Applicant;
-import com.gotcha.server.common.TestRepository;
+import com.gotcha.server.common.RepositoryTest;
 import com.gotcha.server.member.domain.Member;
 import com.gotcha.server.project.domain.Interview;
 import com.gotcha.server.project.domain.Project;
 import java.time.LocalDate;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.Import;
 
-@Slf4j
-@DataJpaTest
-@Import(TestRepository.class)
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class InterviewerRepositoryTest {
-    @Autowired
-    private TestRepository testRepository;
+class InterviewerRepositoryTest extends RepositoryTest {
     @Autowired
     private InterviewerRepository interviewerRepository;
 

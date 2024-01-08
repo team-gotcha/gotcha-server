@@ -11,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -23,13 +24,13 @@ public class IndividualQuestion {
     private Long id;
 
     @Column(nullable = false)
-    protected String content;
+    private String content;
 
     @Column(nullable = false)
-    protected Integer importance;
+    private Integer importance;
 
     @Column(nullable = false)
-    protected Integer questionOrder;
+    private Integer questionOrder;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, name = "applicant_id")
@@ -43,7 +44,31 @@ public class IndividualQuestion {
     @JoinColumn(name = "comment_target_id")
     private IndividualQuestion commentTarget;
 
+    @Column(nullable = false)
+    private boolean asking;
+
+    @Column(nullable = false)
+    private boolean isCommon;
+
+    @Builder
+    public IndividualQuestion(final String content, final Applicant applicant) {
+        this.content = content;
+        this.importance = 0;
+        this.questionOrder = 0;
+        this.applicant = applicant;
+        this.asking = false;
+        this.isCommon = false;
+    }
+
     public void setApplicant(final Applicant applicant) {
         this.applicant = applicant;
+    }
+
+    public void setInterviewer(final Interviewer interviewer) {
+        this.interviewer = interviewer;
+    }
+
+    public void setQuestionOrder(final Integer questionOrder) {
+        this.questionOrder = questionOrder;
     }
 }

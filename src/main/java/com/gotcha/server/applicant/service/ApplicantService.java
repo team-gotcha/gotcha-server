@@ -2,13 +2,16 @@ package com.gotcha.server.applicant.service;
 
 import com.gotcha.server.applicant.domain.Applicant;
 import com.gotcha.server.applicant.domain.Interviewer;
+import com.gotcha.server.applicant.domain.Keyword;
 import com.gotcha.server.applicant.domain.PreparedInterviewer;
 import com.gotcha.server.applicant.dto.request.InterviewProceedRequest;
+import com.gotcha.server.applicant.dto.response.ApplicantResponse;
 import com.gotcha.server.applicant.dto.response.ApplicantsResponse;
 import com.gotcha.server.applicant.dto.response.InterviewProceedResponse;
 import com.gotcha.server.applicant.dto.response.TodayInterviewResponse;
 import com.gotcha.server.applicant.repository.ApplicantRepository;
 import com.gotcha.server.applicant.repository.InterviewerRepository;
+import com.gotcha.server.applicant.repository.KeywordRepository;
 import com.gotcha.server.applicant.repository.PreparedInterviewerRepository;
 import com.gotcha.server.auth.security.MemberDetails;
 import com.gotcha.server.global.exception.AppException;
@@ -28,6 +31,7 @@ public class ApplicantService {
     private final InterviewerRepository interviewerRepository;
     private final PreparedInterviewerRepository preparedInterviewerRepository;
     private final InterviewRepository interviewRepository;
+    private final KeywordRepository keywordRepository;
 
     @Transactional
     public InterviewProceedResponse proceedToInterview(final InterviewProceedRequest request, final MemberDetails details) {
@@ -52,9 +56,16 @@ public class ApplicantService {
         return new TodayInterviewResponse(count);
     }
 
-    public List<ApplicantsResponse> listApplicantByInterview(final Long interviewId) {
+    public List<ApplicantsResponse> listApplicantsByInterview(final Long interviewId) {
         Interview interview = interviewRepository.findById(interviewId)
                 .orElseThrow(() -> new AppException(ErrorCode.INTERVIEW_NOT_FOUNT));
         return applicantRepository.findAllByInterviewWithKeywords(interview);
+    }
+
+    public ApplicantResponse findApplicantById(final Long applicantId) {
+        Applicant applicant = applicantRepository.findById(applicantId)
+                .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
+        List<Keyword> keywords = keywordRepository.findAllByApplicant(applicant);
+        return ApplicantResponse.from(applicant, keywords);
     }
 }

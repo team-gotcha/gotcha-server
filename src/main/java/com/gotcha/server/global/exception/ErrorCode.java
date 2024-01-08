@@ -21,6 +21,7 @@ public enum ErrorCode {
     PROJECT_NOT_FOUNT(HttpStatus.NOT_FOUND, "존재하지 않는 프로젝트입니다."),
     APPLICANT_NOT_FOUNT(HttpStatus.NOT_FOUND, "존재하지 않는 지원자입니다."),
     INTERVIEW_NOT_FOUNT(HttpStatus.NOT_FOUND, "존재하지 않는 면접입니다."),
+    QUESTION_NOT_FOUNT(HttpStatus.NOT_FOUND, "존재하지 않는 질문입니다."),
     INVALID_INTERVIEW_STATUS(HttpStatus.INTERNAL_SERVER_ERROR, "유효하지 않은 면접 단계입니다.");
 
     private HttpStatus httpStatus;
