@@ -7,4 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface IndividualQuestionRepository extends JpaRepository<IndividualQuestion, Long> {
     List<IndividualQuestion> findAllByApplicantOrderByQuestionOrder(Applicant applicant);
+    List<IndividualQuestion> findAllByIdIn(List<Long> ids);
 }

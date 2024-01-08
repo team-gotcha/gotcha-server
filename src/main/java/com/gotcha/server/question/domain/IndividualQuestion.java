@@ -11,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -49,7 +50,25 @@ public class IndividualQuestion {
     @Column(nullable = false)
     private boolean isCommon;
 
+    @Builder
+    public IndividualQuestion(final String content, final Applicant applicant) {
+        this.content = content;
+        this.importance = 0;
+        this.questionOrder = 0;
+        this.applicant = applicant;
+        this.asking = false;
+        this.isCommon = false;
+    }
+
     public void setApplicant(final Applicant applicant) {
         this.applicant = applicant;
+    }
+
+    public void setInterviewer(final Interviewer interviewer) {
+        this.interviewer = interviewer;
+    }
+
+    public void setQuestionOrder(final Integer questionOrder) {
+        this.questionOrder = questionOrder;
     }
 }

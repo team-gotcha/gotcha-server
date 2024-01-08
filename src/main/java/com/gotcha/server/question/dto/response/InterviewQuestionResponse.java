@@ -2,7 +2,6 @@ package com.gotcha.server.question.dto.response;
 
 import com.gotcha.server.question.domain.IndividualQuestion;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,6 +23,6 @@ public class InterviewQuestionResponse {
                         .isCommon(q.isCommon())
                         .content(q.getContent())
                         .build())
-                .collect(Collectors.toList());
+                .toList();
     }
 }
