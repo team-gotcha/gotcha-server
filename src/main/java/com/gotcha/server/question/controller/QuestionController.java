@@ -23,7 +23,7 @@ public class QuestionController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @GetMapping("/{applicant-id}")
+    @GetMapping("/in-progress/{applicant-id}")
     public ResponseEntity<List<InterviewQuestionResponse>> findAllInterviewQuestions(@PathVariable(name = "applicant-id") Long applicantId) {
         return ResponseEntity.ok(questionService.listInterviewQuestions(applicantId));
     }
