@@ -2,6 +2,7 @@ package com.gotcha.server.evaluation.controller;
 
 import com.gotcha.server.auth.security.MemberDetails;
 import com.gotcha.server.evaluation.dto.request.EvaluateRequest;
+import com.gotcha.server.evaluation.dto.request.OneLinerRequest;
 import com.gotcha.server.evaluation.service.EvaluationService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,12 @@ public class EvaluationController {
     @PostMapping
     public ResponseEntity<Void> evaluate(@AuthenticationPrincipal final MemberDetails details, @RequestBody final List<EvaluateRequest> requests) {
         evaluationService.evaluate(details, requests);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PostMapping("/one-liner")
+    public ResponseEntity<Void> createOneLiner(@AuthenticationPrincipal final MemberDetails details, @RequestBody final OneLinerRequest request) {
+        evaluationService.createOneLiner(details, request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

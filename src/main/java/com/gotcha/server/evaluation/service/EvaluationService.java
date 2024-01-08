@@ -1,11 +1,16 @@
 package com.gotcha.server.evaluation.service;
 
+import com.gotcha.server.applicant.domain.Applicant;
 import com.gotcha.server.applicant.domain.Interviewer;
+import com.gotcha.server.applicant.repository.ApplicantRepository;
 import com.gotcha.server.applicant.repository.InterviewerRepository;
 import com.gotcha.server.auth.security.MemberDetails;
 import com.gotcha.server.evaluation.domain.Evaluation;
+import com.gotcha.server.evaluation.domain.OneLiner;
 import com.gotcha.server.evaluation.dto.request.EvaluateRequest;
+import com.gotcha.server.evaluation.dto.request.OneLinerRequest;
 import com.gotcha.server.evaluation.repository.EvaluationRepository;
+import com.gotcha.server.evaluation.repository.OneLinerRepository;
 import com.gotcha.server.global.exception.AppException;
 import com.gotcha.server.global.exception.ErrorCode;
 import com.gotcha.server.question.domain.IndividualQuestion;
@@ -24,6 +29,8 @@ public class EvaluationService {
     private final IndividualQuestionRepository individualQuestionRepository;
     private final EvaluationRepository evaluationRepository;
     private final InterviewerRepository interviewerRepository;
+    private final OneLinerRepository oneLinerRepository;
+    private final ApplicantRepository applicantRepository;
 
     @Transactional
     public void evaluate(final MemberDetails details, final List<EvaluateRequest> requests) {
@@ -46,5 +53,14 @@ public class EvaluationService {
                         .build())
                 .toList();
         evaluationRepository.saveAll(evaluations);
+    }
+
+    @Transactional
+    public void createOneLiner(final MemberDetails details, final OneLinerRequest request) {
+        Interviewer interviewer = interviewerRepository.findByMember(details.member())
+                .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED_INTERVIEWER));
+        Applicant applicant = applicantRepository.findById(request.applicantId())
+                .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
+        oneLinerRepository.save(new OneLiner(applicant, request.content(), interviewer));
     }
 }
