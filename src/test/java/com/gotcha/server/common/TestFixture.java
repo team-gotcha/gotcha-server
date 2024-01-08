@@ -8,6 +8,7 @@ import com.gotcha.server.member.domain.Member;
 import com.gotcha.server.project.domain.Collaborator;
 import com.gotcha.server.project.domain.Interview;
 import com.gotcha.server.project.domain.Project;
+import com.gotcha.server.project.domain.Subcollaborator;
 
 public class TestFixture {
     public static Member 테스트유저(String 이름) {
@@ -44,4 +45,9 @@ public class TestFixture {
     public static Collaborator 테스트콜라보레이터(String 이메일, Project 프로젝트){
         return new Collaborator(이메일, 프로젝트);
     }
+
+    public static Subcollaborator 테스트서브콜라보레이터(String 이메일, Interview 인터뷰){
+        return new Subcollaborator(이메일, 인터뷰);
+    }
+
 }
