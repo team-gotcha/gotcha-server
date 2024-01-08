@@ -23,13 +23,13 @@ public class IndividualQuestion {
     private Long id;
 
     @Column(nullable = false)
-    protected String content;
+    private String content;
 
     @Column(nullable = false)
-    protected Integer importance;
+    private Integer importance;
 
     @Column(nullable = false)
-    protected Integer questionOrder;
+    private Integer questionOrder;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, name = "applicant_id")
@@ -42,6 +42,12 @@ public class IndividualQuestion {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "comment_target_id")
     private IndividualQuestion commentTarget;
+
+    @Column(nullable = false)
+    private boolean asking;
+
+    @Column(nullable = false)
+    private boolean isCommon;
 
     public void setApplicant(final Applicant applicant) {
         this.applicant = applicant;
