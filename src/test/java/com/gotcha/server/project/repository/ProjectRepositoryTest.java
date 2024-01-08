@@ -4,7 +4,9 @@ import com.gotcha.server.common.TestRepository;
 import com.gotcha.server.global.config.QueryDslConfig;
 import com.gotcha.server.member.domain.Member;
 import com.gotcha.server.project.domain.Collaborator;
+import com.gotcha.server.project.domain.Interview;
 import com.gotcha.server.project.domain.Project;
+import com.gotcha.server.project.domain.Subcollaborator;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -28,11 +30,11 @@ class ProjectRepositoryTest {
     private TestRepository testRepository;
 
     @Autowired
-    private ProjectRepository projectRepository;
+    private InterviewDslRepositoryImpl interviewDslRepository;
 
     @Test
-    @DisplayName("Collaborator 이메일로 프로젝트 조회한다.")
-    void Collaborator_이메일로_프로젝트_조회하기() {
+    @DisplayName("사용자 이메일로 세부 면접 조회하기")
+    void 사용자_이메일로_세부_면접_조회하기() {
         // given
         Member 종미 = 테스트유저("종미");
         Member 윤정 = 테스트유저("윤정");
@@ -40,18 +42,24 @@ class ProjectRepositoryTest {
         Project 프로젝트B = 테스트프로젝트();
         Collaborator 콜라보레이터1 = 테스트콜라보레이터(종미.getEmail(), 프로젝트A);
         Collaborator 콜라보레이터2 = 테스트콜라보레이터(종미.getEmail(), 프로젝트B);
+        Interview 인터뷰A = 테스트면접(프로젝트A, "디자이너 면접");
+        Interview 인터뷰B = 테스트면접(프로젝트A, "개발자 면접");
+        Subcollaborator 서브콜라보레이터1 = 테스트서브콜라보레이터(종미.getEmail(), 인터뷰A);
+        Subcollaborator 서브콜라보레이터2 = 테스트서브콜라보레이터(종미.getEmail(), 인터뷰B);
 
         testRepository.save(
                 종미, 윤정,
                 프로젝트A, 프로젝트B,
-                콜라보레이터1, 콜라보레이터2);
+                콜라보레이터1, 콜라보레이터2,
+                인터뷰A, 인터뷰B,
+                서브콜라보레이터1, 서브콜라보레이터2);
 
         // when
-        List<Project> 조회결과 = projectRepository.findProjectsByCollaboratorEmail(종미.getEmail());
+        List<Interview> 조회결과 = interviewDslRepository.getInterviewList(종미.getEmail(), 프로젝트A);
 
         // then
         Assertions.assertThat(조회결과)
                 .hasSize(2)
-                .containsExactlyInAnyOrder(프로젝트A, 프로젝트B);
+                .containsExactlyInAnyOrder(인터뷰A, 인터뷰B);
     }
 }
