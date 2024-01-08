@@ -8,12 +8,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController("api/")
+@RestController("api/questions")
 @RequiredArgsConstructor
 public class QuestionController {
     private final QuestionService questionService;
 
-    @PostMapping("/common-questions")
+    @PostMapping("/common")
     public ResponseEntity<Void> createCommonQuestions(final CommonQuestionsRequest request) {
         questionService.createCommonQuestions(request);
         return ResponseEntity.status(HttpStatus.CREATED).build();

@@ -1,6 +1,6 @@
 package com.gotcha.server.question.domain;
 
-import com.gotcha.server.project.domain.Project;
+import com.gotcha.server.project.domain.Interview;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -22,14 +22,14 @@ public class CommonQuestion {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false, name = "project_id")
-    private Project project;
+    @JoinColumn(nullable = false, name = "interview_id")
+    private Interview interview;
 
     @Column(nullable = false)
     protected String content;
 
-    public CommonQuestion(final String content, final Project project) {
+    public CommonQuestion(final String content, final Interview interview) {
         this.content = content;
-        this.project = project;
+        this.interview = interview;
     }
 }

@@ -2,8 +2,8 @@ package com.gotcha.server.question.service;
 
 import com.gotcha.server.global.exception.AppException;
 import com.gotcha.server.global.exception.ErrorCode;
-import com.gotcha.server.project.domain.Project;
-import com.gotcha.server.project.repository.ProjectRepository;
+import com.gotcha.server.project.domain.Interview;
+import com.gotcha.server.project.repository.InterviewRepository;
 import com.gotcha.server.question.domain.CommonQuestion;
 import com.gotcha.server.question.dto.request.CommonQuestionsRequest;
 import com.gotcha.server.question.repository.CommonQuestionRepository;
@@ -18,16 +18,16 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class QuestionService {
     private final CommonQuestionRepository commonQuestionRepository;
-    private final ProjectRepository projectRepository;
+    private final InterviewRepository interviewRepository;
 
     @Transactional
     public void createCommonQuestions(final CommonQuestionsRequest request) {
-        Project project = projectRepository.findById(request.projectId())
-                .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUNT));
+        Interview interview = interviewRepository.findById(request.interviewId())
+                .orElseThrow(() -> new AppException(ErrorCode.INTERVIEW_NOT_FOUNT));
         List<String> questionContents = request.questions();
 
         List<CommonQuestion> questions = questionContents.stream()
-                .map(content -> new CommonQuestion(content, project))
+                .map(content -> new CommonQuestion(content, interview))
                 .collect(Collectors.toList());
         commonQuestionRepository.saveAll(questions);
     }
