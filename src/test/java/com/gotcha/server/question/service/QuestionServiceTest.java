@@ -5,7 +5,6 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import com.gotcha.server.project.domain.LayoutType;
 import com.gotcha.server.project.domain.Project;
 import com.gotcha.server.project.repository.ProjectRepository;
 import com.gotcha.server.question.dto.request.CommonQuestionsRequest;
@@ -33,7 +32,7 @@ class QuestionServiceTest {
     void 공통질문_생성하기() {
         // given
         Long projectId = 1L;
-        Project mockProject = new Project("팀이름", "프로젝트이름", LayoutType.REGISTERED);
+        Project mockProject = new Project("프로젝트이름");
         CommonQuestionsRequest request = new CommonQuestionsRequest(List.of("content1", "content2"), projectId);
 
         given(projectRepository.findById(1L)).willReturn(Optional.of(mockProject));

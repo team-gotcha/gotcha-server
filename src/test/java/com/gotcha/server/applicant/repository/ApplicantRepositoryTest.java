@@ -9,28 +9,16 @@ import com.gotcha.server.applicant.domain.Applicant;
 import com.gotcha.server.applicant.domain.Interviewer;
 import com.gotcha.server.applicant.domain.KeywordType;
 import com.gotcha.server.applicant.dto.response.ApplicantsResponse;
-import com.gotcha.server.common.TestRepository;
-import com.gotcha.server.global.config.QueryDslConfig;
+import com.gotcha.server.common.RepositoryTest;
 import com.gotcha.server.member.domain.Member;
 import com.gotcha.server.project.domain.Interview;
 import com.gotcha.server.project.domain.Project;
 import java.util.List;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.Import;
 
-@Slf4j
-@DataJpaTest
-@Import({TestRepository.class, QueryDslConfig.class})
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class ApplicantRepositoryTest {
-    @Autowired
-    private TestRepository testRepository;
-
+class ApplicantRepositoryTest extends RepositoryTest {
     @Autowired
     private ApplicantRepository applicantRepository;
 
