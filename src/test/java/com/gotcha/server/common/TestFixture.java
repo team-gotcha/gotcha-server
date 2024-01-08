@@ -5,6 +5,7 @@ import com.gotcha.server.applicant.domain.Interviewer;
 import com.gotcha.server.applicant.domain.Keyword;
 import com.gotcha.server.applicant.domain.KeywordType;
 import com.gotcha.server.member.domain.Member;
+import com.gotcha.server.project.domain.Collaborator;
 import com.gotcha.server.project.domain.Interview;
 import com.gotcha.server.project.domain.Project;
 
@@ -19,7 +20,7 @@ public class TestFixture {
     }
 
     public static Project 테스트프로젝트() {
-        return Project.builder().name("테스트프로젝트").teamName("CEOS").build();
+        return Project.builder().name("테스트프로젝트").build();
     }
 
     public static Interview 테스트면접(Project 프로젝트, String 면접이름) {
@@ -38,5 +39,9 @@ public class TestFixture {
 
     public static Keyword 테스트키워드(Applicant 지원자, String 내용, KeywordType 종류) {
         return new Keyword(지원자, 내용, 종류);
+    }
+
+    public static Collaborator 테스트콜라보레이터(String 이메일, Project 프로젝트){
+        return new Collaborator(이메일, 프로젝트);
     }
 }
