@@ -23,6 +23,6 @@ public class InterviewController {
     public ResponseEntity<String> createInterview(
             @RequestBody @Valid InterviewRequest request) {
         interviewService.createInterview(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body("세부 면접이 생성되었습니다.");
+        return ResponseEntity.status(HttpStatus.CREATED).body("세부 면접 생성 및 초대 이메일 발송이 완료되었습니다.");
     }
 }

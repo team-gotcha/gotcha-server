@@ -5,8 +5,10 @@ import com.gotcha.server.applicant.domain.Interviewer;
 import com.gotcha.server.applicant.domain.Keyword;
 import com.gotcha.server.applicant.domain.KeywordType;
 import com.gotcha.server.member.domain.Member;
+import com.gotcha.server.project.domain.Collaborator;
 import com.gotcha.server.project.domain.Interview;
 import com.gotcha.server.project.domain.Project;
+import com.gotcha.server.project.domain.Subcollaborator;
 import com.gotcha.server.question.domain.IndividualQuestion;
 
 public class TestFixture {
@@ -39,6 +41,14 @@ public class TestFixture {
 
     public static Keyword 테스트키워드(Applicant 지원자, String 내용, KeywordType 종류) {
         return new Keyword(지원자, 내용, 종류);
+    }
+
+    public static Collaborator 테스트콜라보레이터(String 이메일, Project 프로젝트){
+        return new Collaborator(이메일, 프로젝트);
+    }
+
+    public static Subcollaborator 테스트서브콜라보레이터(String 이메일, Interview 인터뷰){
+        return new Subcollaborator(이메일, 인터뷰);
     }
 
     public static IndividualQuestion 테스트개별질문(Applicant 지원자, String 내용, Integer 순서) {
