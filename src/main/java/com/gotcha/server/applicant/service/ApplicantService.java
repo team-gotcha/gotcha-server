@@ -16,6 +16,7 @@ import com.gotcha.server.applicant.repository.PreparedInterviewerRepository;
 import com.gotcha.server.auth.security.MemberDetails;
 import com.gotcha.server.global.exception.AppException;
 import com.gotcha.server.global.exception.ErrorCode;
+import com.gotcha.server.member.domain.Member;
 import com.gotcha.server.project.domain.Interview;
 import com.gotcha.server.project.repository.InterviewRepository;
 import java.util.List;
@@ -37,11 +38,7 @@ public class ApplicantService {
     public InterviewProceedResponse proceedToInterview(final InterviewProceedRequest request, final MemberDetails details) {
         Applicant applicant = applicantRepository.findById(request.applicantId())
                 .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
-        Interviewer interviewer = interviewerRepository.findByMember(details.member())
-                .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED_INTERVIEWER));
-        if(!preparedInterviewerRepository.existsByInterviewer(interviewer)) {
-            preparedInterviewerRepository.save(new PreparedInterviewer(applicant, interviewer));
-        }
+        createNewPreparedInterviewer(applicant, details.member());
 
         long interviewerCount = interviewerRepository.countByApplicant(applicant);
         long preparedInterviewerCount = preparedInterviewerRepository.countByApplicant(applicant);
@@ -49,6 +46,14 @@ public class ApplicantService {
             applicant.moveToNextStatus();
         }
         return new InterviewProceedResponse(interviewerCount, preparedInterviewerCount);
+    }
+
+    private void createNewPreparedInterviewer(final Applicant applicant, final Member member) {
+        Interviewer interviewer = interviewerRepository.findByMember(member)
+                .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED_INTERVIEWER));
+        if(!preparedInterviewerRepository.existsByInterviewer(interviewer)) {
+            preparedInterviewerRepository.save(new PreparedInterviewer(applicant, interviewer));
+        }
     }
 
     public TodayInterviewResponse countTodayInterview(final MemberDetails details) {

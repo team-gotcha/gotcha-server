@@ -40,12 +40,7 @@ public class EvaluationService {
         Interviewer interviewer = interviewerRepository.findByMember(details.member())
                 .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED_INTERVIEWER));
 
-        List<Long> questionIds = requests.stream().map(EvaluateRequest::questionId).toList();
-        List<IndividualQuestion> questions = individualQuestionRepository.findAllByIdIn(questionIds);
-        if(questions.size() != questionIds.size()) {
-            throw new AppException(ErrorCode.QUESTION_NOT_FOUNT);
-        }
-
+        List<IndividualQuestion> questions = getQuestionsBeingEvaluated(requests);
         Map<Long, IndividualQuestion> questionMap = questions.stream().collect(Collectors.toMap(IndividualQuestion::getId, q->q));
         List<Evaluation> evaluations = requests.stream()
                 .map(request -> Evaluation.builder()
@@ -56,6 +51,15 @@ public class EvaluationService {
                         .build())
                 .toList();
         evaluationRepository.saveAll(evaluations);
+    }
+
+    private List<IndividualQuestion> getQuestionsBeingEvaluated(final List<EvaluateRequest> requests) {
+        List<Long> questionIds = requests.stream().map(EvaluateRequest::questionId).toList();
+        List<IndividualQuestion> questions = individualQuestionRepository.findAllByIdIn(questionIds);
+        if(questions.size() != questionIds.size()) {
+            throw new AppException(ErrorCode.QUESTION_NOT_FOUNT);
+        }
+        return questions;
     }
 
     @Transactional
