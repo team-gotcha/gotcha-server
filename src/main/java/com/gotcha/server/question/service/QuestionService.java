@@ -42,7 +42,7 @@ public class QuestionService {
     public List<InterviewQuestionResponse> listInterviewQuestions(final Long applicantId) {
         Applicant applicant = applicantRepository.findById(applicantId)
                 .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
-        List<IndividualQuestion> questions = individualQuestionRepository.findAllByApplicantOrderByQuestionOrder(applicant);
+        List<IndividualQuestion> questions = individualQuestionRepository.findAllDuringInterview(applicant);
         return InterviewQuestionResponse.generateList(questions);
     }
 }
