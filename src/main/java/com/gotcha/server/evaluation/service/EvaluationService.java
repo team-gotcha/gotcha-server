@@ -9,6 +9,8 @@ import com.gotcha.server.evaluation.domain.Evaluation;
 import com.gotcha.server.evaluation.domain.OneLiner;
 import com.gotcha.server.evaluation.dto.request.EvaluateRequest;
 import com.gotcha.server.evaluation.dto.request.OneLinerRequest;
+import com.gotcha.server.evaluation.dto.response.EvaluationResponse;
+import com.gotcha.server.evaluation.dto.response.QuestionEvaluationResponse;
 import com.gotcha.server.evaluation.repository.EvaluationRepository;
 import com.gotcha.server.evaluation.repository.OneLinerRepository;
 import com.gotcha.server.global.exception.AppException;
@@ -62,5 +64,14 @@ public class EvaluationService {
         Applicant applicant = applicantRepository.findById(request.applicantId())
                 .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
         oneLinerRepository.save(new OneLiner(applicant, request.content(), interviewer));
+    }
+
+    public QuestionEvaluationResponse findQuestionEvaluations(final Long questionId) {
+        IndividualQuestion question = individualQuestionRepository.findById(questionId)
+                .orElseThrow(() -> new AppException(ErrorCode.QUESTION_NOT_FOUNT));
+        List<EvaluationResponse> evaluations = evaluationRepository.findAllByQuestion(question).stream()
+                .map(e -> new EvaluationResponse(e.getScore(), e.getContent()))
+                .toList();
+        return new QuestionEvaluationResponse(question.getContent(), question.isCommon(), evaluations);
     }
 }
