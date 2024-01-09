@@ -4,6 +4,7 @@ import com.gotcha.server.applicant.domain.Applicant;
 import com.gotcha.server.applicant.domain.Interviewer;
 import com.gotcha.server.applicant.domain.Keyword;
 import com.gotcha.server.applicant.domain.KeywordType;
+import com.gotcha.server.evaluation.domain.Evaluation;
 import com.gotcha.server.member.domain.Member;
 import com.gotcha.server.project.domain.Collaborator;
 import com.gotcha.server.project.domain.Interview;
@@ -51,12 +52,24 @@ public class TestFixture {
         return new Subcollaborator(이메일, 인터뷰);
     }
 
-    public static IndividualQuestion 테스트개별질문(Applicant 지원자, String 내용, Integer 순서) {
+    public static IndividualQuestion 테스트개별질문(Applicant 지원자, String 내용, Integer 순서, boolean 면접때질문하기) {
         IndividualQuestion question = IndividualQuestion.builder()
                 .applicant(지원자)
                 .content(내용)
                 .build();
         question.setQuestionOrder(순서);
+        if(면접때질문하기) {
+            question.askDuringInterview();
+        }
         return question;
+    }
+
+    public static Evaluation 테스트평가(Integer 점수, String 평가내용, IndividualQuestion 질문, Interviewer 면접관) {
+        return Evaluation.builder()
+                .score(점수)
+                .content(평가내용)
+                .interviewer(면접관)
+                .question(질문)
+                .build();
     }
 }
