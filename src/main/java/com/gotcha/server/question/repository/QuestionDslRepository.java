@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface QuestionDslRepository {
     List<IndividualQuestion> findAllDuringInterview(Applicant applicant);
+    List<IndividualQuestion> findAllAfterEvaluation(Applicant applicant);
 }

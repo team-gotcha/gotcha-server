@@ -1,6 +1,7 @@
 package com.gotcha.server.question.repository;
 
 import com.gotcha.server.applicant.domain.Applicant;
+import com.gotcha.server.evaluation.domain.QEvaluation;
 import com.gotcha.server.question.domain.IndividualQuestion;
 import com.gotcha.server.question.domain.QIndividualQuestion;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -21,6 +22,21 @@ public class QuestionDslRepositoryImpl implements QuestionDslRepository {
                 .select(qQuestion)
                 .from(qQuestion)
                 .where(qQuestion.applicant.eq(applicant), qQuestion.asking.eq(true))
+                .orderBy(qQuestion.questionOrder.asc())
+                .fetch();
+    }
+
+    @Override
+    public List<IndividualQuestion> findAllAfterEvaluation(Applicant applicant) {
+        QIndividualQuestion qQuestion = QIndividualQuestion.individualQuestion;
+        QEvaluation qEvaluation = QEvaluation.evaluation;
+
+        return jpaQueryFactory
+                .select(qQuestion)
+                .from(qQuestion)
+                .where(qQuestion.applicant.eq(applicant), qQuestion.asking.eq(true))
+                .innerJoin(qQuestion.evaluations, qEvaluation)
+                .fetchJoin()
                 .orderBy(qQuestion.questionOrder.asc())
                 .fetch();
     }

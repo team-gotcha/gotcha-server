@@ -2,6 +2,8 @@ package com.gotcha.server.question.domain;
 
 import com.gotcha.server.applicant.domain.Applicant;
 import com.gotcha.server.applicant.domain.Interviewer;
+import com.gotcha.server.evaluation.domain.Evaluation;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -10,6 +12,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -50,6 +55,9 @@ public class IndividualQuestion {
     @Column(nullable = false)
     private boolean isCommon;
 
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Evaluation> evaluations = new ArrayList<>();
+
     @Builder
     public IndividualQuestion(final String content, final Applicant applicant) {
         this.content = content;
@@ -70,5 +78,19 @@ public class IndividualQuestion {
 
     public void setQuestionOrder(final Integer questionOrder) {
         this.questionOrder = questionOrder;
+    }
+
+    public void askDuringInterview() {
+        this.asking = true;
+    }
+
+    public void addEvaluation(final Evaluation evaluation) {
+        evaluations.add(evaluation);
+        evaluation.setQuestion(this);
+    }
+
+    public void removeEvaluation(final Evaluation evaluation) {
+        evaluations.remove(evaluation);
+        evaluation.setQuestion(null);
     }
 }
