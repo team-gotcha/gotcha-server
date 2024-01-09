@@ -4,6 +4,7 @@ import com.gotcha.server.auth.security.MemberDetails;
 import com.gotcha.server.evaluation.dto.request.EvaluateRequest;
 import com.gotcha.server.evaluation.dto.request.OneLinerRequest;
 import com.gotcha.server.evaluation.dto.response.QuestionEvaluationResponse;
+import com.gotcha.server.evaluation.dto.response.QuestionRankResponse;
 import com.gotcha.server.evaluation.service.EvaluationService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +36,12 @@ public class EvaluationController {
     }
 
     @GetMapping("/questions")
-    public ResponseEntity<QuestionEvaluationResponse> findEvaluationsByQuestion(@RequestParam(value = "question-id", required = false) Long questionId) {
+    public ResponseEntity<QuestionEvaluationResponse> findEvaluationsByQuestion(@RequestParam(value = "question-id") Long questionId) {
         return ResponseEntity.ok(evaluationService.findQuestionEvaluations(questionId));
+    }
+
+    @GetMapping("/questions-rank")
+    public ResponseEntity<List<QuestionRankResponse>> findQuestionRanksByApplicant(@RequestParam(value = "applicant-id") Long applicantId) {
+        return ResponseEntity.ok(evaluationService.findQuestionRanks(applicantId));
     }
 }
