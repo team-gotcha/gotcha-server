@@ -23,7 +23,7 @@ class ApplicantRepositoryTest extends RepositoryTest {
     private ApplicantRepository applicantRepository;
 
     @Test
-    @DisplayName("면접 별로 지원자를 조회할 때 면접관의 프로필도 조회한다.")
+    @DisplayName("면접 별로 지원자를 조회할 때 면접관의 이메일도 조회한다.")
     void 면접별_지원자_조회하기() {
         // given
         Member 종미 = 테스트유저("종미");
@@ -59,7 +59,7 @@ class ApplicantRepositoryTest extends RepositoryTest {
                 .containsAll(List.of("지원자A", "지원자B", "지원자C"));
         assertThat(조회결과)
                 .filteredOn(a -> a.getName().equals("지원자A"))
-                .flatExtracting(ApplicantsResponse::getInterviewerProfiles)
+                .flatExtracting(ApplicantsResponse::getInterviewerEmails)
                 .hasSize(2);
     }
 
