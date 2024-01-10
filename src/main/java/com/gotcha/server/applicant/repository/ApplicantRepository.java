@@ -11,5 +11,5 @@ public interface ApplicantRepository extends JpaRepository<Applicant, Long>, App
             + "join fetch a.interviewers i "
             + "join fetch i.member "
             + "where a.id = :applicantId")
-    Optional<Applicant> findById(@Param("applicantId") Long id);
+    Optional<Applicant> findByIdWithInterviewer(@Param("applicantId") Long id);
 }

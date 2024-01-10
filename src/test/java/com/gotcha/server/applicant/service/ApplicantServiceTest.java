@@ -31,7 +31,7 @@ class ApplicantServiceTest extends IntegrationTest {
         environ.테스트키워드_저장하기(지원자A, "SQL자격증", KeywordType.SKILL);
 
         // when
-        ApplicantResponse 조회결과 = applicantService.findApplicantById(지원자A.getId());
+        ApplicantResponse 조회결과 = applicantService.findApplicantDetailsById(지원자A.getId());
 
         // then
         assertEquals("지원자A", 조회결과.getName());

@@ -41,6 +41,6 @@ public class ApplicantController {
 
     @GetMapping("/{applicant-id}")
     public ResponseEntity<ApplicantResponse> findApplicantDetailsById(@PathVariable(name = "applicant-id") Long applicantId) {
-        return ResponseEntity.ok(applicantService.findApplicantById(applicantId));
+        return ResponseEntity.ok(applicantService.findApplicantDetailsById(applicantId));
     }
 }

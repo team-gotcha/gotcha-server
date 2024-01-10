@@ -67,8 +67,8 @@ public class ApplicantService {
         return applicantRepository.findAllByInterviewWithKeywords(interview);
     }
 
-    public ApplicantResponse findApplicantById(final Long applicantId) {
-        Applicant applicant = applicantRepository.findById(applicantId)
+    public ApplicantResponse findApplicantDetailsById(final Long applicantId) {
+        Applicant applicant = applicantRepository.findByIdWithInterviewer(applicantId)
                 .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
         List<Keyword> keywords = keywordRepository.findAllByApplicant(applicant);
         return ApplicantResponse.from(applicant, keywords);
