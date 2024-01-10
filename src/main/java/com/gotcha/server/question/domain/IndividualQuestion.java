@@ -3,6 +3,8 @@ package com.gotcha.server.question.domain;
 import com.gotcha.server.applicant.domain.Applicant;
 import com.gotcha.server.applicant.domain.Interviewer;
 import com.gotcha.server.evaluation.domain.Evaluation;
+import com.gotcha.server.global.exception.AppException;
+import com.gotcha.server.global.exception.ErrorCode;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,6 +15,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
@@ -24,7 +27,8 @@ import lombok.NoArgsConstructor;
 @Entity(name = "individual_question")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class IndividualQuestion {
-    private static final int DEFAULT_IMPORTANCE = 1;
+    private static final int MIN_IMPORTANCE = 3;
+    private static final int MAX_IMPORTANCE = 5;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,10 +38,10 @@ public class IndividualQuestion {
     private String content;
 
     @Column(nullable = false)
-    private Integer importance;
+    private int importance;
 
     @Column(nullable = false)
-    private Integer questionOrder;
+    private int questionOrder;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, name = "applicant_id")
@@ -63,7 +67,7 @@ public class IndividualQuestion {
     @Builder
     public IndividualQuestion(final String content, final Applicant applicant) {
         this.content = content;
-        this.importance = DEFAULT_IMPORTANCE;
+        this.importance = MIN_IMPORTANCE;
         this.questionOrder = 0;
         this.applicant = applicant;
         this.asking = false;
@@ -82,11 +86,15 @@ public class IndividualQuestion {
         this.questionOrder = questionOrder;
     }
 
-    public void setImportance(Integer importance) {
-        if(importance == null) {
-            importance = DEFAULT_IMPORTANCE;
-        }
+    public void setImportance(int importance) {
+        validateImportance(importance);
         this.importance = importance;
+    }
+
+    public void validateImportance(int importance) {
+        if(importance < MIN_IMPORTANCE || importance > MAX_IMPORTANCE) {
+            throw new AppException(ErrorCode.INVALID_IMPORTANCE);
+        }
     }
 
     public void askDuringInterview() {
@@ -103,13 +111,16 @@ public class IndividualQuestion {
         evaluation.setQuestion(null);
     }
 
-    public Integer multiplyWeight(final int score) {
+    public int multiplyWeight(final int score) {
         return score * importance;
     }
 
-    public Integer calculateEvaluationScore() {
-        return multiplyWeight(evaluations.stream()
+    public double calculateEvaluationScore() {
+        int totalSum = evaluations.stream()
                 .mapToInt(Evaluation::getScore)
-                .sum());
+                .sum();
+        BigDecimal evaluationCount = new BigDecimal(evaluations.size());
+        BigDecimal totalSumWithWeight = new BigDecimal(multiplyWeight(totalSum));
+        return totalSumWithWeight.divide(evaluationCount).doubleValue();
     }
 }

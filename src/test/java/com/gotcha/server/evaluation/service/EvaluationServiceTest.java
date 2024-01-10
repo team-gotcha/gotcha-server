@@ -123,6 +123,6 @@ class EvaluationServiceTest extends IntegrationTest {
         // then
         assertThat(조회결과).hasSize(2)
                 .extracting(QuestionRankResponse::totalScore)
-                .containsExactlyElementsOf(List.of(7, 3));
+                .containsExactlyElementsOf(List.of(3.5, 1.5));
     }
 }

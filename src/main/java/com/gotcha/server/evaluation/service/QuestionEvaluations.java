@@ -1,6 +1,5 @@
 package com.gotcha.server.evaluation.service;
 
-import com.gotcha.server.evaluation.domain.Evaluation;
 import com.gotcha.server.evaluation.dto.response.QuestionRankResponse;
 import com.gotcha.server.question.domain.IndividualQuestion;
 import java.util.ArrayList;
@@ -9,13 +8,13 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class QuestionEvaluations {
-    private final Map<IndividualQuestion, Integer> totalQuestionsScore;
+    private final Map<IndividualQuestion, Double> totalQuestionsScore;
 
     public QuestionEvaluations(final List<IndividualQuestion> questions) {
         this.totalQuestionsScore = calculateTotalQuestionsScore(questions);
     }
 
-    public Map<IndividualQuestion, Integer> calculateTotalQuestionsScore(final List<IndividualQuestion> questions) {
+    public Map<IndividualQuestion, Double> calculateTotalQuestionsScore(final List<IndividualQuestion> questions) {
         return questions.stream()
                 .collect(Collectors.toMap(
                         question -> question,

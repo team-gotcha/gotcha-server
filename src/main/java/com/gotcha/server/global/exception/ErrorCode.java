@@ -17,6 +17,7 @@ public enum ErrorCode {
     NO_PARAMETER(HttpStatus.BAD_REQUEST, " 파라미터가 없습니다."),
     NAME_IS_EMPTY(HttpStatus.BAD_REQUEST, "면접 이름을 입력해주세요."),
     INVALID_EMAIL(HttpStatus.BAD_REQUEST, "유효하지 않은 이메일 주소입니다."),
+    INVALID_IMPORTANCE(HttpStatus.BAD_REQUEST, "중요도의 범위는 3~5입니다."),
 
     PROJECT_NOT_FOUNT(HttpStatus.NOT_FOUND, "존재하지 않는 프로젝트입니다."),
     APPLICANT_NOT_FOUNT(HttpStatus.NOT_FOUND, "존재하지 않는 지원자입니다."),
