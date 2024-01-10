@@ -4,6 +4,7 @@ import com.gotcha.server.applicant.dto.request.InterviewProceedRequest;
 import com.gotcha.server.applicant.dto.response.ApplicantResponse;
 import com.gotcha.server.applicant.dto.response.ApplicantsResponse;
 import com.gotcha.server.applicant.dto.response.InterviewProceedResponse;
+import com.gotcha.server.applicant.dto.response.PassedApplicantsResponse;
 import com.gotcha.server.applicant.dto.response.TodayInterviewResponse;
 import com.gotcha.server.applicant.service.ApplicantService;
 import com.gotcha.server.auth.security.MemberDetails;
@@ -42,5 +43,10 @@ public class ApplicantController {
     @GetMapping("/{applicant-id}")
     public ResponseEntity<ApplicantResponse> findApplicantDetailsById(@PathVariable(name = "applicant-id") Long applicantId) {
         return ResponseEntity.ok(applicantService.findApplicantDetailsById(applicantId));
+    }
+
+    @GetMapping("/pass")
+    public ResponseEntity<List<PassedApplicantsResponse>> findAllPassedApplicantsByInterview(@RequestParam(name = "interview-id") Long interviewId) {
+        return ResponseEntity.ok(applicantService.listPassedApplicantsByInterview(interviewId));
     }
 }

@@ -8,6 +8,7 @@ import com.gotcha.server.applicant.dto.request.InterviewProceedRequest;
 import com.gotcha.server.applicant.dto.response.ApplicantResponse;
 import com.gotcha.server.applicant.dto.response.ApplicantsResponse;
 import com.gotcha.server.applicant.dto.response.InterviewProceedResponse;
+import com.gotcha.server.applicant.dto.response.PassedApplicantsResponse;
 import com.gotcha.server.applicant.dto.response.TodayInterviewResponse;
 import com.gotcha.server.applicant.repository.ApplicantRepository;
 import com.gotcha.server.applicant.repository.InterviewerRepository;
@@ -72,5 +73,11 @@ public class ApplicantService {
                 .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
         List<Keyword> keywords = keywordRepository.findAllByApplicant(applicant);
         return ApplicantResponse.from(applicant, keywords);
+    }
+
+    public List<PassedApplicantsResponse> listPassedApplicantsByInterview(final Long interviewId) {
+        Interview interview = interviewRepository.findById(interviewId)
+                .orElseThrow(() -> new AppException(ErrorCode.INTERVIEW_NOT_FOUNT));
+        return applicantRepository.findAllPassedApplicantsWithKeywords(interview);
     }
 }
