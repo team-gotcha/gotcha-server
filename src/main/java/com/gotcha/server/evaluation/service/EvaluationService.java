@@ -84,7 +84,7 @@ public class EvaluationService {
         Applicant applicant = applicantRepository.findById(applicantId)
                 .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
 
-        List<IndividualQuestion> questions = individualQuestionRepository.findAllDuringInterview(applicant);
+        List<IndividualQuestion> questions = individualQuestionRepository.findAllAfterEvaluation(applicant);
         QuestionEvaluations evaluations = new QuestionEvaluations(questions);
         return evaluations.createQuestionRanks();
     }
