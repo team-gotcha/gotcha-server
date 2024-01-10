@@ -7,6 +7,7 @@ import com.gotcha.server.applicant.repository.InterviewerRepository;
 import com.gotcha.server.auth.security.MemberDetails;
 import com.gotcha.server.evaluation.domain.Evaluation;
 import com.gotcha.server.evaluation.domain.OneLiner;
+import com.gotcha.server.evaluation.domain.QuestionEvaluations;
 import com.gotcha.server.evaluation.dto.request.EvaluateRequest;
 import com.gotcha.server.evaluation.dto.request.OneLinerRequest;
 import com.gotcha.server.evaluation.dto.response.EvaluationResponse;

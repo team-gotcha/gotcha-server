@@ -1,4 +1,4 @@
-package com.gotcha.server.evaluation.service;
+package com.gotcha.server.evaluation.domain;
 
 import com.gotcha.server.evaluation.dto.response.QuestionRankResponse;
 import com.gotcha.server.question.domain.IndividualQuestion;
