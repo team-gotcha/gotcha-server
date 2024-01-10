@@ -24,6 +24,8 @@ import lombok.NoArgsConstructor;
 @Entity(name = "individual_question")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class IndividualQuestion {
+    private static final int DEFAULT_IMPORTANCE = 1;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -61,7 +63,7 @@ public class IndividualQuestion {
     @Builder
     public IndividualQuestion(final String content, final Applicant applicant) {
         this.content = content;
-        this.importance = 0;
+        this.importance = DEFAULT_IMPORTANCE;
         this.questionOrder = 0;
         this.applicant = applicant;
         this.asking = false;
@@ -80,6 +82,13 @@ public class IndividualQuestion {
         this.questionOrder = questionOrder;
     }
 
+    public void setImportance(Integer importance) {
+        if(importance == null) {
+            importance = DEFAULT_IMPORTANCE;
+        }
+        this.importance = importance;
+    }
+
     public void askDuringInterview() {
         this.asking = true;
     }
@@ -92,5 +101,15 @@ public class IndividualQuestion {
     public void removeEvaluation(final Evaluation evaluation) {
         evaluations.remove(evaluation);
         evaluation.setQuestion(null);
+    }
+
+    public Integer multiplyWeight(final int score) {
+        return score * importance;
+    }
+
+    public Integer calculateEvaluationScore() {
+        return multiplyWeight(evaluations.stream()
+                .mapToInt(Evaluation::getScore)
+                .sum());
     }
 }

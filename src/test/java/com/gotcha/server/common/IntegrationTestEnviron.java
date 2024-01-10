@@ -58,8 +58,8 @@ public class IntegrationTestEnviron {
         return keywordRepository.save(테스트키워드(지원자, 내용, 종류));
     }
 
-    public IndividualQuestion 테스트개별질문_저장하기(Applicant 지원자, String 내용, Integer 순서, boolean 면접때질문하기) {
-        return individualQuestionRepository.save(테스트개별질문(지원자, 내용, 순서, 면접때질문하기));
+    public IndividualQuestion 테스트개별질문_저장하기(Applicant 지원자, String 내용, Integer 순서, boolean 면접때질문하기, Integer 중요도) {
+        return individualQuestionRepository.save(테스트개별질문(지원자, 내용, 순서, 면접때질문하기, 중요도));
     }
 
     public Evaluation 테스트평가_저장하기(Integer 점수, String 평가내용, IndividualQuestion 질문, Interviewer 면접관) {

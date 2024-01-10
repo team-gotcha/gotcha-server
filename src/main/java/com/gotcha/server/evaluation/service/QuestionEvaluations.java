@@ -19,9 +19,7 @@ public class QuestionEvaluations {
         return questions.stream()
                 .collect(Collectors.toMap(
                         question -> question,
-                        question -> question.getEvaluations().stream()
-                                .mapToInt(Evaluation::getScore)
-                                .sum()));
+                        question -> question.calculateEvaluationScore()));
     }
 
     public List<IndividualQuestion> calculateQuestionsRank() {

@@ -42,8 +42,8 @@ class EvaluationServiceTest extends IntegrationTest {
         Applicant 지원자A = environ.테스트지원자_저장하기(테스트면접, "지원자A");
         environ.테스트면접관_저장하기(지원자A, 종미);
 
-        IndividualQuestion 질문A = environ.테스트개별질문_저장하기(지원자A, "자기소개해주세요.", 1, true);
-        IndividualQuestion 질문B = environ.테스트개별질문_저장하기(지원자A, "장점을소개해주세요.", 2, true);
+        IndividualQuestion 질문A = environ.테스트개별질문_저장하기(지원자A, "자기소개해주세요.", 1, true, 1);
+        IndividualQuestion 질문B = environ.테스트개별질문_저장하기(지원자A, "장점을소개해주세요.", 2, true, 1);
 
         List<EvaluateRequest> 평가요청 = List.of(
                 new EvaluateRequest(질문A.getId(), 4, "좋은인상이있음"), new EvaluateRequest(질문B.getId(), 1, "낫배드"));
@@ -66,8 +66,8 @@ class EvaluationServiceTest extends IntegrationTest {
         Interviewer 종미면접관 = environ.테스트면접관_저장하기(지원자A, 종미);
         Interviewer 윤정면접관 = environ.테스트면접관_저장하기(지원자A, 윤정);
 
-        IndividualQuestion 질문A = environ.테스트개별질문_저장하기(지원자A, "자기소개해주세요.", 1, true);
-        IndividualQuestion 질문B = environ.테스트개별질문_저장하기(지원자A, "장점을소개해주세요.", 2, true);
+        IndividualQuestion 질문A = environ.테스트개별질문_저장하기(지원자A, "자기소개해주세요.", 1, true, 1);
+        IndividualQuestion 질문B = environ.테스트개별질문_저장하기(지원자A, "장점을소개해주세요.", 2, true, 1);
 
         environ.테스트평가_저장하기(1, "인상이좋다", 질문A, 종미면접관);
         environ.테스트평가_저장하기(2, "굿", 질문A, 윤정면접관);
@@ -109,8 +109,8 @@ class EvaluationServiceTest extends IntegrationTest {
         Interviewer 종미면접관 = environ.테스트면접관_저장하기(지원자A, 종미);
         Interviewer 윤정면접관 = environ.테스트면접관_저장하기(지원자A, 윤정);
 
-        IndividualQuestion 질문A = environ.테스트개별질문_저장하기(지원자A, "자기소개해주세요.", 1, true);
-        IndividualQuestion 질문B = environ.테스트개별질문_저장하기(지원자A, "장점을소개해주세요.", 2, true);
+        IndividualQuestion 질문A = environ.테스트개별질문_저장하기(지원자A, "자기소개해주세요.", 1, true, 1);
+        IndividualQuestion 질문B = environ.테스트개별질문_저장하기(지원자A, "장점을소개해주세요.", 2, true, 1);
 
         environ.테스트평가_저장하기(1, "인상이좋다", 질문A, 종미면접관);
         environ.테스트평가_저장하기(2, "굿", 질문A, 윤정면접관);
