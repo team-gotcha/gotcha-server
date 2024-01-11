@@ -43,6 +43,9 @@ public class Applicant {
     @Column(nullable = false)
     private InterviewStatus interviewStatus;
 
+    @Column(nullable = false)
+    private String email;
+
     private LocalDate date;
     private String name;
     private Integer age;
