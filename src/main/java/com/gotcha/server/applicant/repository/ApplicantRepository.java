@@ -1,6 +1,8 @@
 package com.gotcha.server.applicant.repository;
 
 import com.gotcha.server.applicant.domain.Applicant;
+import com.gotcha.server.project.domain.Interview;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -11,5 +13,7 @@ public interface ApplicantRepository extends JpaRepository<Applicant, Long>, App
             + "join fetch a.interviewers i "
             + "join fetch i.member "
             + "where a.id = :applicantId")
-    Optional<Applicant> findById(@Param("applicantId") Long id);
+    Optional<Applicant> findByIdWithInterviewer(@Param("applicantId") Long id);
+
+    List<Applicant> findAllByInterview(Interview interview);
 }

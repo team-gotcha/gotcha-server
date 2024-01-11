@@ -1,9 +1,11 @@
 package com.gotcha.server.applicant.controller;
 
 import com.gotcha.server.applicant.dto.request.InterviewProceedRequest;
+import com.gotcha.server.applicant.dto.request.PassEmailSendRequest;
 import com.gotcha.server.applicant.dto.response.ApplicantResponse;
 import com.gotcha.server.applicant.dto.response.ApplicantsResponse;
 import com.gotcha.server.applicant.dto.response.InterviewProceedResponse;
+import com.gotcha.server.applicant.dto.response.PassedApplicantsResponse;
 import com.gotcha.server.applicant.dto.response.TodayInterviewResponse;
 import com.gotcha.server.applicant.service.ApplicantService;
 import com.gotcha.server.auth.security.MemberDetails;
@@ -35,12 +37,23 @@ public class ApplicantController {
     }
 
     @GetMapping("")
-    public ResponseEntity<List<ApplicantsResponse>> findAllApplicantByInterview(@RequestParam(name = "interview-id") Long interviewId) {
+    public ResponseEntity<List<ApplicantsResponse>> findAllApplicantByInterview(@RequestParam(name = "interview-id") final Long interviewId) {
         return ResponseEntity.ok(applicantService.listApplicantsByInterview(interviewId));
     }
 
     @GetMapping("/{applicant-id}")
-    public ResponseEntity<ApplicantResponse> findApplicantDetailsById(@PathVariable(name = "applicant-id") Long applicantId) {
-        return ResponseEntity.ok(applicantService.findApplicantById(applicantId));
+    public ResponseEntity<ApplicantResponse> findApplicantDetailsById(@PathVariable(name = "applicant-id") final Long applicantId) {
+        return ResponseEntity.ok(applicantService.findApplicantDetailsById(applicantId));
+    }
+
+    @GetMapping("/pass")
+    public ResponseEntity<List<PassedApplicantsResponse>> findAllPassedApplicantsByInterview(@RequestParam(name = "interview-id") final Long interviewId) {
+        return ResponseEntity.ok(applicantService.listPassedApplicantsByInterview(interviewId));
+    }
+
+    @PostMapping("/send-email")
+    public ResponseEntity<Void> sendPassEmail(@RequestBody final PassEmailSendRequest request) {
+        applicantService.sendPassEmail(request);
+        return ResponseEntity.ok().build();
     }
 }

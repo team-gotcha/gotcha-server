@@ -3,11 +3,13 @@ package com.gotcha.server.applicant.repository;
 import com.gotcha.server.applicant.domain.Applicant;
 import com.gotcha.server.applicant.domain.InterviewStatus;
 import com.gotcha.server.applicant.domain.KeywordType;
+import com.gotcha.server.applicant.domain.Outcome;
 import com.gotcha.server.applicant.domain.QApplicant;
 import com.gotcha.server.applicant.domain.QInterviewer;
 import com.gotcha.server.applicant.domain.QKeyword;
 import com.gotcha.server.applicant.dto.response.KeywordResponse;
 import com.gotcha.server.applicant.dto.response.ApplicantsResponse;
+import com.gotcha.server.applicant.dto.response.PassedApplicantsResponse;
 import com.gotcha.server.member.domain.QMember;
 import com.gotcha.server.project.domain.Interview;
 import com.gotcha.server.question.domain.QIndividualQuestion;
@@ -71,6 +73,37 @@ public class ApplicantDslRepositoryImpl implements ApplicantDslRepository {
                 .from(qKeyword)
                 .where(qKeyword.applicant.in(applicants))
                 .groupBy(qKeyword.keywordType, qKeyword.applicant)
+                .fetch();
+    }
+
+    @Override
+    public List<PassedApplicantsResponse> findAllPassedApplicantsWithKeywords(final Interview interview) {
+        QKeyword qKeyword = QKeyword.keyword;
+
+        List<Applicant> applicants = findAllPassedApplicants(interview);
+        List<Tuple> keywords = findAllKeywordByApplicants(applicants);
+
+        Map<Applicant, List<String>> keywordMap = applicants.stream()
+                .collect(Collectors.toMap(applicant -> applicant, v -> new ArrayList<>()));
+        keywords.forEach(tuple -> {
+            Applicant applicant = tuple.get(qKeyword.applicant);
+            String minName = tuple.get(qKeyword.name.min());
+            keywordMap.get(applicant).add(minName);
+        });
+
+        return PassedApplicantsResponse.generateList(applicants, keywordMap);
+    }
+
+    private List<Applicant> findAllPassedApplicants(final Interview interview) {
+        QApplicant qApplicant = QApplicant.applicant;
+
+        return jpaQueryFactory
+                .select(qApplicant)
+                .from(qApplicant)
+                .where(qApplicant.interview.eq(interview),
+                        qApplicant.interviewStatus.eq(InterviewStatus.COMPLETION),
+                        qApplicant.outcome.eq(Outcome.PASS))
+                .orderBy(qApplicant.totalScore.desc())
                 .fetch();
     }
 }

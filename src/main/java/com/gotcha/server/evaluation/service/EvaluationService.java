@@ -7,8 +7,12 @@ import com.gotcha.server.applicant.repository.InterviewerRepository;
 import com.gotcha.server.auth.security.MemberDetails;
 import com.gotcha.server.evaluation.domain.Evaluation;
 import com.gotcha.server.evaluation.domain.OneLiner;
+import com.gotcha.server.evaluation.domain.QuestionEvaluations;
 import com.gotcha.server.evaluation.dto.request.EvaluateRequest;
 import com.gotcha.server.evaluation.dto.request.OneLinerRequest;
+import com.gotcha.server.evaluation.dto.response.EvaluationResponse;
+import com.gotcha.server.evaluation.dto.response.QuestionEvaluationResponse;
+import com.gotcha.server.evaluation.dto.response.QuestionRankResponse;
 import com.gotcha.server.evaluation.repository.EvaluationRepository;
 import com.gotcha.server.evaluation.repository.OneLinerRepository;
 import com.gotcha.server.global.exception.AppException;
@@ -37,12 +41,7 @@ public class EvaluationService {
         Interviewer interviewer = interviewerRepository.findByMember(details.member())
                 .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED_INTERVIEWER));
 
-        List<Long> questionIds = requests.stream().map(EvaluateRequest::questionId).toList();
-        List<IndividualQuestion> questions = individualQuestionRepository.findAllByIdIn(questionIds);
-        if(questions.size() != questionIds.size()) {
-            throw new AppException(ErrorCode.QUESTION_NOT_FOUNT);
-        }
-
+        List<IndividualQuestion> questions = getQuestionsBeingEvaluated(requests);
         Map<Long, IndividualQuestion> questionMap = questions.stream().collect(Collectors.toMap(IndividualQuestion::getId, q->q));
         List<Evaluation> evaluations = requests.stream()
                 .map(request -> Evaluation.builder()
@@ -55,6 +54,15 @@ public class EvaluationService {
         evaluationRepository.saveAll(evaluations);
     }
 
+    private List<IndividualQuestion> getQuestionsBeingEvaluated(final List<EvaluateRequest> requests) {
+        List<Long> questionIds = requests.stream().map(EvaluateRequest::questionId).toList();
+        List<IndividualQuestion> questions = individualQuestionRepository.findAllByIdIn(questionIds);
+        if(questions.size() != questionIds.size()) {
+            throw new AppException(ErrorCode.QUESTION_NOT_FOUNT);
+        }
+        return questions;
+    }
+
     @Transactional
     public void createOneLiner(final MemberDetails details, final OneLinerRequest request) {
         Interviewer interviewer = interviewerRepository.findByMember(details.member())
@@ -62,5 +70,23 @@ public class EvaluationService {
         Applicant applicant = applicantRepository.findById(request.applicantId())
                 .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
         oneLinerRepository.save(new OneLiner(applicant, request.content(), interviewer));
+    }
+
+    public QuestionEvaluationResponse findQuestionEvaluations(final Long questionId) {
+        IndividualQuestion question = individualQuestionRepository.findById(questionId)
+                .orElseThrow(() -> new AppException(ErrorCode.QUESTION_NOT_FOUNT));
+        List<EvaluationResponse> evaluations = evaluationRepository.findAllByQuestion(question).stream()
+                .map(e -> new EvaluationResponse(e.getScore(), e.getContent()))
+                .toList();
+        return new QuestionEvaluationResponse(question.getContent(), question.isCommon(), evaluations);
+    }
+
+    public List<QuestionRankResponse> findQuestionRanks(final Long applicantId) {
+        Applicant applicant = applicantRepository.findById(applicantId)
+                .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
+
+        List<IndividualQuestion> questions = individualQuestionRepository.findAllAfterEvaluation(applicant);
+        QuestionEvaluations evaluations = new QuestionEvaluations(questions);
+        return evaluations.createQuestionRanks();
     }
 }

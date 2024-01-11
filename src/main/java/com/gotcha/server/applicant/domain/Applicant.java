@@ -3,6 +3,7 @@ package com.gotcha.server.applicant.domain;
 import com.gotcha.server.project.domain.Interview;
 import com.gotcha.server.question.domain.IndividualQuestion;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -36,6 +37,15 @@ public class Applicant {
     @OneToMany(mappedBy = "applicant", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<IndividualQuestion> questions = new ArrayList<>();
 
+    @Column(nullable = false)
+    private Outcome outcome;
+
+    @Column(nullable = false)
+    private InterviewStatus interviewStatus;
+
+    @Column(nullable = false)
+    private String email;
+
     private LocalDate date;
     private String name;
     private Integer age;
@@ -44,8 +54,7 @@ public class Applicant {
     private String position;
     private String path;
     private Integer totalScore;
-    private Outcome outcome;
-    private InterviewStatus interviewStatus;
+    private int ranking;
     private String resumeLink;
     private String portfolio;
 
@@ -53,10 +62,15 @@ public class Applicant {
         this.interview = interview;
         this.outcome = Outcome.PENDING;
         this.interviewStatus = InterviewStatus.PREPARATION;
+        this.ranking = 0;
     }
 
     public void moveToNextStatus() {
         interviewStatus = interviewStatus.moveToNextStatus();
+    }
+
+    public void determineOutcome(Outcome outcome) {
+        this.outcome = outcome;
     }
 
     public void addInterviewer(final Interviewer interviewer) {

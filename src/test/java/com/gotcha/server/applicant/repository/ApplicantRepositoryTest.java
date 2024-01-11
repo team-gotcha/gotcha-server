@@ -6,9 +6,12 @@ import static com.gotcha.server.common.TestFixture.테스트지원자;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.gotcha.server.applicant.domain.Applicant;
+import com.gotcha.server.applicant.domain.InterviewStatus;
 import com.gotcha.server.applicant.domain.Interviewer;
 import com.gotcha.server.applicant.domain.KeywordType;
+import com.gotcha.server.applicant.domain.Outcome;
 import com.gotcha.server.applicant.dto.response.ApplicantsResponse;
+import com.gotcha.server.applicant.dto.response.PassedApplicantsResponse;
 import com.gotcha.server.common.RepositoryTest;
 import com.gotcha.server.member.domain.Member;
 import com.gotcha.server.project.domain.Interview;
@@ -23,7 +26,7 @@ class ApplicantRepositoryTest extends RepositoryTest {
     private ApplicantRepository applicantRepository;
 
     @Test
-    @DisplayName("면접 별로 지원자를 조회할 때 면접관의 프로필도 조회한다.")
+    @DisplayName("면접 별로 지원자를 조회할 때 면접관의 이메일도 조회한다.")
     void 면접별_지원자_조회하기() {
         // given
         Member 종미 = 테스트유저("종미");
@@ -59,7 +62,7 @@ class ApplicantRepositoryTest extends RepositoryTest {
                 .containsAll(List.of("지원자A", "지원자B", "지원자C"));
         assertThat(조회결과)
                 .filteredOn(a -> a.getName().equals("지원자A"))
-                .flatExtracting(ApplicantsResponse::getInterviewerProfiles)
+                .flatExtracting(ApplicantsResponse::getInterviewerEmails)
                 .hasSize(2);
     }
 
@@ -93,5 +96,32 @@ class ApplicantRepositoryTest extends RepositoryTest {
                 .filteredOn(a -> a.getName().equals("지원자A"))
                 .flatExtracting(ApplicantsResponse::getKeywords)
                 .hasSize(3);
+    }
+
+    @Test
+    @DisplayName("합격한 지원자들을 조회한다.")
+    void 합격한_지원자목록_조회하기() {
+        // given
+        Project 조회할프로젝트 = 테스트프로젝트();
+        Interview 조회할면접 = 테스트면접(조회할프로젝트, "테스트면접1");
+        Applicant 합격지원자A = 평가된_지원자_생성하기(조회할면접, "지원자A", Outcome.PASS);
+        Applicant 합격지원자B = 평가된_지원자_생성하기(조회할면접, "지원자B", Outcome.PASS);
+        Applicant 미평가지원자 = 테스트지원자(조회할면접, "지원자C");
+        Applicant 불합격지원자 = 평가된_지원자_생성하기(조회할면접, "지원자D", Outcome.FAIL);
+        testRepository.save(조회할프로젝트, 조회할면접, 합격지원자A, 합격지원자B, 미평가지원자, 불합격지원자);
+
+        // when
+        List<PassedApplicantsResponse> 조회결과 = applicantRepository.findAllPassedApplicantsWithKeywords(조회할면접);
+
+        // then
+        assertThat(조회결과).hasSize(2);
+    }
+
+    private Applicant 평가된_지원자_생성하기(Interview 면접, String 이름, Outcome 결과) {
+        Applicant 지원자 = 테스트지원자(면접, 이름);
+        지원자.moveToNextStatus();
+        지원자.moveToNextStatus();
+        지원자.determineOutcome(결과);
+        return 지원자;
     }
 }

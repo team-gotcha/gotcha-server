@@ -39,4 +39,8 @@ public class Evaluation extends BaseTimeEntity {
         this.question = question;
         this.interviewer = interviewer;
     }
+
+    public void setQuestion(final IndividualQuestion question) {
+        this.question = question;
+    }
 }

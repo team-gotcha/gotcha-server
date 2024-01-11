@@ -19,7 +19,7 @@ public class ApplicantsResponse {
     private String name;
     private InterviewStatus status;
     private LocalDate date;
-    private List<String> interviewerProfiles;
+    private List<String> interviewerEmails;
     private Integer questionCount;
     private List<KeywordResponse> keywords;
 
@@ -30,8 +30,8 @@ public class ApplicantsResponse {
                         .name(a.getName())
                         .status(a.getInterviewStatus())
                         .date(a.getDate())
-                        .interviewerProfiles(a.getInterviewers().stream()
-                                .map(interviewer -> interviewer.getMember().getProfileUrl())
+                        .interviewerEmails(a.getInterviewers().stream()
+                                .map(interviewer -> interviewer.getMember().getEmail())
                                 .toList())
                         .questionCount(a.getQuestions().size())
                         .keywords(keywordMap.get(a))
