@@ -1,4 +1,4 @@
-package com.gotcha.server.applicant.dto.request;
+package com.gotcha.server.question.dto.request;
 
 import com.gotcha.server.applicant.domain.Applicant;
 import com.gotcha.server.applicant.domain.Keyword;
@@ -15,11 +15,13 @@ public class IndividualQuestionRequest {
 
     private String content;
     private Applicant applicant;
+    private IndividualQuestion commentTarget;
 
     @Builder
-    public IndividualQuestionRequest(String content, Applicant applicant) {
+    public IndividualQuestionRequest(String content, Applicant applicant, IndividualQuestion commentTarget) {
         this.content = content;
         this.applicant = applicant;
+        this.commentTarget = commentTarget;
     }
 
     public IndividualQuestion toEntity(Member member){
@@ -27,6 +29,7 @@ public class IndividualQuestionRequest {
                 .content(content)
                 .applicant(applicant)
                 .member(member)
+                .commentTarget(commentTarget)
                 .build();
     }
 }

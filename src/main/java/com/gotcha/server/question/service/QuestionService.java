@@ -1,9 +1,11 @@
 package com.gotcha.server.question.service;
 
 import com.gotcha.server.applicant.domain.Applicant;
+import com.gotcha.server.question.dto.request.IndividualQuestionRequest;
 import com.gotcha.server.applicant.repository.ApplicantRepository;
 import com.gotcha.server.global.exception.AppException;
 import com.gotcha.server.global.exception.ErrorCode;
+import com.gotcha.server.member.domain.Member;
 import com.gotcha.server.project.domain.Interview;
 import com.gotcha.server.project.repository.InterviewRepository;
 import com.gotcha.server.question.domain.CommonQuestion;
@@ -19,7 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional(readOnly = true)
+@Transactional
 @RequiredArgsConstructor
 public class QuestionService {
     private final CommonQuestionRepository commonQuestionRepository;
@@ -44,5 +46,18 @@ public class QuestionService {
                 .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
         List<IndividualQuestion> questions = individualQuestionRepository.findAllDuringInterview(applicant);
         return InterviewQuestionResponse.generateList(questions);
+    }
+
+    public void createIndividualQuestion(IndividualQuestionRequest request, Member member){
+        validQuestion(request);
+
+        IndividualQuestion question = request.toEntity(member);
+        individualQuestionRepository.save(question);
+    }
+
+    public void validQuestion(IndividualQuestionRequest request){
+        if (request.getContent() == null || request.getContent().trim().isEmpty()) {
+            throw new AppException(ErrorCode.CONTENT_IS_EMPTY);
+        }
     }
 }

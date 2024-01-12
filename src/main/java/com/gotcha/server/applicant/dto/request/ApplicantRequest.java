@@ -2,8 +2,7 @@ package com.gotcha.server.applicant.dto.request;
 
 import com.gotcha.server.applicant.domain.*;
 import com.gotcha.server.project.domain.Interview;
-import com.gotcha.server.question.domain.IndividualQuestion;
-import jakarta.persistence.*;
+import com.gotcha.server.question.dto.request.IndividualQuestionRequest;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

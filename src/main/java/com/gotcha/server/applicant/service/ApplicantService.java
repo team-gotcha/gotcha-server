@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.gotcha.server.question.domain.IndividualQuestion;
+import com.gotcha.server.question.dto.request.IndividualQuestionRequest;
 import com.gotcha.server.question.repository.IndividualQuestionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -145,6 +146,8 @@ public class ApplicantService {
                 .collect(Collectors.toList());
     }
 
-//    public List<Interviewer> createInterviewers() {
-//    }
+    //    public List<Interviewer> createInterviewers() {
+    //    }
+
+
 }

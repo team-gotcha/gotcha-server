@@ -66,7 +66,7 @@ public class IndividualQuestion {
     private List<Evaluation> evaluations = new ArrayList<>();
 
     @Builder
-    public IndividualQuestion(final String content, final Applicant applicant, final Member member) {
+    public IndividualQuestion(final String content, final Applicant applicant, final Member member, final IndividualQuestion commentTarget) {
         this.content = content;
         this.importance = MIN_IMPORTANCE;
         this.questionOrder = 0;
@@ -74,6 +74,7 @@ public class IndividualQuestion {
         this.asking = false;
         this.isCommon = false;
         this.member = member;
+        this.commentTarget = commentTarget;
     }
 
     public void setApplicant(final Applicant applicant) {
