@@ -3,10 +3,8 @@ package com.gotcha.server.applicant.service;
 import com.gotcha.server.applicant.domain.Applicant;
 import com.gotcha.server.applicant.domain.Interviewer;
 import com.gotcha.server.applicant.domain.Keyword;
-import com.gotcha.server.applicant.domain.Outcome;
 import com.gotcha.server.applicant.domain.PreparedInterviewer;
-import com.gotcha.server.applicant.dto.request.InterviewProceedRequest;
-import com.gotcha.server.applicant.dto.request.PassEmailSendRequest;
+import com.gotcha.server.applicant.dto.request.*;
 import com.gotcha.server.applicant.dto.response.ApplicantResponse;
 import com.gotcha.server.applicant.dto.response.ApplicantsResponse;
 import com.gotcha.server.applicant.dto.response.InterviewProceedResponse;
@@ -23,14 +21,19 @@ import com.gotcha.server.mail.service.MailService;
 import com.gotcha.server.member.domain.Member;
 import com.gotcha.server.project.domain.Interview;
 import com.gotcha.server.project.repository.InterviewRepository;
+
 import java.util.List;
+import java.util.stream.Collectors;
+
+import com.gotcha.server.question.domain.IndividualQuestion;
+import com.gotcha.server.question.repository.IndividualQuestionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional
 public class ApplicantService {
     private final ApplicantRepository applicantRepository;
     private final InterviewerRepository interviewerRepository;
@@ -38,6 +41,7 @@ public class ApplicantService {
     private final InterviewRepository interviewRepository;
     private final KeywordRepository keywordRepository;
     private final MailService mailService;
+    private final IndividualQuestionRepository individualQuestionRepository;
 
     @Transactional
     public InterviewProceedResponse proceedToInterview(final InterviewProceedRequest request, final MemberDetails details) {
@@ -47,7 +51,7 @@ public class ApplicantService {
 
         long interviewerCount = interviewerRepository.countByApplicant(applicant);
         long preparedInterviewerCount = preparedInterviewerRepository.countByApplicant(applicant);
-        if(interviewerCount <= preparedInterviewerCount) {
+        if (interviewerCount <= preparedInterviewerCount) {
             applicant.moveToNextStatus();
         }
         return new InterviewProceedResponse(interviewerCount, preparedInterviewerCount);
@@ -56,7 +60,7 @@ public class ApplicantService {
     private void createNewPreparedInterviewer(final Applicant applicant, final Member member) {
         Interviewer interviewer = interviewerRepository.findByMember(member)
                 .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED_INTERVIEWER));
-        if(!preparedInterviewerRepository.existsByInterviewer(interviewer)) {
+        if (!preparedInterviewerRepository.existsByInterviewer(interviewer)) {
             preparedInterviewerRepository.save(new PreparedInterviewer(applicant, interviewer));
         }
     }
@@ -93,7 +97,7 @@ public class ApplicantService {
         String projectName = interview.getProject().getName();
 
         List<Applicant> applicants = applicantRepository.findAllByInterview(interview);
-        for(Applicant applicant: applicants) {
+        for (Applicant applicant : applicants) {
             sendEmailAndChangeStatus(applicant, projectName, interviewName, positionName);
         }
     }
@@ -106,4 +110,41 @@ public class ApplicantService {
                 applicant.getOutcome().createPassEmailMessage(applicant.getName(), projectName, interviewName, positionName));
         applicant.moveToNextStatus();
     }
+
+    public void createApplicant(ApplicantRequest request, Member member) {
+        List<Keyword> keywords = createKeywords(request.getKeywords());
+        List<IndividualQuestion> questions = createIndividualQuestions(request.getQuestions(), member);
+//        List<Interviewer> interviewers = createInterviewers();
+
+        Applicant applicant = request.toEntity();
+
+//        for (Interviewer interviewer : interviewers) {
+//            applicant.addInterviewer(interviewer);
+//        }
+
+        for (Keyword keyword : keywords) {
+            applicant.addKeyword(keyword);
+        }
+
+        for (IndividualQuestion question : questions) {
+            applicant.addQuestion(question);
+        }
+
+        applicantRepository.save(applicant);
+    }
+
+    public List<Keyword> createKeywords(List<KeywordRequest> keywordRequests) {
+        return keywordRequests.stream()
+                .map(request -> request.toEntity())
+                .collect(Collectors.toList());
+    }
+
+    public List<IndividualQuestion> createIndividualQuestions(List<IndividualQuestionRequest> questionRequests, Member member) {
+        return questionRequests.stream()
+                .map(request -> request.toEntity(member))
+                .collect(Collectors.toList());
+    }
+
+//    public List<Interviewer> createInterviewers() {
+//    }
 }

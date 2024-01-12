@@ -5,6 +5,7 @@ import com.gotcha.server.applicant.domain.Interviewer;
 import com.gotcha.server.evaluation.domain.Evaluation;
 import com.gotcha.server.global.exception.AppException;
 import com.gotcha.server.global.exception.ErrorCode;
+import com.gotcha.server.member.domain.Member;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -49,7 +50,7 @@ public class IndividualQuestion {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "writer_id")
-    private Interviewer interviewer;
+    private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "comment_target_id")
@@ -65,21 +66,18 @@ public class IndividualQuestion {
     private List<Evaluation> evaluations = new ArrayList<>();
 
     @Builder
-    public IndividualQuestion(final String content, final Applicant applicant) {
+    public IndividualQuestion(final String content, final Applicant applicant, final Member member) {
         this.content = content;
         this.importance = MIN_IMPORTANCE;
         this.questionOrder = 0;
         this.applicant = applicant;
         this.asking = false;
         this.isCommon = false;
+        this.member = member;
     }
 
     public void setApplicant(final Applicant applicant) {
         this.applicant = applicant;
-    }
-
-    public void setInterviewer(final Interviewer interviewer) {
-        this.interviewer = interviewer;
     }
 
     public void setQuestionOrder(final Integer questionOrder) {
