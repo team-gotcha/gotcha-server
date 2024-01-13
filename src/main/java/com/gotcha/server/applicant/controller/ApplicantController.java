@@ -1,29 +1,28 @@
 package com.gotcha.server.applicant.controller;
 
+import com.gotcha.server.applicant.dto.request.ApplicantRequest;
 import com.gotcha.server.applicant.dto.request.InterviewProceedRequest;
 import com.gotcha.server.applicant.dto.request.PassEmailSendRequest;
-import com.gotcha.server.applicant.dto.response.ApplicantResponse;
-import com.gotcha.server.applicant.dto.response.ApplicantsResponse;
-import com.gotcha.server.applicant.dto.response.InterviewProceedResponse;
-import com.gotcha.server.applicant.dto.response.PassedApplicantsResponse;
-import com.gotcha.server.applicant.dto.response.TodayInterviewResponse;
+import com.gotcha.server.applicant.dto.response.*;
 import com.gotcha.server.applicant.service.ApplicantService;
 import com.gotcha.server.auth.security.MemberDetails;
 import java.util.List;
+
+import com.gotcha.server.member.domain.Member;
+import com.gotcha.server.member.repository.MemberRepository;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-@RestController("/api/applicants")
+@RestController
+@RequestMapping(value = "/api/applicants")
 @RequiredArgsConstructor
 public class ApplicantController {
     private final ApplicantService applicantService;
+    private final MemberRepository memberRepository;
 
     @PostMapping("/interview-ready")
     public ResponseEntity<InterviewProceedResponse> proceedToInterview(
@@ -55,5 +54,33 @@ public class ApplicantController {
     public ResponseEntity<Void> sendPassEmail(@RequestBody final PassEmailSendRequest request) {
         applicantService.sendPassEmail(request);
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping
+    public ResponseEntity<String> createApplicant(
+            @RequestBody @Valid ApplicantRequest request,
+            @AuthenticationPrincipal MemberDetails details) {
+        //테스트용 유저 생성
+        Member member = Member.builder()
+                .email("a@gmail.co")
+                .socialId("socialId")
+                .name("이름")
+                .profileUrl("a.jpg")
+                .refreshToken("token")
+                .build();
+        memberRepository.save(member);
+        applicantService.createApplicant(request, member);
+//        applicantService.createApplicant(request, details.member());
+        return ResponseEntity.status(HttpStatus.CREATED).body("면접 지원자 정보가 입력되었습니다.");
+    }
+
+    @GetMapping("/interview-completed")
+    public ResponseEntity<List<CompletedApplicantsResponse>> getCompletedApplicants(@RequestParam(value = "interview-id") Long interviewId){
+        return ResponseEntity.status(HttpStatus.OK).body(applicantService.getCompletedApplicants(interviewId));
+    }
+
+    @GetMapping("/interview-completed/details")
+    public ResponseEntity<CompletedApplicantDetailsResponse> getCompletedApplicantDetails(@RequestParam(value = "applicant-id") Long applicantId){
+        return ResponseEntity.status(HttpStatus.OK).body(applicantService.getCompletedApplicantDetails(applicantId));
     }
 }

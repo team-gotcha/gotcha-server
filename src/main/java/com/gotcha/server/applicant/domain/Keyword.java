@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -29,6 +30,8 @@ public class Keyword {
     @Column(nullable = false)
     private KeywordType keywordType;
 
+
+    @Builder
     public Keyword(final Applicant applicant, final String name, final KeywordType keywordType) {
         this.applicant = applicant;
         this.name = name;

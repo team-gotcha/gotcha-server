@@ -54,7 +54,7 @@ class ApplicantRepositoryTest extends RepositoryTest {
                 종미면접관_지원자A, 종미면접관_지원자B, 종미면접관_지원자C, 윤정면접관_지원자A);
 
         // when
-        List<ApplicantsResponse> 조회결과 = applicantRepository.findAllByInterviewWithKeywords(조회할면접);
+        List<ApplicantsResponse> 조회결과 = applicantRepository.generateApplicantsResponse(조회할면접);
 
         // then
         assertThat(조회결과).hasSize(3)
@@ -89,7 +89,7 @@ class ApplicantRepositoryTest extends RepositoryTest {
                 테스트키워드(지원자B, "성실함", KeywordType.TRAIT), 테스트키워드(지원자B, "깔끔함", KeywordType.TRAIT));
 
         // when
-        List<ApplicantsResponse> 조회결과 = applicantRepository.findAllByInterviewWithKeywords(조회할면접);
+        List<ApplicantsResponse> 조회결과 = applicantRepository.generateApplicantsResponse(조회할면접);
 
         // then
         assertThat(조회결과).hasSize(2)
