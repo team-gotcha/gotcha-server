@@ -50,6 +50,20 @@ public class ApplicantDslRepositoryImpl implements ApplicantDslRepository {
         return keywordMap;
     }
 
+    @Override
+    public List<KeywordResponse> findKeywordsByApplicant(Applicant applicant) {
+        QKeyword qKeyword = QKeyword.keyword;
+        List<Tuple> keywords = findAllKeywordByApplicants(List.of(applicant));
+
+        return keywords.stream()
+                .map(tuple -> {
+                    String minName = tuple.get(qKeyword.name.min());
+                    KeywordType keywordType = tuple.get(qKeyword.keywordType);
+                    return new KeywordResponse(minName, keywordType);
+                })
+                .collect(Collectors.toList());
+    }
+
     private List<Applicant> findAllApplicants(final Interview interview) {
         QApplicant qApplicant = QApplicant.applicant;
         QInterviewer qInterviewer = QInterviewer.interviewer;

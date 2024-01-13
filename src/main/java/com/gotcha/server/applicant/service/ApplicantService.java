@@ -189,4 +189,13 @@ public class ApplicantService {
 
     public void setTotalScore(List<Applicant> applicants){
     }
+
+    public CompletedApplicantDetailsResponse getCompletedApplicantDetails(Long applicantId){
+        final Applicant applicant = applicantRepository.findById(applicantId)
+                .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
+
+        final List<KeywordResponse> keywords = applicantRepository.findKeywordsByApplicant(applicant);
+        final List<OneLinerResponse> oneLiners = oneLinerRepository.getOneLinersForApplicant(applicant);
+        return CompletedApplicantDetailsResponse.from(applicant, keywords, oneLiners);
+    }
 }

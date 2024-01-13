@@ -75,7 +75,12 @@ public class ApplicantController {
     }
 
     @GetMapping("/interview-completed")
-    public ResponseEntity<List<CompletedApplicantsResponse>> getCompletedApplicants(@RequestParam Long interviewId){
+    public ResponseEntity<List<CompletedApplicantsResponse>> getCompletedApplicants(@RequestParam(value = "interview-id") Long interviewId){
         return ResponseEntity.status(HttpStatus.OK).body(applicantService.getCompletedApplicants(interviewId));
+    }
+
+    @GetMapping("/interview-completed/details")
+    public ResponseEntity<CompletedApplicantDetailsResponse> getCompletedApplicantDetails(@RequestParam(value = "applicant-id") Long applicantId){
+        return ResponseEntity.status(HttpStatus.OK).body(applicantService.getCompletedApplicantDetails(applicantId));
     }
 }

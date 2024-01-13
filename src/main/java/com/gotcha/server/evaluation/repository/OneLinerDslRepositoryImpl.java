@@ -39,4 +39,21 @@ public class OneLinerDslRepositoryImpl implements OneLinerDslRepository{
                 ));
         return oneLinerMap;
     }
+
+    @Override
+    public List<OneLinerResponse> getOneLinersForApplicant(Applicant applicant) {
+        QOneLiner qOneLiner = QOneLiner.oneLiner;
+
+        return jpaQueryFactory
+                .select(qOneLiner.content, qOneLiner.member.name)
+                .from(qOneLiner)
+                .where(qOneLiner.applicant.eq(applicant))
+                .fetch()
+                .stream()
+                .map(tuple -> new OneLinerResponse(
+                        tuple.get(qOneLiner.member.name),
+                        tuple.get(qOneLiner.content)
+                ))
+                .toList();
+    }
 }

@@ -9,5 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 public interface OneLinerDslRepository {
-    public Map<Applicant, List<OneLinerResponse>> getOneLinersForApplicants(List<Applicant> applicants);
+    Map<Applicant, List<OneLinerResponse>> getOneLinersForApplicants(List<Applicant> applicants);
+    List<OneLinerResponse> getOneLinersForApplicant(Applicant applicant);
 }
