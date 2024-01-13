@@ -3,18 +3,13 @@ package com.gotcha.server.applicant.controller;
 import com.gotcha.server.applicant.dto.request.ApplicantRequest;
 import com.gotcha.server.applicant.dto.request.InterviewProceedRequest;
 import com.gotcha.server.applicant.dto.request.PassEmailSendRequest;
-import com.gotcha.server.applicant.dto.response.ApplicantResponse;
-import com.gotcha.server.applicant.dto.response.ApplicantsResponse;
-import com.gotcha.server.applicant.dto.response.InterviewProceedResponse;
-import com.gotcha.server.applicant.dto.response.PassedApplicantsResponse;
-import com.gotcha.server.applicant.dto.response.TodayInterviewResponse;
+import com.gotcha.server.applicant.dto.response.*;
 import com.gotcha.server.applicant.service.ApplicantService;
 import com.gotcha.server.auth.security.MemberDetails;
 import java.util.List;
 
 import com.gotcha.server.member.domain.Member;
 import com.gotcha.server.member.repository.MemberRepository;
-import com.gotcha.server.project.dto.request.ProjectRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -77,5 +72,10 @@ public class ApplicantController {
         applicantService.createApplicant(request, member);
 //        applicantService.createApplicant(request, details.member());
         return ResponseEntity.status(HttpStatus.CREATED).body("면접 지원자 정보가 입력되었습니다.");
+    }
+
+    @GetMapping("/interview-completed")
+    public ResponseEntity<List<CompletedApplicantsResponse>> getCompletedApplicants(@RequestParam Long interviewId){
+        return ResponseEntity.status(HttpStatus.OK).body(applicantService.getCompletedApplicants(interviewId));
     }
 }

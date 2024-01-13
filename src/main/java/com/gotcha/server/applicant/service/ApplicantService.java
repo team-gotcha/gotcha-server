@@ -5,11 +5,7 @@ import com.gotcha.server.applicant.domain.Interviewer;
 import com.gotcha.server.applicant.domain.Keyword;
 import com.gotcha.server.applicant.domain.PreparedInterviewer;
 import com.gotcha.server.applicant.dto.request.*;
-import com.gotcha.server.applicant.dto.response.ApplicantResponse;
-import com.gotcha.server.applicant.dto.response.ApplicantsResponse;
-import com.gotcha.server.applicant.dto.response.InterviewProceedResponse;
-import com.gotcha.server.applicant.dto.response.PassedApplicantsResponse;
-import com.gotcha.server.applicant.dto.response.TodayInterviewResponse;
+import com.gotcha.server.applicant.dto.response.*;
 import com.gotcha.server.applicant.repository.ApplicantRepository;
 import com.gotcha.server.applicant.repository.InterviewerRepository;
 import com.gotcha.server.applicant.repository.KeywordRepository;
@@ -23,6 +19,7 @@ import com.gotcha.server.project.domain.Interview;
 import com.gotcha.server.project.repository.InterviewRepository;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.gotcha.server.question.domain.IndividualQuestion;
@@ -74,7 +71,7 @@ public class ApplicantService {
     public List<ApplicantsResponse> listApplicantsByInterview(final Long interviewId) {
         Interview interview = interviewRepository.findById(interviewId)
                 .orElseThrow(() -> new AppException(ErrorCode.INTERVIEW_NOT_FOUNT));
-        return applicantRepository.findAllByInterviewWithKeywords(interview);
+        return applicantRepository.generateApplicantsResponse(interview);
     }
 
     public ApplicantResponse findApplicantDetailsById(final Long applicantId) {
@@ -149,5 +146,11 @@ public class ApplicantService {
     //    public List<Interviewer> createInterviewers() {
     //    }
 
-
+    public List<CompletedApplicantsResponse> getCompletedApplicants(Long interviewId) {
+        final Interview interview = interviewRepository.findById(interviewId)
+                .orElseThrow(() -> new AppException(ErrorCode.INTERVIEW_NOT_FOUNT));
+        final List<Applicant> applicants = applicantRepository.findAllByInterview(interview);
+        final Map<Applicant, List<KeywordResponse>> keywordMap = applicantRepository.findAllByInterviewWithKeywords(applicants, interview);
+        return CompletedApplicantsResponse.generateList(applicants, keywordMap);
+    }
 }

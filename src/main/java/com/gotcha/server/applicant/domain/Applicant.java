@@ -118,6 +118,10 @@ public class Applicant {
         this.name = name;
     }
 
+    public void setEmail(String email){
+        this.email = email;
+    }
+
     @Builder
     public Applicant(Interview interview, List<Interviewer> interviewers, List<IndividualQuestion> questions, List<Keyword> keywords, String email, LocalDate date, String name, Integer age, String education, String phoneNumber, String position, String path, String resumeLink, String portfolio) {
         this.interview = interview;
