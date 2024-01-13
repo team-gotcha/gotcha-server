@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Applicant {
+public class Applicant implements Comparable<Applicant> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -60,7 +60,7 @@ public class Applicant {
     private String position;
     private String path;
     private Integer totalScore;
-    private int ranking;
+    private Integer ranking;
     private String resumeLink;
     private String portfolio;
 
@@ -70,6 +70,14 @@ public class Applicant {
         this.interviewStatus = InterviewStatus.PREPARATION;
         this.ranking = 0;
         this.totalScore = 0;
+    }
+
+    public void updateRanking(Integer ranking){
+        this.ranking = ranking;
+    }
+
+    public void updateTotalScore(Integer totalScore){
+        this.totalScore = totalScore;
     }
 
     public void moveToNextStatus() {
@@ -120,6 +128,11 @@ public class Applicant {
 
     public void setEmail(String email){
         this.email = email;
+    }
+
+    @Override
+    public int compareTo(Applicant other) {
+        return Integer.compare(this.getTotalScore(), other.getTotalScore());
     }
 
     @Builder

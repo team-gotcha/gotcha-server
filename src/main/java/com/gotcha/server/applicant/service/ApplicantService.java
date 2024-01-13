@@ -21,8 +21,10 @@ import com.gotcha.server.member.domain.Member;
 import com.gotcha.server.project.domain.Interview;
 import com.gotcha.server.project.repository.InterviewRepository;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import com.gotcha.server.question.domain.IndividualQuestion;
@@ -152,9 +154,39 @@ public class ApplicantService {
     public List<CompletedApplicantsResponse> getCompletedApplicants(Long interviewId) {
         final Interview interview = interviewRepository.findById(interviewId)
                 .orElseThrow(() -> new AppException(ErrorCode.INTERVIEW_NOT_FOUNT));
-        final List<Applicant> applicants = applicantRepository.findAllByInterview(interview);
+
+        final List<Applicant> applicants = resetCompletedApplicants(interview);
         final Map<Applicant, List<KeywordResponse>> keywordMap = applicantRepository.findAllByInterviewWithKeywords(applicants, interview);
         final Map<Applicant, List<OneLinerResponse>> oneLinerMap = oneLinerRepository.getOneLinersForApplicants(applicants);
         return CompletedApplicantsResponse.generateList(applicants, keywordMap, oneLinerMap);
+    }
+
+    public List<Applicant> resetCompletedApplicants(Interview interview){
+        final List<Applicant> applicants = applicantRepository.findAllByInterview(interview);
+        applicants.sort(Collections.reverseOrder()); // 점수 순으로 정렬
+
+        setRanking(applicants);
+        setTotalScore(applicants);
+
+        return applicants;
+    }
+
+    public void setRanking(List<Applicant> applicants){
+        int currentRank = 1;
+        int currentScore = applicants.get(0).getTotalScore();
+
+        for (int i = 0; i < applicants.size(); i++) {
+            Applicant applicant = applicants.get(i);
+
+            if (applicant.getTotalScore() < currentScore) {
+                currentRank++;
+                currentScore = applicant.getTotalScore();
+            }
+
+            applicant.updateRanking(currentRank);
+        }
+    }
+
+    public void setTotalScore(List<Applicant> applicants){
     }
 }
