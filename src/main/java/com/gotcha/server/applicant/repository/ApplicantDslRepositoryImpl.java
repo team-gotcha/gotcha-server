@@ -28,10 +28,15 @@ public class ApplicantDslRepositoryImpl implements ApplicantDslRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public List<ApplicantsResponse> findAllByInterviewWithKeywords(final Interview interview) {
-        QKeyword qKeyword = QKeyword.keyword;
-
+    public List<ApplicantsResponse> generateApplicantsResponse(final Interview interview) {
         List<Applicant> applicants = findAllApplicants(interview);
+        final Map<Applicant, List<KeywordResponse>> keywordMap = findAllByInterviewWithKeywords(applicants, interview);
+        return ApplicantsResponse.generateList(applicants, keywordMap);
+    } // to-do: service 단으로 옮기는게 좋아보인다
+
+    @Override
+    public Map<Applicant, List<KeywordResponse>> findAllByInterviewWithKeywords(List<Applicant> applicants, final Interview interview){
+        QKeyword qKeyword = QKeyword.keyword;
         List<Tuple> keywords = findAllKeywordByApplicants(applicants);
 
         Map<Applicant, List<KeywordResponse>> keywordMap = applicants.stream()
@@ -42,8 +47,7 @@ public class ApplicantDslRepositoryImpl implements ApplicantDslRepository {
             KeywordType keywordType = tuple.get(qKeyword.keywordType);
             keywordMap.get(applicant).add(new KeywordResponse(minName, keywordType));
         });
-
-        return ApplicantsResponse.generateList(applicants, keywordMap);
+        return keywordMap;
     }
 
     private List<Applicant> findAllApplicants(final Interview interview) {
