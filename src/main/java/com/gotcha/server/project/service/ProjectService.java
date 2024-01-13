@@ -31,7 +31,7 @@ public class ProjectService {
     private final MailService mailService;
     private final InterviewDslRepositoryImpl interviewDslRepository;
 
-    @Transactional(readOnly = true)
+
     public void createProject(ProjectRequest request) {
         validProject(request);
 
@@ -41,7 +41,6 @@ public class ProjectService {
         sendProjectInvitation(request);
     }
 
-    @Transactional(readOnly = true)
     public void createCollaborator(Project project, List<String> emails) {
         for (String email : emails) {
             Collaborator collaborator = Collaborator.builder()
@@ -52,7 +51,6 @@ public class ProjectService {
         }
     }
 
-    @Transactional(readOnly = true)
     public ProjectResponse getEmails(Long projectId) {
         List<String> emails = collaboratorRepository.findEmailsByProjectId(projectId);
         return ProjectResponse.from(emails);
