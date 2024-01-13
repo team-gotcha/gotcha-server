@@ -38,8 +38,8 @@ public class EvaluationService {
 
     @Transactional
     public void evaluate(final MemberDetails details, final List<EvaluateRequest> requests) {
-        Interviewer interviewer = interviewerRepository.findByMember(details.member())
-                .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED_INTERVIEWER));
+//        Interviewer interviewer = interviewerRepository.findByMember(details.member())
+//                .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED_INTERVIEWER));
 
         List<IndividualQuestion> questions = getQuestionsBeingEvaluated(requests);
         Map<Long, IndividualQuestion> questionMap = questions.stream().collect(Collectors.toMap(IndividualQuestion::getId, q->q));
@@ -48,7 +48,7 @@ public class EvaluationService {
                         .score(request.score())
                         .content(request.content())
                         .question(questionMap.get(request.questionId()))
-                        .interviewer(interviewer)
+                        .member(details.member())
                         .build())
                 .toList();
         evaluationRepository.saveAll(evaluations);

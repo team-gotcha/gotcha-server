@@ -2,6 +2,7 @@ package com.gotcha.server.evaluation.domain;
 
 import com.gotcha.server.applicant.domain.Interviewer;
 import com.gotcha.server.global.domain.BaseTimeEntity;
+import com.gotcha.server.member.domain.Member;
 import com.gotcha.server.question.domain.IndividualQuestion;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -28,16 +29,16 @@ public class Evaluation extends BaseTimeEntity {
     private IndividualQuestion question;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "interviewer_id", nullable = false)
-    private Interviewer interviewer;
+    @JoinColumn(name = "writer_id", nullable = false)
+    private Member member;
 
     @Builder
     public Evaluation(final Integer score, final String content,
-            final IndividualQuestion question, final Interviewer interviewer) {
+            final IndividualQuestion question, final Member member) {
         this.score = score;
         this.content = content;
         this.question = question;
-        this.interviewer = interviewer;
+        this.member = member;
     }
 
     public void setQuestion(final IndividualQuestion question) {
