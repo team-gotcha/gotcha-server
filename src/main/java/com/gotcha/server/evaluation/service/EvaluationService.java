@@ -65,11 +65,11 @@ public class EvaluationService {
 
     @Transactional
     public void createOneLiner(final MemberDetails details, final OneLinerRequest request) {
-        Interviewer interviewer = interviewerRepository.findByMember(details.member())
-                .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED_INTERVIEWER));
+//        Interviewer interviewer = interviewerRepository.findByMember(details.member())
+//                .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED_INTERVIEWER));
         Applicant applicant = applicantRepository.findById(request.applicantId())
                 .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
-        oneLinerRepository.save(new OneLiner(applicant, request.content(), interviewer));
+        oneLinerRepository.save(new OneLiner(applicant, request.content(), details.member()));
     }
 
     public QuestionEvaluationResponse findQuestionEvaluations(final Long questionId) {

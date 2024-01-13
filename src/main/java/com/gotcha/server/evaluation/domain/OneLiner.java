@@ -3,6 +3,7 @@ package com.gotcha.server.evaluation.domain;
 import com.gotcha.server.applicant.domain.Applicant;
 import com.gotcha.server.applicant.domain.Interviewer;
 import com.gotcha.server.global.domain.BaseTimeEntity;
+import com.gotcha.server.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -24,12 +25,12 @@ public class OneLiner extends BaseTimeEntity {
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "interviewer_id", nullable = false)
-    private Interviewer interviewer;
+    @JoinColumn(name = "writer_id", nullable = false)
+    private Member member;
 
-    public OneLiner(final Applicant applicant, final String content, final Interviewer interviewer) {
+    public OneLiner(final Applicant applicant, final String content, final Member member) {
         this.applicant = applicant;
         this.content = content;
-        this.interviewer = interviewer;
+        this.member = member;
     }
 }
