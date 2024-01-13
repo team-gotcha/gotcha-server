@@ -33,11 +33,12 @@ public class TestFixture {
     public static Applicant 테스트지원자(Interview 면접, String 이름) {
         Applicant applicant = new Applicant(면접);
         applicant.setName(이름);
+        applicant.setEmail(String.format("%s email", 이름));
         return applicant;
     }
 
     public static Interviewer 테스트면접관(Applicant 지원자, Member 면접관) {
-        return new Interviewer(지원자, 면접관);
+        return new Interviewer(지원자, 면접관, 면접관.getName());
     }
 
     public static Keyword 테스트키워드(Applicant 지원자, String 내용, KeywordType 종류) {
