@@ -11,6 +11,9 @@ import com.gotcha.server.applicant.repository.InterviewerRepository;
 import com.gotcha.server.applicant.repository.KeywordRepository;
 import com.gotcha.server.applicant.repository.PreparedInterviewerRepository;
 import com.gotcha.server.auth.security.MemberDetails;
+import com.gotcha.server.evaluation.dto.response.OneLinerResponse;
+import com.gotcha.server.evaluation.repository.OneLinerRepository;
+import com.gotcha.server.evaluation.service.EvaluationService;
 import com.gotcha.server.global.exception.AppException;
 import com.gotcha.server.global.exception.ErrorCode;
 import com.gotcha.server.mail.service.MailService;
@@ -39,7 +42,7 @@ public class ApplicantService {
     private final InterviewRepository interviewRepository;
     private final KeywordRepository keywordRepository;
     private final MailService mailService;
-    private final IndividualQuestionRepository individualQuestionRepository;
+    private final OneLinerRepository oneLinerRepository;
 
     @Transactional
     public InterviewProceedResponse proceedToInterview(final InterviewProceedRequest request, final MemberDetails details) {
@@ -151,6 +154,7 @@ public class ApplicantService {
                 .orElseThrow(() -> new AppException(ErrorCode.INTERVIEW_NOT_FOUNT));
         final List<Applicant> applicants = applicantRepository.findAllByInterview(interview);
         final Map<Applicant, List<KeywordResponse>> keywordMap = applicantRepository.findAllByInterviewWithKeywords(applicants, interview);
-        return CompletedApplicantsResponse.generateList(applicants, keywordMap);
+        final Map<Applicant, List<OneLinerResponse>> oneLinerMap = oneLinerRepository.getOneLinersForApplicants(applicants);
+        return CompletedApplicantsResponse.generateList(applicants, keywordMap, oneLinerMap);
     }
 }
