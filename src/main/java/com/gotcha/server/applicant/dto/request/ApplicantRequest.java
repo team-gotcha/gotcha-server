@@ -6,6 +6,7 @@ import com.gotcha.server.question.dto.request.IndividualQuestionRequest;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -25,13 +26,13 @@ public class ApplicantRequest {
     private String path;
     private String email;
     private List<KeywordRequest> keywords;
-    private String resumeLink;
-    private String portfolio;
+    private MultipartFile resumeLink;
+    private MultipartFile portfolio;
     private Interview interview;
     private List<IndividualQuestionRequest> questions;
 
     @Builder
-    public ApplicantRequest(String name, LocalDate date, List<InterviewerRequest> interviewers, Integer age, String education, String position, String phoneNumber, String path, String email, List<KeywordRequest> keywords, String resumeLink, String portfolio, Interview interview, List<IndividualQuestionRequest> questions) {
+    public ApplicantRequest(String name, LocalDate date, List<InterviewerRequest> interviewers, Integer age, String education, String position, String phoneNumber, String path, String email, List<KeywordRequest> keywords, MultipartFile resumeLink, MultipartFile portfolio, Interview interview, List<IndividualQuestionRequest> questions) {
         this.name = name;
         this.date = date;
         this.interviewers = interviewers;
@@ -48,7 +49,7 @@ public class ApplicantRequest {
         this.questions = questions;
     }
 
-    public Applicant toEntity() {
+    public Applicant toEntity(String resumeLink, String portfolio) {
         return Applicant.builder()
                 .name(name)
                 .date(date)

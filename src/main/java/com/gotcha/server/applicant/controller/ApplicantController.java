@@ -6,6 +6,8 @@ import com.gotcha.server.applicant.dto.request.PassEmailSendRequest;
 import com.gotcha.server.applicant.dto.response.*;
 import com.gotcha.server.applicant.service.ApplicantService;
 import com.gotcha.server.auth.security.MemberDetails;
+
+import java.io.IOException;
 import java.util.List;
 
 import com.gotcha.server.member.domain.Member;
@@ -59,7 +61,7 @@ public class ApplicantController {
     @PostMapping
     public ResponseEntity<String> createApplicant(
             @RequestBody @Valid ApplicantRequest request,
-            @AuthenticationPrincipal MemberDetails details) {
+            @AuthenticationPrincipal MemberDetails details) throws IOException {
         //테스트용 유저 생성
         Member member = Member.builder()
                 .email("a@gmail.co")
