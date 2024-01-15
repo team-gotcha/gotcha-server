@@ -1,12 +1,6 @@
 package com.gotcha.server.applicant.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,8 +22,8 @@ public class Keyword {
     private String name;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private KeywordType keywordType;
-
 
     @Builder
     public Keyword(final Applicant applicant, final String name, final KeywordType keywordType) {

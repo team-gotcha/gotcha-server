@@ -6,6 +6,7 @@ import com.gotcha.server.question.dto.request.IndividualQuestionRequest;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -25,13 +26,11 @@ public class ApplicantRequest {
     private String path;
     private String email;
     private List<KeywordRequest> keywords;
-    private String resumeLink;
-    private String portfolio;
     private Interview interview;
     private List<IndividualQuestionRequest> questions;
 
     @Builder
-    public ApplicantRequest(String name, LocalDate date, List<InterviewerRequest> interviewers, Integer age, String education, String position, String phoneNumber, String path, String email, List<KeywordRequest> keywords, String resumeLink, String portfolio, Interview interview, List<IndividualQuestionRequest> questions) {
+    public ApplicantRequest(String name, LocalDate date, List<InterviewerRequest> interviewers, Integer age, String education, String position, String phoneNumber, String path, String email, List<KeywordRequest> keywords, Interview interview, List<IndividualQuestionRequest> questions) {
         this.name = name;
         this.date = date;
         this.interviewers = interviewers;
@@ -42,8 +41,6 @@ public class ApplicantRequest {
         this.path = path;
         this.email = email;
         this.keywords = keywords;
-        this.resumeLink = resumeLink;
-        this.portfolio = portfolio;
         this.interview = interview;
         this.questions = questions;
     }
@@ -58,8 +55,6 @@ public class ApplicantRequest {
                 .phoneNumber(phoneNumber)
                 .path(path)
                 .email(email)
-                .resumeLink(resumeLink)
-                .portfolio(portfolio)
                 .interview(interview)
                 .questions(new ArrayList<>())
                 .keywords(new ArrayList<>())
