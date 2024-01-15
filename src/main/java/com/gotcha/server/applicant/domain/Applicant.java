@@ -2,16 +2,7 @@ package com.gotcha.server.applicant.domain;
 
 import com.gotcha.server.project.domain.Interview;
 import com.gotcha.server.question.domain.IndividualQuestion;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -44,9 +35,11 @@ public class Applicant implements Comparable<Applicant> {
     private List<Keyword> keywords = new ArrayList<>();
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private Outcome outcome;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private InterviewStatus interviewStatus;
 
     @Column(nullable = false)
