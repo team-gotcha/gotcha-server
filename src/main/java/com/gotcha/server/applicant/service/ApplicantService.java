@@ -208,7 +208,7 @@ public class ApplicantService {
         return CompletedApplicantsResponse.generateList(applicants, keywordMap, oneLinerMap);
     }
 
-    public List<Applicant> resetCompletedApplicants(Interview interview){
+    public List<Applicant> resetCompletedApplicants(Interview interview) {
         final List<Applicant> applicants = applicantRepository.findAllByInterview(interview);
         applicants.sort(Collections.reverseOrder()); // 점수 순으로 정렬
 
@@ -218,7 +218,7 @@ public class ApplicantService {
         return applicants;
     }
 
-    public void setRanking(List<Applicant> applicants){
+    public void setRanking(List<Applicant> applicants) {
         int currentRank = 1;
         int currentScore = applicants.get(0).getTotalScore();
 
@@ -234,10 +234,10 @@ public class ApplicantService {
         }
     }
 
-    public void setTotalScore(List<Applicant> applicants){
+    public void setTotalScore(List<Applicant> applicants) {
     }
 
-    public CompletedApplicantDetailsResponse getCompletedApplicantDetails(Long applicantId){
+    public CompletedApplicantDetailsResponse getCompletedApplicantDetails(Long applicantId) {
         final Applicant applicant = applicantRepository.findById(applicantId)
                 .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
 

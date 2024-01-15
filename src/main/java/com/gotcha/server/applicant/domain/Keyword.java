@@ -25,7 +25,6 @@ public class Keyword {
     @Enumerated(EnumType.STRING)
     private KeywordType keywordType;
 
-
     @Builder
     public Keyword(final Applicant applicant, final String name, final KeywordType keywordType) {
         this.applicant = applicant;

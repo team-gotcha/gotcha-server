@@ -75,7 +75,7 @@ public class ProjectService {
 
     public void sendProjectInvitation(ProjectRequest request) {
         for (String toEmail : request.getEmails()) {
-            String title = "[Gotcha] " + request.getName() + " 프로젝트에 초대되셨습니다.";
+            String title = "[Gotcha] GOTCHA에서 " + request.getName() + " 프로젝트에 대한 초대 이메일이 도착했어요!";
             String text = "메인 페이지 링크"; // to-do: 메일 내용 추가하기, 가입 유무에 따라 메일 내용 다르게 보내기
             mailService.sendEmail(toEmail, title, text);
         }
