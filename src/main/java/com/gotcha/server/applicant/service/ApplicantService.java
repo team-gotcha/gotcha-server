@@ -127,14 +127,12 @@ public class ApplicantService {
     }
 
     @Transactional
-    public void createApplicant(ApplicantRequest request, Member member) throws IOException {
+    public void createApplicant(ApplicantRequest request, Member member) {
         List<Keyword> keywords = createKeywords(request.getKeywords());
         List<IndividualQuestion> questions = createIndividualQuestions(request.getQuestions(), member);
 //        List<Interviewer> interviewers = createInterviewers();
-        String resumeLink = saveUploadFile(request.getResumeLink());
-        String portfolioLink = saveUploadFile(request.getPortfolio());
 
-        Applicant applicant = request.toEntity(resumeLink, portfolioLink);
+        Applicant applicant = request.toEntity();
 
 //        for (Interviewer interviewer : interviewers) {
 //            applicant.addInterviewer(interviewer);
@@ -147,8 +145,17 @@ public class ApplicantService {
             applicant.addQuestion(question);
         }
 
-
         applicantRepository.save(applicant);
+    }
+
+    public void addApplicantFiles(MultipartFile resume, MultipartFile portfolio, Long applicantId) throws IOException {
+        String resumeLink = saveUploadFile(resume);
+        String portfolioLink = saveUploadFile(portfolio);
+
+        Applicant applicant = applicantRepository.findById(applicantId)
+                .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
+        applicant.updateResumeLink(resumeLink);
+        applicant.updatePortfolio(portfolioLink);
     }
 
     @Transactional
@@ -238,4 +245,6 @@ public class ApplicantService {
         final List<OneLinerResponse> oneLiners = oneLinerRepository.getOneLinersForApplicant(applicant);
         return CompletedApplicantDetailsResponse.from(applicant, keywords, oneLiners);
     }
+
+
 }

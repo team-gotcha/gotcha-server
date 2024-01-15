@@ -76,6 +76,14 @@ public class Applicant implements Comparable<Applicant> {
         this.ranking = ranking;
     }
 
+    public void updateResumeLink(String resumeLink){
+        this.resumeLink = resumeLink;
+    }
+
+    public void updatePortfolio(String portfolio){
+        this.portfolio = portfolio;
+    }
+
     public void updateTotalScore(Integer totalScore){
         this.totalScore = totalScore;
     }

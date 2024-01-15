@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping(value = "/api/applicants")
@@ -61,7 +62,7 @@ public class ApplicantController {
     @PostMapping
     public ResponseEntity<String> createApplicant(
             @RequestBody @Valid ApplicantRequest request,
-            @AuthenticationPrincipal MemberDetails details) throws IOException {
+            @AuthenticationPrincipal MemberDetails details) {
         //테스트용 유저 생성
         Member member = Member.builder()
                 .email("a@gmail.co")
@@ -76,13 +77,24 @@ public class ApplicantController {
         return ResponseEntity.status(HttpStatus.CREATED).body("면접 지원자 정보가 입력되었습니다.");
     }
 
+    @PostMapping("/files")
+    public ResponseEntity<String> addApplicantFiles(
+            @RequestParam(required = false) MultipartFile resume,
+            @RequestParam(required = false) MultipartFile portfolio,
+            @RequestParam(name = "applicant-id") final Long applicantId
+    ) throws IOException {
+        applicantService.addApplicantFiles(resume, portfolio, applicantId);
+        return ResponseEntity.status(HttpStatus.CREATED).body("면접 지원자의 파일이 저장되었습니다.");
+    }
+
+
     @GetMapping("/interview-completed")
-    public ResponseEntity<List<CompletedApplicantsResponse>> getCompletedApplicants(@RequestParam(value = "interview-id") Long interviewId){
+    public ResponseEntity<List<CompletedApplicantsResponse>> getCompletedApplicants(@RequestParam(value = "interview-id") Long interviewId) {
         return ResponseEntity.status(HttpStatus.OK).body(applicantService.getCompletedApplicants(interviewId));
     }
 
     @GetMapping("/interview-completed/details")
-    public ResponseEntity<CompletedApplicantDetailsResponse> getCompletedApplicantDetails(@RequestParam(value = "applicant-id") Long applicantId){
+    public ResponseEntity<CompletedApplicantDetailsResponse> getCompletedApplicantDetails(@RequestParam(value = "applicant-id") Long applicantId) {
         return ResponseEntity.status(HttpStatus.OK).body(applicantService.getCompletedApplicantDetails(applicantId));
     }
 }
