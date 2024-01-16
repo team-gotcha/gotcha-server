@@ -1,7 +1,6 @@
 package com.gotcha.server.evaluation.domain;
 
 import com.gotcha.server.applicant.domain.Applicant;
-import com.gotcha.server.applicant.domain.Interviewer;
 import com.gotcha.server.global.domain.BaseTimeEntity;
 import com.gotcha.server.member.domain.Member;
 import jakarta.persistence.*;
