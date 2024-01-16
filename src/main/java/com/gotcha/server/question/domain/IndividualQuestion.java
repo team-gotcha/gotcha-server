@@ -25,7 +25,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@Entity(name = "individual_question")
+@Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class IndividualQuestion {
     private static final int MIN_IMPORTANCE = 3;
