@@ -1,6 +1,7 @@
 package com.gotcha.server.applicant.domain;
 
 import com.gotcha.server.member.domain.Member;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -28,15 +29,31 @@ public class Interviewer {
     @JoinColumn(nullable = false, name = "member_id")
     private Member member;
 
+    @Column(nullable = false)
+    private Boolean prepared;
+
     private String name;
 
     public Interviewer(final Applicant applicant, final Member member, final String name) {
         this.applicant = applicant;
         this.member = member;
         this.name = name;
+        this.prepared = false;
     }
 
     public void setApplicant(Applicant applicant) {
         this.applicant = applicant;
+    }
+
+    public void setPrepared() {
+        this.prepared = true;
+    }
+
+    public Boolean isPrepared() {
+        return this.prepared;
+    }
+
+    public boolean hasPermission(final Member member) {
+        return this.member.equals(member);
     }
 }
