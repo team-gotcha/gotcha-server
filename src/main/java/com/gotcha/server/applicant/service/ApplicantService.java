@@ -77,7 +77,9 @@ public class ApplicantService {
     public List<ApplicantsResponse> listApplicantsByInterview(final Long interviewId) {
         Interview interview = interviewRepository.findById(interviewId)
                 .orElseThrow(() -> new AppException(ErrorCode.INTERVIEW_NOT_FOUNT));
-        return applicantRepository.generateApplicantsResponse(interview);
+        List<Applicant> applicants = applicantRepository.findAllByInterviewWithInterviewer(interview);
+        Map<Applicant, List<KeywordResponse>> applicantsWithKeywords = keywordRepository.findAllByApplicants(applicants);
+        return ApplicantsResponse.generateList(applicantsWithKeywords);
     }
 
     public ApplicantResponse findApplicantDetailsById(final Long applicantId) {
@@ -90,7 +92,9 @@ public class ApplicantService {
     public List<PassedApplicantsResponse> listPassedApplicantsByInterview(final Long interviewId) {
         Interview interview = interviewRepository.findById(interviewId)
                 .orElseThrow(() -> new AppException(ErrorCode.INTERVIEW_NOT_FOUNT));
-        return applicantRepository.findAllPassedApplicantsWithKeywords(interview);
+        List<Applicant> applicants = applicantRepository.findAllPassedApplicants(interview);
+        Map<Applicant, List<KeywordResponse>> applicantsWithKeywords = keywordRepository.findAllByApplicants(applicants);
+        return PassedApplicantsResponse.generateList(applicantsWithKeywords);
     }
 
     public void sendPassEmail(final PassEmailSendRequest request) {
