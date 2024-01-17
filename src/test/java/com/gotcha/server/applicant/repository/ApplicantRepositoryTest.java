@@ -6,12 +6,8 @@ import static com.gotcha.server.common.TestFixture.테스트지원자;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.gotcha.server.applicant.domain.Applicant;
-import com.gotcha.server.applicant.domain.InterviewStatus;
 import com.gotcha.server.applicant.domain.Interviewer;
-import com.gotcha.server.applicant.domain.KeywordType;
 import com.gotcha.server.applicant.domain.Outcome;
-import com.gotcha.server.applicant.dto.response.ApplicantsResponse;
-import com.gotcha.server.applicant.dto.response.PassedApplicantsResponse;
 import com.gotcha.server.common.RepositoryTest;
 import com.gotcha.server.member.domain.Member;
 import com.gotcha.server.project.domain.Interview;
@@ -54,7 +50,7 @@ class ApplicantRepositoryTest extends RepositoryTest {
                 종미면접관_지원자A, 종미면접관_지원자B, 종미면접관_지원자C, 윤정면접관_지원자A);
 
         // when
-        List<ApplicantsResponse> 조회결과 = applicantRepository.generateApplicantsResponse(조회할면접);
+        List<Applicant> 조회결과 = applicantRepository.findAllByInterviewWithInterviewer(조회할면접);
 
         // then
         assertThat(조회결과).hasSize(3)
@@ -62,40 +58,8 @@ class ApplicantRepositoryTest extends RepositoryTest {
                 .containsAll(List.of("지원자A", "지원자B", "지원자C"));
         assertThat(조회결과)
                 .filteredOn(a -> a.getName().equals("지원자A"))
-                .flatExtracting(ApplicantsResponse::getInterviewerEmails)
+                .flatExtracting(Applicant::getInterviewers)
                 .hasSize(2);
-    }
-
-    @Test
-    @DisplayName("면접 별로 지원자를 조회할 때 태그도 조회한다.")
-    void 면접별_지원자_조회하기2() {
-        // given
-        Member 종미 = 테스트유저("종미");
-        Project 조회할프로젝트 = 테스트프로젝트();
-        Interview 조회할면접 = 테스트면접(조회할프로젝트, "테스트면접1");
-        Applicant 지원자A = 테스트지원자(조회할면접, "지원자A");
-        Applicant 지원자B = 테스트지원자(조회할면접, "지원자B");
-        Interviewer 종미면접관_지원자A = 테스트면접관(지원자A, 종미);
-        Interviewer 종미면접관_지원자B = 테스트면접관(지원자B, 종미);
-        지원자A.addInterviewer(종미면접관_지원자A);
-        지원자B.addInterviewer(종미면접관_지원자B);
-
-        testRepository.save(
-                종미,
-                조회할프로젝트, 조회할면접,
-                지원자A, 지원자B,
-                종미면접관_지원자A, 종미면접관_지원자B,
-                테스트키워드(지원자A, "성실함", KeywordType.TRAIT), 테스트키워드(지원자A, "인턴경험", KeywordType.EXPERIENCE), 테스트키워드(지원자A, "SQL자격증", KeywordType.SKILL),
-                테스트키워드(지원자B, "성실함", KeywordType.TRAIT), 테스트키워드(지원자B, "깔끔함", KeywordType.TRAIT));
-
-        // when
-        List<ApplicantsResponse> 조회결과 = applicantRepository.generateApplicantsResponse(조회할면접);
-
-        // then
-        assertThat(조회결과).hasSize(2)
-                .filteredOn(a -> a.getName().equals("지원자A"))
-                .flatExtracting(ApplicantsResponse::getKeywords)
-                .hasSize(3);
     }
 
     @Test
@@ -111,7 +75,7 @@ class ApplicantRepositoryTest extends RepositoryTest {
         testRepository.save(조회할프로젝트, 조회할면접, 합격지원자A, 합격지원자B, 미평가지원자, 불합격지원자);
 
         // when
-        List<PassedApplicantsResponse> 조회결과 = applicantRepository.findAllPassedApplicantsWithKeywords(조회할면접);
+        List<Applicant> 조회결과 = applicantRepository.findAllPassedApplicants(조회할면접);
 
         // then
         assertThat(조회결과).hasSize(2);
