@@ -41,7 +41,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 public class ApplicantService {
     private final ApplicantRepository applicantRepository;
     private final InterviewerRepository interviewerRepository;
