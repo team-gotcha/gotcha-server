@@ -56,9 +56,6 @@ public class ApplicantRequest {
                 .path(path)
                 .email(email)
                 .interview(interview)
-                .questions(new ArrayList<>())
-                .keywords(new ArrayList<>())
-                .interviewers(new ArrayList<>())
                 .build();
     }
 }

@@ -58,11 +58,8 @@ public class Applicant implements Comparable<Applicant> {
     private String portfolio;
 
     @Builder
-    public Applicant(Interview interview, List<Interviewer> interviewers, List<IndividualQuestion> questions, List<Keyword> keywords, String email, LocalDate date, String name, Integer age, String education, String phoneNumber, String position, String path, String resumeLink, String portfolio) {
+    public Applicant(Interview interview, String email, LocalDate date, String name, Integer age, String education, String phoneNumber, String position, String path, String resumeLink, String portfolio) {
         this.interview = interview;
-        this.interviewers = interviewers;
-        this.questions = questions;
-        this.keywords = keywords;
         this.email = email;
         this.date = date;
         this.name = name;
