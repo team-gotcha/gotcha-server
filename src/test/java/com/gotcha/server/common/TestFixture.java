@@ -38,7 +38,7 @@ public class TestFixture {
     }
 
     public static Interviewer 테스트면접관(Applicant 지원자, Member 면접관) {
-        return new Interviewer(지원자, 면접관, 면접관.getName());
+        return new Interviewer(지원자, 면접관);
     }
 
     public static Keyword 테스트키워드(Applicant 지원자, String 내용, KeywordType 종류) {

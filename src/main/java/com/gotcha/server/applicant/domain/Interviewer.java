@@ -28,12 +28,12 @@ public class Interviewer {
     @JoinColumn(nullable = false, name = "member_id")
     private Member member;
 
-    private String name;
+    private Boolean prepared;
 
-    public Interviewer(final Applicant applicant, final Member member, final String name) {
+    public Interviewer(final Applicant applicant, final Member member) {
         this.applicant = applicant;
         this.member = member;
-        this.name = name;
+        this.prepared = false;
     }
 
     public void setApplicant(Applicant applicant) {
