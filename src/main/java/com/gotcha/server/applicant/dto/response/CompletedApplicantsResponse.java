@@ -57,7 +57,7 @@ public class CompletedApplicantsResponse {
 
     private static List<String> getInterviewersNames(Applicant applicant) {
         return applicant.getInterviewers().stream()
-                .map(Interviewer::getName)
+                .map(interviewer -> interviewer.getMember().getName())
                 .toList();
     }
 }

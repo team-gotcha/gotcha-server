@@ -10,17 +10,20 @@ import com.gotcha.server.project.repository.InterviewRepository;
 import com.gotcha.server.project.repository.SubcollaboratorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class InterviewService {
 
     private final InterviewRepository interviewRepository;
     private final SubcollaboratorRepository subcollaboratorRepository;
     private final MailService mailService;
 
+    @Transactional
     public void createInterview(InterviewRequest request){
         validInterview(request);
 
@@ -30,6 +33,7 @@ public class InterviewService {
         sendInterviewInvitation(request);
     }
 
+    @Transactional
     public void createSubcollaborator(Interview interview, List<String> emails){
         for(String email : emails){
             Subcollaborator subcollaborator = Subcollaborator.builder()

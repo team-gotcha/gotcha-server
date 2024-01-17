@@ -19,6 +19,7 @@ import com.gotcha.server.global.exception.AppException;
 import com.gotcha.server.global.exception.ErrorCode;
 import com.gotcha.server.mail.service.MailService;
 import com.gotcha.server.member.domain.Member;
+import com.gotcha.server.member.repository.MemberRepository;
 import com.gotcha.server.project.domain.Interview;
 import com.gotcha.server.project.repository.InterviewRepository;
 
@@ -46,6 +47,7 @@ public class ApplicantService {
     private final KeywordRepository keywordRepository;
     private final MailService mailService;
     private final OneLinerRepository oneLinerRepository;
+    private final MemberRepository memberRepository;
     private final AmazonS3 amazonS3;
 
     @Value("${cloud.aws.s3.bucket}")
@@ -123,14 +125,13 @@ public class ApplicantService {
     public void createApplicant(ApplicantRequest request, Member member) {
         List<Keyword> keywords = createKeywords(request.getKeywords());
         List<IndividualQuestion> questions = createIndividualQuestions(request.getQuestions(), member);
-//        List<Interviewer> interviewers = createInterviewers();
+        List<Interviewer> interviewers = createInterviewers(request.getInterviewers());
 
         Applicant applicant = request.toEntity();
 
-//        for (Interviewer interviewer : interviewers) {
-//            applicant.addInterviewer(interviewer);
-//        }
-
+        for (Interviewer interviewer : interviewers) {
+            applicant.addInterviewer(interviewer);
+        }
         for (Keyword keyword : keywords) {
             applicant.addKeyword(keyword);
         }
@@ -188,8 +189,11 @@ public class ApplicantService {
                 .collect(Collectors.toList());
     }
 
-    //    public List<Interviewer> createInterviewers() {
-    //    }
+    public List<Interviewer> createInterviewers(List<InterviewerRequest> interviewerRequests) {
+        return interviewerRequests.stream()
+                .map(request -> request.toEntity(memberRepository.findById(request.getId()).orElseThrow(() -> new AppException(ErrorCode.MEMBER_NOT_FOUND))))
+                .collect(Collectors.toList());
+    }
 
     public List<CompletedApplicantsResponse> getCompletedApplicants(Long interviewId) {
         final Interview interview = interviewRepository.findById(interviewId)

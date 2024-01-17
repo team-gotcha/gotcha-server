@@ -37,15 +37,15 @@ public class ProjectController {
 
     @GetMapping
     public ResponseEntity<SidebarResponse> getSidebar(@AuthenticationPrincipal MemberDetails details){
-        //테스트용 유저 생성
-        Member member = Member.builder()
-                .email("a@gmail.co")
-                .socialId("socialId")
-                .name("이름")
-                .profileUrl("a.jpg")
-                .refreshToken("token")
-                .build();
-        return ResponseEntity.status(HttpStatus.OK).body(projectService.getSidebar(member));
-//        return ResponseEntity.status(HttpStatus.OK).body(projectService.getSidebar(details.member()));
+//        //테스트용 유저 생성
+//        Member member = Member.builder()
+//                .email("a@gmail.co")
+//                .socialId("socialId")
+//                .name("이름")
+//                .profileUrl("a.jpg")
+//                .refreshToken("token")
+//                .build();
+//        return ResponseEntity.status(HttpStatus.OK).body(projectService.getSidebar(member));
+        return ResponseEntity.status(HttpStatus.OK).body(projectService.getSidebar(details.member()));
     }
 }

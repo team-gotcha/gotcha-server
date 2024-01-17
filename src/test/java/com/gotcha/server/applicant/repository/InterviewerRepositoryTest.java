@@ -47,27 +47,27 @@ class InterviewerRepositoryTest extends RepositoryTest {
         assertEquals(2L, 조회된_면접_개수);
     }
 
-    @Test
-    @DisplayName("지원자의 면접관 이름 목록을 조회한다.")
-    void findInterviewerNamesByApplicationId() {
-        // given
-        Member 종미 = 테스트유저("종미");
-        Member 윤정 = 테스트유저("윤정");
-        Project 테스트프로젝트 = 테스트프로젝트();
-        Interview 테스트면접 = 테스트면접(테스트프로젝트, "테스트면접");
-        Applicant 지원자A = 테스트지원자(테스트면접, "지원자A");
-        Interviewer 테스트면접관A = 테스트면접관(지원자A, 종미);
-        Interviewer 테스트면접관B = 테스트면접관(지원자A, 윤정);
-
-        testRepository.save(
-                종미, 윤정, 테스트프로젝트, 테스트면접, 지원자A, 테스트면접관A, 테스트면접관B
-        );
-
-        // when
-        List<String> 조회결과 = interviewerRepository.findInterviewerNamesByApplicationId(지원자A.getId());
-
-        // then
-        assertThat(조회결과).hasSize(2)
-                .containsAll(List.of("윤정", "종미"));
-    }
+//    @Test
+//    @DisplayName("지원자의 면접관 이름 목록을 조회한다.")
+//    void findInterviewerNamesByApplicationId() {
+//        // given
+//        Member 종미 = 테스트유저("종미");
+//        Member 윤정 = 테스트유저("윤정");
+//        Project 테스트프로젝트 = 테스트프로젝트();
+//        Interview 테스트면접 = 테스트면접(테스트프로젝트, "테스트면접");
+//        Applicant 지원자A = 테스트지원자(테스트면접, "지원자A");
+//        Interviewer 테스트면접관A = 테스트면접관(지원자A, 종미);
+//        Interviewer 테스트면접관B = 테스트면접관(지원자A, 윤정);
+//
+//        testRepository.save(
+//                종미, 윤정, 테스트프로젝트, 테스트면접, 지원자A, 테스트면접관A, 테스트면접관B
+//        );
+//
+//        // when
+//        List<String> 조회결과 = interviewerRepository.findInterviewerNamesByApplicationId(지원자A.getId());
+//
+//        // then
+//        assertThat(조회결과).hasSize(2)
+//                .containsAll(List.of("윤정", "종미"));
+//    }
 }

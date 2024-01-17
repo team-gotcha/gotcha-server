@@ -21,7 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class QuestionService {
     private final CommonQuestionRepository commonQuestionRepository;
@@ -48,6 +48,7 @@ public class QuestionService {
         return InterviewQuestionResponse.generateList(questions);
     }
 
+    @Transactional
     public void createIndividualQuestion(IndividualQuestionRequest request, Member member){
         validQuestion(request);
 

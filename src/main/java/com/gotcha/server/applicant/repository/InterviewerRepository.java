@@ -19,6 +19,6 @@ public interface InterviewerRepository extends JpaRepository<Interviewer, Long> 
             + "where i.member = :member and a.date = current_date()")
     long countTodayInterview(@Param("member") Member member);
 
-    @Query("SELECT i.name FROM Interviewer i WHERE i.applicant.id = :applicationId")
-    List<String> findInterviewerNamesByApplicationId(@Param("applicationId") Long applicationId);
+//    @Query("SELECT i.member.name FROM Interviewer i WHERE i.applicant.id = :applicationId")
+//    List<String> findInterviewerNamesByApplicationId(@Param("applicationId") Long applicationId);
 }

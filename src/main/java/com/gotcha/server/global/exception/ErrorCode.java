@@ -25,6 +25,7 @@ public enum ErrorCode {
     APPLICANT_NOT_FOUNT(HttpStatus.NOT_FOUND, "존재하지 않는 지원자입니다."),
     INTERVIEW_NOT_FOUNT(HttpStatus.NOT_FOUND, "존재하지 않는 면접입니다."),
     QUESTION_NOT_FOUNT(HttpStatus.NOT_FOUND, "존재하지 않는 질문입니다."),
+    MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 면접관입니다."),
   
     INVALID_INTERVIEW_STATUS(HttpStatus.INTERNAL_SERVER_ERROR, "유효하지 않은 면접 단계입니다."),
     UNABLE_TO_SEND_EMAIL(HttpStatus.INTERNAL_SERVER_ERROR, "이메일을 보낼 수 없습니다.");

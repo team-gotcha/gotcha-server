@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ProjectService {
 
     private final ProjectRepository projectRepository;
@@ -31,7 +32,7 @@ public class ProjectService {
     private final MailService mailService;
     private final InterviewDslRepositoryImpl interviewDslRepository;
 
-
+    @Transactional
     public void createProject(ProjectRequest request) {
         validProject(request);
 
@@ -41,6 +42,7 @@ public class ProjectService {
         sendProjectInvitation(request);
     }
 
+    @Transactional
     public void createCollaborator(Project project, List<String> emails) {
         for (String email : emails) {
             Collaborator collaborator = Collaborator.builder()
