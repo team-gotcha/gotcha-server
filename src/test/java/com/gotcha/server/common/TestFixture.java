@@ -31,10 +31,11 @@ public class TestFixture {
     }
 
     public static Applicant 테스트지원자(Interview 면접, String 이름) {
-        Applicant applicant = new Applicant(면접);
-        applicant.setName(이름);
-        applicant.setEmail(String.format("%s email", 이름));
-        return applicant;
+        return Applicant.builder()
+                .name(이름)
+                .interview(면접)
+                .email(String.format("%s email", 이름))
+                .build();
     }
 
     public static Interviewer 테스트면접관(Applicant 지원자, Member 면접관) {

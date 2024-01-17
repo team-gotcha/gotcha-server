@@ -7,13 +7,11 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.gotcha.server.applicant.domain.Applicant;
 import com.gotcha.server.applicant.domain.Interviewer;
 import com.gotcha.server.applicant.domain.Keyword;
-import com.gotcha.server.applicant.domain.PreparedInterviewer;
 import com.gotcha.server.applicant.dto.request.*;
 import com.gotcha.server.applicant.dto.response.*;
 import com.gotcha.server.applicant.repository.ApplicantRepository;
 import com.gotcha.server.applicant.repository.InterviewerRepository;
 import com.gotcha.server.applicant.repository.KeywordRepository;
-import com.gotcha.server.applicant.repository.PreparedInterviewerRepository;
 import com.gotcha.server.auth.security.MemberDetails;
 import com.gotcha.server.evaluation.dto.response.OneLinerResponse;
 import com.gotcha.server.evaluation.repository.OneLinerRepository;
@@ -45,7 +43,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class ApplicantService {
     private final ApplicantRepository applicantRepository;
     private final InterviewerRepository interviewerRepository;
-    private final PreparedInterviewerRepository preparedInterviewerRepository;
     private final InterviewRepository interviewRepository;
     private final KeywordRepository keywordRepository;
     private final MailService mailService;
@@ -60,22 +57,18 @@ public class ApplicantService {
     public InterviewProceedResponse proceedToInterview(final InterviewProceedRequest request, final MemberDetails details) {
         Applicant applicant = applicantRepository.findById(request.applicantId())
                 .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
-        createNewPreparedInterviewer(applicant, details.member());
+        List<Interviewer> interviewers = interviewerRepository.findAllByApplicant(applicant);
+        Interviewer interviewer = interviewers.stream().filter(i -> i.hasPermission(details.member())).findAny()
+                .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED_INTERVIEWER));
 
-        long interviewerCount = interviewerRepository.countByApplicant(applicant);
-        long preparedInterviewerCount = preparedInterviewerRepository.countByApplicant(applicant);
+        interviewer.setPrepared();
+
+        long interviewerCount = interviewers.size();
+        long preparedInterviewerCount = interviewers.stream().filter(Interviewer::isPrepared).count();
         if (interviewerCount <= preparedInterviewerCount) {
             applicant.moveToNextStatus();
         }
         return new InterviewProceedResponse(interviewerCount, preparedInterviewerCount);
-    }
-
-    private void createNewPreparedInterviewer(final Applicant applicant, final Member member) {
-        Interviewer interviewer = interviewerRepository.findByMember(member)
-                .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED_INTERVIEWER));
-        if (!preparedInterviewerRepository.existsByInterviewer(interviewer)) {
-            preparedInterviewerRepository.save(new PreparedInterviewer(applicant, interviewer));
-        }
     }
 
     public TodayInterviewResponse countTodayInterview(final MemberDetails details) {
@@ -86,7 +79,9 @@ public class ApplicantService {
     public List<ApplicantsResponse> listApplicantsByInterview(final Long interviewId) {
         Interview interview = interviewRepository.findById(interviewId)
                 .orElseThrow(() -> new AppException(ErrorCode.INTERVIEW_NOT_FOUNT));
-        return applicantRepository.generateApplicantsResponse(interview);
+        List<Applicant> applicants = applicantRepository.findAllByInterviewWithInterviewer(interview);
+        Map<Applicant, List<KeywordResponse>> applicantsWithKeywords = keywordRepository.findAllByApplicants(applicants);
+        return ApplicantsResponse.generateList(applicantsWithKeywords);
     }
 
     public ApplicantResponse findApplicantDetailsById(final Long applicantId) {
@@ -99,7 +94,9 @@ public class ApplicantService {
     public List<PassedApplicantsResponse> listPassedApplicantsByInterview(final Long interviewId) {
         Interview interview = interviewRepository.findById(interviewId)
                 .orElseThrow(() -> new AppException(ErrorCode.INTERVIEW_NOT_FOUNT));
-        return applicantRepository.findAllPassedApplicantsWithKeywords(interview);
+        List<Applicant> applicants = applicantRepository.findAllPassedApplicants(interview);
+        Map<Applicant, List<KeywordResponse>> applicantsWithKeywords = keywordRepository.findAllByApplicants(applicants);
+        return PassedApplicantsResponse.generateList(applicantsWithKeywords);
     }
 
     public void sendPassEmail(final PassEmailSendRequest request) {

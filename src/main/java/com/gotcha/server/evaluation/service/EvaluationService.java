@@ -1,9 +1,8 @@
 package com.gotcha.server.evaluation.service;
 
 import com.gotcha.server.applicant.domain.Applicant;
-import com.gotcha.server.applicant.domain.Interviewer;
+import com.gotcha.server.applicant.domain.InterviewStatus;
 import com.gotcha.server.applicant.repository.ApplicantRepository;
-import com.gotcha.server.applicant.repository.InterviewerRepository;
 import com.gotcha.server.auth.security.MemberDetails;
 import com.gotcha.server.evaluation.domain.Evaluation;
 import com.gotcha.server.evaluation.domain.OneLiner;
@@ -21,6 +20,7 @@ import com.gotcha.server.question.domain.IndividualQuestion;
 import com.gotcha.server.question.repository.IndividualQuestionRepository;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -32,16 +32,17 @@ import org.springframework.transaction.annotation.Transactional;
 public class EvaluationService {
     private final IndividualQuestionRepository individualQuestionRepository;
     private final EvaluationRepository evaluationRepository;
-    private final InterviewerRepository interviewerRepository;
     private final OneLinerRepository oneLinerRepository;
     private final ApplicantRepository applicantRepository;
 
     @Transactional
     public void evaluate(final MemberDetails details, final List<EvaluateRequest> requests) {
-//        Interviewer interviewer = interviewerRepository.findByMember(details.member())
-//                .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED_INTERVIEWER));
-
         List<IndividualQuestion> questions = getQuestionsBeingEvaluated(requests);
+        Applicant applicant = validateApplicantOfQuestions(questions);
+        if(applicant.getInterviewStatus() != InterviewStatus.COMPLETION) {
+            applicant.moveToNextStatus();
+        }
+
         Map<Long, IndividualQuestion> questionMap = questions.stream().collect(Collectors.toMap(IndividualQuestion::getId, q->q));
         List<Evaluation> evaluations = requests.stream()
                 .map(request -> Evaluation.builder()
@@ -56,17 +57,29 @@ public class EvaluationService {
 
     private List<IndividualQuestion> getQuestionsBeingEvaluated(final List<EvaluateRequest> requests) {
         List<Long> questionIds = requests.stream().map(EvaluateRequest::questionId).toList();
-        List<IndividualQuestion> questions = individualQuestionRepository.findAllByIdIn(questionIds);
+        List<IndividualQuestion> questions = individualQuestionRepository.findAllWithApplicantByIdIn(questionIds);
+        validateQuestionIds(questionIds, questions);
+        return questions;
+    }
+
+    private void validateQuestionIds(final List<Long> questionIds, final List<IndividualQuestion> questions) {
         if(questions.size() != questionIds.size()) {
             throw new AppException(ErrorCode.QUESTION_NOT_FOUNT);
         }
-        return questions;
+    }
+
+    private Applicant validateApplicantOfQuestions(final List<IndividualQuestion> questions) {
+        Applicant firstApplicant = questions.get(0).getApplicant();
+        boolean allSameApplicant = questions.stream().map(IndividualQuestion::getApplicant)
+                .allMatch(applicant -> Objects.equals(firstApplicant, applicant));
+        if(!allSameApplicant) {
+            throw new AppException(ErrorCode.MULTIPLE_APPLICANT_EVALUATION);
+        }
+        return firstApplicant;
     }
 
     @Transactional
     public void createOneLiner(final MemberDetails details, final OneLinerRequest request) {
-//        Interviewer interviewer = interviewerRepository.findByMember(details.member())
-//                .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED_INTERVIEWER));
         Applicant applicant = applicantRepository.findById(request.applicantId())
                 .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
         oneLinerRepository.save(new OneLiner(applicant, request.content(), details.member()));

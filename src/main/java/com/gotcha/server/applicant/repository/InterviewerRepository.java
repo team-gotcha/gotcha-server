@@ -12,7 +12,7 @@ import org.springframework.data.repository.query.Param;
 
 public interface InterviewerRepository extends JpaRepository<Interviewer, Long> {
     Optional<Interviewer> findByMember(Member member);
-    long countByApplicant(Applicant applicant);
+    List<Interviewer> findAllByApplicant(Applicant applicant);
     @Query("select count(i) "
             + "from Interviewer i "
             + "join i.applicant a "

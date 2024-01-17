@@ -57,8 +57,19 @@ public class Applicant implements Comparable<Applicant> {
     private String resumeLink;
     private String portfolio;
 
-    public Applicant(final Interview interview) {
+    @Builder
+    public Applicant(Interview interview, String email, LocalDate date, String name, Integer age, String education, String phoneNumber, String position, String path, String resumeLink, String portfolio) {
         this.interview = interview;
+        this.email = email;
+        this.date = date;
+        this.name = name;
+        this.age = age;
+        this.education = education;
+        this.phoneNumber = phoneNumber;
+        this.position = position;
+        this.path = path;
+        this.resumeLink = resumeLink;
+        this.portfolio = portfolio;
         this.outcome = Outcome.PENDING;
         this.interviewStatus = InterviewStatus.PREPARATION;
         this.ranking = 0;
@@ -134,27 +145,5 @@ public class Applicant implements Comparable<Applicant> {
     @Override
     public int compareTo(Applicant other) {
         return Integer.compare(this.getTotalScore(), other.getTotalScore());
-    }
-
-    @Builder
-    public Applicant(Interview interview, List<Interviewer> interviewers, List<IndividualQuestion> questions, List<Keyword> keywords, String email, LocalDate date, String name, Integer age, String education, String phoneNumber, String position, String path, String resumeLink, String portfolio) {
-        this.interview = interview;
-        this.interviewers = interviewers;
-        this.questions = questions;
-        this.keywords = keywords;
-        this.email = email;
-        this.date = date;
-        this.name = name;
-        this.age = age;
-        this.education = education;
-        this.phoneNumber = phoneNumber;
-        this.position = position;
-        this.path = path;
-        this.resumeLink = resumeLink;
-        this.portfolio = portfolio;
-        this.outcome = Outcome.PENDING;
-        this.interviewStatus = InterviewStatus.PREPARATION;
-        this.ranking = 0;
-        this.totalScore = 0;
     }
 }
