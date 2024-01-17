@@ -31,10 +31,11 @@ public class TestFixture {
     }
 
     public static Applicant 테스트지원자(Interview 면접, String 이름) {
-        Applicant applicant = new Applicant(면접);
-        applicant.setName(이름);
-        applicant.setEmail(String.format("%s email", 이름));
-        return applicant;
+        return Applicant.builder()
+                .name(이름)
+                .interview(면접)
+                .email(String.format("%s email", 이름))
+                .build();
     }
 
     public static Interviewer 테스트면접관(Applicant 지원자, Member 면접관) {
@@ -66,11 +67,11 @@ public class TestFixture {
         return question;
     }
 
-    public static Evaluation 테스트평가(Integer 점수, String 평가내용, IndividualQuestion 질문, Interviewer 면접관) {
+    public static Evaluation 테스트평가(Integer 점수, String 평가내용, IndividualQuestion 질문, Member 면접관) {
         return Evaluation.builder()
                 .score(점수)
                 .content(평가내용)
-                .interviewer(면접관)
+                .member(면접관)
                 .question(질문)
                 .build();
     }

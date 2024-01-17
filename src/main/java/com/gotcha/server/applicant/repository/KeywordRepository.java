@@ -5,6 +5,6 @@ import com.gotcha.server.applicant.domain.Keyword;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface KeywordRepository extends JpaRepository<Keyword, Long> {
+public interface KeywordRepository extends JpaRepository<Keyword, Long>, KeywordDslRepository {
     List<Keyword> findAllByApplicant(Applicant applicant);
 }

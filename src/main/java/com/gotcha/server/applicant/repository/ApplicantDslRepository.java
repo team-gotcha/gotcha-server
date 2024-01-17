@@ -10,7 +10,7 @@ import java.util.Map;
 
 public interface ApplicantDslRepository {
     Map<Applicant, List<KeywordResponse>> findAllByInterviewWithKeywords(List<Applicant> applicants, final Interview interview);
-    List<ApplicantsResponse> generateApplicantsResponse(final Interview interview);
-    List<PassedApplicantsResponse> findAllPassedApplicantsWithKeywords(Interview interview);
+    List<Applicant> findAllByInterviewWithInterviewer(Interview interview);
+    List<Applicant> findAllPassedApplicants(Interview interview);
     List<KeywordResponse> findKeywordsByApplicant(Applicant applicant);
 }

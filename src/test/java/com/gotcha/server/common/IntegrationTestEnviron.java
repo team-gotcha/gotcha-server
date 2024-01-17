@@ -62,7 +62,7 @@ public class IntegrationTestEnviron {
         return individualQuestionRepository.save(테스트개별질문(지원자, 내용, 순서, 면접때질문하기, 중요도));
     }
 
-    public Evaluation 테스트평가_저장하기(Integer 점수, String 평가내용, IndividualQuestion 질문, Interviewer 면접관) {
+    public Evaluation 테스트평가_저장하기(Integer 점수, String 평가내용, IndividualQuestion 질문, Member 면접관) {
         return evaluationRepository.save(테스트평가(점수, 평가내용, 질문, 면접관));
     }
 }

@@ -1,5 +1,6 @@
 package com.gotcha.server.common;
 
+import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.stereotype.Component;
@@ -8,7 +9,7 @@ import org.springframework.stereotype.Component;
 public class TestRepository {
 
     @Autowired
-    private TestEntityManager em;
+    private EntityManager em;
 
     public void save(Object... objects) {
         for(Object o: objects) {

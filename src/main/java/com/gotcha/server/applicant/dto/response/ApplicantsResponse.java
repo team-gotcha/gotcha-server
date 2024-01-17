@@ -23,19 +23,19 @@ public class ApplicantsResponse {
     private Integer questionCount;
     private List<KeywordResponse> keywords;
 
-    public static List<ApplicantsResponse> generateList(final List<Applicant> applicants, final Map<Applicant, List<KeywordResponse>> keywordMap) {
-        return applicants.stream()
-                .map(a -> ApplicantsResponse.builder()
-                        .id(a.getId())
-                        .name(a.getName())
-                        .status(a.getInterviewStatus())
-                        .date(a.getDate())
-                        .interviewerEmails(a.getInterviewers().stream()
-                                .map(interviewer -> interviewer.getMember().getEmail())
-                                .toList())
-                        .questionCount(a.getQuestions().size())
-                        .keywords(keywordMap.get(a))
-                        .build())
-                .toList();
+    public static List<ApplicantsResponse> generateList(final Map<Applicant, List<KeywordResponse>> applicantsWithKeywords) {
+        return applicantsWithKeywords.keySet().stream()
+                        .map(applicant -> ApplicantsResponse.builder()
+                                .id(applicant.getId())
+                                .name(applicant.getName())
+                                .status(applicant.getInterviewStatus())
+                                .date(applicant.getDate())
+                                .interviewerEmails(applicant.getInterviewers().stream()
+                                        .map(interviewer -> interviewer.getMember().getEmail())
+                                        .toList())
+                                .questionCount(applicant.getQuestions().size())
+                                .keywords(applicantsWithKeywords.get(applicant))
+                                .build())
+                                .toList();
     }
 }

@@ -19,14 +19,14 @@ public class PassedApplicantsResponse {
     private Integer rank;
     private List<String> keywords;
 
-    public static List<PassedApplicantsResponse> generateList(List<Applicant> applicants, Map<Applicant, List<String>> keywords) {
-        return applicants.stream()
-                .map(a -> PassedApplicantsResponse.builder()
-                        .id(a.getId())
-                        .name(a.getName())
-                        .score(a.getTotalScore())
-                        .rank(a.getRanking())
-                        .keywords(keywords.get(a))
+    public static List<PassedApplicantsResponse> generateList(final Map<Applicant, List<KeywordResponse>> applicantsWithKeywords) {
+        return applicantsWithKeywords.keySet().stream()
+                .map(applicant -> PassedApplicantsResponse.builder()
+                        .id(applicant.getId())
+                        .name(applicant.getName())
+                        .score(applicant.getTotalScore())
+                        .rank(applicant.getRanking())
+                        .keywords(applicantsWithKeywords.get(applicant).stream().map(KeywordResponse::name).toList())
                         .build())
                 .toList();
     }

@@ -8,8 +8,6 @@ import com.gotcha.server.applicant.domain.QApplicant;
 import com.gotcha.server.applicant.domain.QInterviewer;
 import com.gotcha.server.applicant.domain.QKeyword;
 import com.gotcha.server.applicant.dto.response.KeywordResponse;
-import com.gotcha.server.applicant.dto.response.ApplicantsResponse;
-import com.gotcha.server.applicant.dto.response.PassedApplicantsResponse;
 import com.gotcha.server.member.domain.QMember;
 import com.gotcha.server.project.domain.Interview;
 import com.gotcha.server.question.domain.QIndividualQuestion;
@@ -28,13 +26,7 @@ public class ApplicantDslRepositoryImpl implements ApplicantDslRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public List<ApplicantsResponse> generateApplicantsResponse(final Interview interview) {
-        List<Applicant> applicants = findAllApplicants(interview);
-        final Map<Applicant, List<KeywordResponse>> keywordMap = findAllByInterviewWithKeywords(applicants, interview);
-        return ApplicantsResponse.generateList(applicants, keywordMap);
-    } // to-do: service 단으로 옮기는게 좋아보인다
-
-    @Override
+    @Deprecated
     public Map<Applicant, List<KeywordResponse>> findAllByInterviewWithKeywords(List<Applicant> applicants, final Interview interview){
         QKeyword qKeyword = QKeyword.keyword;
         List<Tuple> keywords = findAllKeywordByApplicants(applicants);
@@ -50,7 +42,11 @@ public class ApplicantDslRepositoryImpl implements ApplicantDslRepository {
         return keywordMap;
     }
 
+    /*
+    Keyword 조회는 KeywordRepository에서 정의함
+     */
     @Override
+    @Deprecated
     public List<KeywordResponse> findKeywordsByApplicant(Applicant applicant) {
         QKeyword qKeyword = QKeyword.keyword;
         List<Tuple> keywords = findAllKeywordByApplicants(List.of(applicant));
@@ -64,7 +60,8 @@ public class ApplicantDslRepositoryImpl implements ApplicantDslRepository {
                 .collect(Collectors.toList());
     }
 
-    private List<Applicant> findAllApplicants(final Interview interview) {
+    @Override
+    public List<Applicant> findAllByInterviewWithInterviewer(final Interview interview) {
         QApplicant qApplicant = QApplicant.applicant;
         QInterviewer qInterviewer = QInterviewer.interviewer;
         QMember qMember = QMember.member;
@@ -83,6 +80,10 @@ public class ApplicantDslRepositoryImpl implements ApplicantDslRepository {
                 .fetch();
     }
 
+    /*
+    Keyword 조회는 KeywordRepository에서 정의함
+     */
+    @Deprecated
     private List<Tuple> findAllKeywordByApplicants(final List<Applicant> applicants) {
         QKeyword qKeyword = QKeyword.keyword;
 
@@ -95,24 +96,7 @@ public class ApplicantDslRepositoryImpl implements ApplicantDslRepository {
     }
 
     @Override
-    public List<PassedApplicantsResponse> findAllPassedApplicantsWithKeywords(final Interview interview) {
-        QKeyword qKeyword = QKeyword.keyword;
-
-        List<Applicant> applicants = findAllPassedApplicants(interview);
-        List<Tuple> keywords = findAllKeywordByApplicants(applicants);
-
-        Map<Applicant, List<String>> keywordMap = applicants.stream()
-                .collect(Collectors.toMap(applicant -> applicant, v -> new ArrayList<>()));
-        keywords.forEach(tuple -> {
-            Applicant applicant = tuple.get(qKeyword.applicant);
-            String minName = tuple.get(qKeyword.name.min());
-            keywordMap.get(applicant).add(minName);
-        });
-
-        return PassedApplicantsResponse.generateList(applicants, keywordMap);
-    }
-
-    private List<Applicant> findAllPassedApplicants(final Interview interview) {
+    public List<Applicant> findAllPassedApplicants(final Interview interview) {
         QApplicant qApplicant = QApplicant.applicant;
 
         return jpaQueryFactory
