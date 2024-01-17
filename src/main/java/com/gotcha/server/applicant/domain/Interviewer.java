@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -30,6 +31,7 @@ public class Interviewer {
 
     private Boolean prepared;
 
+    @Builder
     public Interviewer(final Applicant applicant, final Member member) {
         this.applicant = applicant;
         this.member = member;

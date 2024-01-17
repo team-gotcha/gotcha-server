@@ -66,11 +66,11 @@ public class TestFixture {
         return question;
     }
 
-    public static Evaluation 테스트평가(Integer 점수, String 평가내용, IndividualQuestion 질문, Interviewer 면접관) {
+    public static Evaluation 테스트평가(Integer 점수, String 평가내용, IndividualQuestion 질문, Member 면접관) {
         return Evaluation.builder()
                 .score(점수)
                 .content(평가내용)
-                .interviewer(면접관)
+                .member(면접관)
                 .question(질문)
                 .build();
     }

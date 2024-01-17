@@ -63,17 +63,17 @@ public class ApplicantController {
     public ResponseEntity<String> createApplicant(
             @RequestBody @Valid ApplicantRequest request,
             @AuthenticationPrincipal MemberDetails details) {
-        //테스트용 유저 생성
-        Member member = Member.builder()
-                .email("a@gmail.co")
-                .socialId("socialId")
-                .name("이름")
-                .profileUrl("a.jpg")
-                .refreshToken("token")
-                .build();
-        memberRepository.save(member);
-        applicantService.createApplicant(request, member);
-//        applicantService.createApplicant(request, details.member());
+//        //테스트용 유저 생성
+//        Member member = Member.builder()
+//                .email("a@gmail.co")
+//                .socialId("socialId")
+//                .name("이름")
+//                .profileUrl("a.jpg")
+//                .refreshToken("token")
+//                .build();
+//        memberRepository.save(member);
+//        applicantService.createApplicant(request, member);
+        applicantService.createApplicant(request, details.member());
         return ResponseEntity.status(HttpStatus.CREATED).body("면접 지원자 정보가 입력되었습니다.");
     }
 

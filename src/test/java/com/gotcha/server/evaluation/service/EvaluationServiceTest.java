@@ -69,10 +69,10 @@ class EvaluationServiceTest extends IntegrationTest {
         IndividualQuestion 질문A = environ.테스트개별질문_저장하기(지원자A, "자기소개해주세요.", 1, true, 1);
         IndividualQuestion 질문B = environ.테스트개별질문_저장하기(지원자A, "장점을소개해주세요.", 2, true, 1);
 
-        environ.테스트평가_저장하기(1, "인상이좋다", 질문A, 종미면접관);
-        environ.테스트평가_저장하기(2, "굿", 질문A, 윤정면접관);
-        environ.테스트평가_저장하기(3, "좋은장점이다", 질문B, 종미면접관);
-        environ.테스트평가_저장하기(4, "좋다", 질문B, 윤정면접관);
+        environ.테스트평가_저장하기(1, "인상이좋다", 질문A, 종미);
+        environ.테스트평가_저장하기(2, "굿", 질문A, 윤정);
+        environ.테스트평가_저장하기(3, "좋은장점이다", 질문B, 종미);
+        environ.테스트평가_저장하기(4, "좋다", 질문B, 윤정);
 
         // when
         List<IndividualQuestion> 평가된_질문들 = individualQuestionRepository.findAllAfterEvaluation(지원자A);
@@ -112,10 +112,10 @@ class EvaluationServiceTest extends IntegrationTest {
         IndividualQuestion 질문A = environ.테스트개별질문_저장하기(지원자A, "자기소개해주세요.", 1, true, 1);
         IndividualQuestion 질문B = environ.테스트개별질문_저장하기(지원자A, "장점을소개해주세요.", 2, true, 1);
 
-        environ.테스트평가_저장하기(1, "인상이좋다", 질문A, 종미면접관);
-        environ.테스트평가_저장하기(2, "굿", 질문A, 윤정면접관);
-        environ.테스트평가_저장하기(3, "좋은장점이다", 질문B, 종미면접관);
-        environ.테스트평가_저장하기(4, "좋다", 질문B, 윤정면접관);
+        environ.테스트평가_저장하기(1, "인상이좋다", 질문A, 종미);
+        environ.테스트평가_저장하기(2, "굿", 질문A, 윤정);
+        environ.테스트평가_저장하기(3, "좋은장점이다", 질문B, 종미);
+        environ.테스트평가_저장하기(4, "좋다", 질문B, 윤정);
 
         // when
         List<QuestionRankResponse> 조회결과 = evaluationService.findQuestionRanks(지원자A.getId());
