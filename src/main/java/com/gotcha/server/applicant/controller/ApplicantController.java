@@ -25,7 +25,6 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class ApplicantController {
     private final ApplicantService applicantService;
-    private final MemberRepository memberRepository;
 
     @PostMapping("/interview-ready")
     public ResponseEntity<InterviewProceedResponse> proceedToInterview(
