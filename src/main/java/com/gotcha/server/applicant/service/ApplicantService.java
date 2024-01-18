@@ -5,6 +5,7 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.gotcha.server.applicant.domain.Applicant;
+import com.gotcha.server.applicant.domain.InterviewStatus;
 import com.gotcha.server.applicant.domain.Interviewer;
 import com.gotcha.server.applicant.domain.Keyword;
 import com.gotcha.server.applicant.dto.request.*;
@@ -206,7 +207,7 @@ public class ApplicantService {
     }
 
     public List<Applicant> resetCompletedApplicants(Interview interview) {
-        final List<Applicant> applicants = applicantRepository.findAllByInterview(interview);
+        final List<Applicant> applicants = applicantRepository.findByInterviewAndInterviewStatus(interview, InterviewStatus.COMPLETION);
         applicants.sort(Collections.reverseOrder()); // 점수 순으로 정렬
 
         setRanking(applicants);
