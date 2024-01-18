@@ -23,7 +23,7 @@ public class InterviewDslRepositoryImpl implements InterviewDslRepository{
         QInterview interview = QInterview.interview;
 
         return jpaQueryFactory
-                .selectFrom(interview)
+                .select(subcollaborator.interview)
                 .from(subcollaborator)
                 .where(subcollaborator.email.eq(email)
                         .and(interview.project.eq(project)))

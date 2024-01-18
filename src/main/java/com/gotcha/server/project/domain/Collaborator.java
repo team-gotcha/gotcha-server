@@ -20,7 +20,7 @@ public class Collaborator {
     @Column(nullable = false)
     private String email;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
     private Project project;
 
