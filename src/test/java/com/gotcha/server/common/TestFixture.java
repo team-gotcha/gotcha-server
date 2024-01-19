@@ -60,8 +60,8 @@ public class TestFixture {
                 .applicant(지원자)
                 .content(내용)
                 .build();
-        question.setQuestionOrder(순서);
-        question.setImportance(중요도);
+        question.updateOrder(순서);
+        question.updateImportance(중요도);
         if(면접때질문하기) {
             question.askDuringInterview();
         }
