@@ -17,7 +17,9 @@ import com.gotcha.server.project.domain.Interview;
 import com.gotcha.server.project.domain.Project;
 import com.gotcha.server.project.repository.InterviewRepository;
 import com.gotcha.server.project.repository.ProjectRepository;
+import com.gotcha.server.question.domain.CommonQuestion;
 import com.gotcha.server.question.domain.IndividualQuestion;
+import com.gotcha.server.question.repository.CommonQuestionRepository;
 import com.gotcha.server.question.repository.IndividualQuestionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -33,6 +35,7 @@ public class IntegrationTestEnviron {
     private final KeywordRepository keywordRepository;
     private final IndividualQuestionRepository individualQuestionRepository;
     private final EvaluationRepository evaluationRepository;
+    private final CommonQuestionRepository commonQuestionRepository;
 
     public Member 테스트유저_저장하기(String 이름) {
         return memberRepository.save(테스트유저(이름));
@@ -60,6 +63,10 @@ public class IntegrationTestEnviron {
 
     public IndividualQuestion 테스트개별질문_저장하기(Applicant 지원자, String 내용, Integer 순서, boolean 면접때질문하기, Integer 중요도) {
         return individualQuestionRepository.save(테스트개별질문(지원자, 내용, 순서, 면접때질문하기, 중요도));
+    }
+
+    public CommonQuestion 테스트공통질문_저장하기(Interview 면접, String 내용) {
+        return commonQuestionRepository.save(테스트공통질문(면접, 내용));
     }
 
     public Evaluation 테스트평가_저장하기(Integer 점수, String 평가내용, IndividualQuestion 질문, Member 면접관) {

@@ -10,6 +10,7 @@ import com.gotcha.server.project.domain.Collaborator;
 import com.gotcha.server.project.domain.Interview;
 import com.gotcha.server.project.domain.Project;
 import com.gotcha.server.project.domain.Subcollaborator;
+import com.gotcha.server.question.domain.CommonQuestion;
 import com.gotcha.server.question.domain.IndividualQuestion;
 
 public class TestFixture {
@@ -65,6 +66,10 @@ public class TestFixture {
             question.askDuringInterview();
         }
         return question;
+    }
+
+    public static CommonQuestion 테스트공통질문(Interview 면접, String 내용) {
+        return new CommonQuestion(내용, 면접);
     }
 
     public static Evaluation 테스트평가(Integer 점수, String 평가내용, IndividualQuestion 질문, Member 면접관) {
