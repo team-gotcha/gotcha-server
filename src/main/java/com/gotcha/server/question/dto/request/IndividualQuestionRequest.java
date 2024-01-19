@@ -30,6 +30,8 @@ public class IndividualQuestionRequest {
                 .applicant(applicant)
                 .member(member)
                 .commentTarget(commentTarget)
+                .isCommon(false)
+                .asking(false)
                 .build();
     }
 }

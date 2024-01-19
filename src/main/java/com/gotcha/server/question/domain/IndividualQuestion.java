@@ -66,15 +66,25 @@ public class IndividualQuestion {
     private List<Evaluation> evaluations = new ArrayList<>();
 
     @Builder
-    public IndividualQuestion(final String content, final Applicant applicant, final Member member, final IndividualQuestion commentTarget) {
+    public IndividualQuestion(final String content, final Applicant applicant, final Member member,
+            final IndividualQuestion commentTarget, final boolean isCommon, final boolean asking) {
         this.content = content;
         this.importance = MIN_IMPORTANCE;
         this.questionOrder = 0;
         this.applicant = applicant;
-        this.asking = false;
-        this.isCommon = false;
+        this.asking = asking;
+        this.isCommon = isCommon;
         this.member = member;
         this.commentTarget = commentTarget;
+    }
+
+    public static IndividualQuestion fromCommonQuestion(final CommonQuestion commonQuestion, final Applicant applicant) {
+        return IndividualQuestion.builder()
+                .content(commonQuestion.getContent())
+                .applicant(applicant)
+                .asking(true)
+                .isCommon(true)
+                .build();
     }
 
     public void setApplicant(final Applicant applicant) {

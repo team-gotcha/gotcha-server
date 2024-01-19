@@ -1,5 +1,8 @@
 package com.gotcha.server.applicant.domain;
 
+import com.gotcha.server.global.exception.AppException;
+import com.gotcha.server.global.exception.ErrorCode;
+import com.gotcha.server.member.domain.Member;
 import com.gotcha.server.project.domain.Interview;
 import com.gotcha.server.question.domain.IndividualQuestion;
 import jakarta.persistence.*;
@@ -94,6 +97,11 @@ public class Applicant implements Comparable<Applicant> {
 
     public void moveToNextStatus() {
         interviewStatus = interviewStatus.moveToNextStatus();
+    }
+
+    public Interviewer pickInterviewer(final Member member) {
+        return interviewers.stream().filter(i -> i.hasPermission(member))
+                .findAny().orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED_INTERVIEWER));
     }
 
     public void determineOutcome(Outcome outcome) {
