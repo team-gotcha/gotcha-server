@@ -12,6 +12,7 @@ import com.gotcha.server.question.domain.CommonQuestion;
 import com.gotcha.server.question.domain.IndividualQuestion;
 import com.gotcha.server.question.dto.request.CommonQuestionsRequest;
 import com.gotcha.server.question.dto.response.InterviewQuestionResponse;
+import com.gotcha.server.question.dto.response.PreparatoryQuestionResponse;
 import com.gotcha.server.question.repository.CommonQuestionRepository;
 import com.gotcha.server.question.repository.IndividualQuestionRepository;
 import java.util.List;
@@ -60,5 +61,12 @@ public class QuestionService {
         if (request.getContent() == null || request.getContent().trim().isEmpty()) {
             throw new AppException(ErrorCode.CONTENT_IS_EMPTY);
         }
+    }
+
+    public List<PreparatoryQuestionResponse> listPreparatoryQuestions(final Long applicantId) {
+        Applicant applicant = applicantRepository.findById(applicantId)
+                .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
+        List<IndividualQuestion> individualQuestions = individualQuestionRepository.findAllDuringInterview(applicant);
+        return individualQuestions.stream().map(PreparatoryQuestionResponse::from).toList();
     }
 }

@@ -6,6 +6,7 @@ import com.gotcha.server.question.dto.request.IndividualQuestionRequest;
 import com.gotcha.server.auth.security.MemberDetails;
 import com.gotcha.server.question.dto.request.CommonQuestionsRequest;
 import com.gotcha.server.question.dto.response.InterviewQuestionResponse;
+import com.gotcha.server.question.dto.response.PreparatoryQuestionResponse;
 import com.gotcha.server.question.service.QuestionService;
 import java.util.List;
 
@@ -51,5 +52,10 @@ public class QuestionController {
         questionService.createIndividualQuestion(request, member);
 //        questionService.createIndividualQuestion(request, details.member());
         return ResponseEntity.status(HttpStatus.CREATED).body("개별 질문이 입력되었습니다.");
+    }
+
+    @GetMapping("/preparatory")
+    public ResponseEntity<List<PreparatoryQuestionResponse>> findAllPreparatoryQuestions(@RequestParam(value = "applicant-id") Long applicantId) {
+        return ResponseEntity.ok(questionService.listPreparatoryQuestions(applicantId));
     }
 }
