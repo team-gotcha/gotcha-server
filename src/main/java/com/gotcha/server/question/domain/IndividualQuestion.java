@@ -91,13 +91,17 @@ public class IndividualQuestion {
         this.applicant = applicant;
     }
 
-    public void setQuestionOrder(final Integer questionOrder) {
-        this.questionOrder = questionOrder;
+    public void updateOrder(final Integer order) {
+        this.questionOrder = order;
     }
 
-    public void setImportance(int importance) {
+    public void updateImportance(Integer importance) {
         validateImportance(importance);
         this.importance = importance;
+    }
+
+    public void updateContent(String content) {
+        this.content = content;
     }
 
     public void validateImportance(int importance) {

@@ -1,6 +1,7 @@
 package com.gotcha.server.question.service;
 
 import com.gotcha.server.applicant.domain.Applicant;
+import com.gotcha.server.question.dto.message.QuestionUpdateMessage;
 import com.gotcha.server.question.dto.request.IndividualQuestionRequest;
 import com.gotcha.server.applicant.repository.ApplicantRepository;
 import com.gotcha.server.global.exception.AppException;
@@ -68,5 +69,13 @@ public class QuestionService {
                 .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
         List<IndividualQuestion> individualQuestions = individualQuestionRepository.findAllDuringInterview(applicant);
         return individualQuestions.stream().map(PreparatoryQuestionResponse::from).toList();
+    }
+
+    @Transactional
+    public void updateQuestion(final Long questionId, final QuestionUpdateMessage message) {
+        IndividualQuestion question = individualQuestionRepository.findById(questionId)
+                .orElseThrow(() -> new AppException(ErrorCode.QUESTION_NOT_FOUNT));
+        QuestionUpdateType updateType = message.type();
+        updateType.update(question, message.value());
     }
 }
