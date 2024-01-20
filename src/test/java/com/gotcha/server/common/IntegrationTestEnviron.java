@@ -53,6 +53,11 @@ public class IntegrationTestEnviron {
         return applicantRepository.save(테스트지원자(면접, 이름));
     }
 
+    public void 테스트지원자_질문공개하기(Applicant 지원자) {
+        지원자.changeQuestionPublicType(true);
+        applicantRepository.save(지원자);
+    }
+
     public Interviewer 테스트면접관_저장하기(Applicant 지원자, Member 면접관) {
         return interviewerRepository.save(테스트면접관(지원자, 면접관));
     }
