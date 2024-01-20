@@ -8,6 +8,7 @@ import com.gotcha.server.project.domain.*;
 import com.gotcha.server.project.dto.request.InterviewRequest;
 import com.gotcha.server.project.dto.response.InterviewerNamesResponse;
 import com.gotcha.server.project.repository.InterviewRepository;
+import com.gotcha.server.project.repository.ProjectRepository;
 import com.gotcha.server.project.repository.SubcollaboratorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,12 +25,13 @@ public class InterviewService {
     private final InterviewRepository interviewRepository;
     private final SubcollaboratorRepository subcollaboratorRepository;
     private final MailService mailService;
+    private final ProjectRepository projectRepository;
 
     @Transactional
     public void createInterview(InterviewRequest request){
         validInterview(request);
 
-        Interview interview = request.toEntity();
+        Interview interview = request.toEntity(projectRepository);
         interviewRepository.save(interview);
         createSubcollaborator(interview, request.getEmails());
         sendInterviewInvitation(request);
