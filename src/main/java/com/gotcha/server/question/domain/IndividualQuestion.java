@@ -66,7 +66,7 @@ public class IndividualQuestion extends BaseTimeEntity {
     private List<Evaluation> evaluations = new ArrayList<>();
 
     @Column(nullable = false)
-    private boolean isPublic;
+    private QuestionPublicType publicType;
 
     @Builder
     public IndividualQuestion(final String content, final Applicant applicant, final Member member,
@@ -79,7 +79,7 @@ public class IndividualQuestion extends BaseTimeEntity {
         this.commentTarget = commentTarget;
         this.importance = MIN_IMPORTANCE;
         this.questionOrder = 0;
-        this.isPublic = false;
+        this.publicType = QuestionPublicType.PENDING;
     }
 
     public static IndividualQuestion fromCommonQuestion(final CommonQuestion commonQuestion, final Applicant applicant) {
