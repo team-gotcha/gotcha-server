@@ -1,18 +1,11 @@
-version: '3'
+version: "3.8"
 services:
   web:
-    image: nzeong/gotcha:latest
-    build:
-      context: .
-      dockerfile: Dockerfile
-    env_file:
-      - .env
-    expose:
-      - 8080
+    image: "nzeong/gotcha"
     ports:
       - "8080:8080"
-    tty: true
     restart: "always"
+    tty: true
     environment:
       - TZ=Asia/Seoul
       - SPRING_PROFILES_ACTIVE=prod

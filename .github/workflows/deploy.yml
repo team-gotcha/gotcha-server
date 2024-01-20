@@ -24,7 +24,10 @@ jobs:
 
 
       - name: Build with Gradle
-        run: ./gradlew bootJar
+        run: |
+          ./gradlew -version
+          ./gradlew clean build -x test
+        shell: bash
 
 
       - name: Login to Docker Hub
