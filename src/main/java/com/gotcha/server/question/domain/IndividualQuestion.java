@@ -95,6 +95,10 @@ public class IndividualQuestion extends BaseTimeEntity {
         this.applicant = applicant;
     }
 
+    public void changePublicType(final Applicant applicant) {
+        this.publicType = applicant.getQuestionPublicType();
+    }
+
     public void updateOrder(final Integer order) {
         this.questionOrder = order;
     }
