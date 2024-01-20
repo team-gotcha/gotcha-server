@@ -1,6 +1,7 @@
 package com.gotcha.server.applicant.controller;
 
 import com.gotcha.server.applicant.dto.request.ApplicantRequest;
+import com.gotcha.server.applicant.dto.request.GoQuestionPublicRequest;
 import com.gotcha.server.applicant.dto.request.InterviewProceedRequest;
 import com.gotcha.server.applicant.dto.request.PassEmailSendRequest;
 import com.gotcha.server.applicant.dto.response.*;
@@ -43,6 +44,14 @@ public class ApplicantController {
     @GetMapping("/{applicant-id}")
     public ResponseEntity<ApplicantResponse> findApplicantDetailsById(@PathVariable(name = "applicant-id") final Long applicantId) {
         return ResponseEntity.ok(applicantService.findApplicantDetailsById(applicantId));
+    }
+
+    @PostMapping("/{applicant-id}/public")
+    public ResponseEntity<Void> makeQuestionsPublic(
+            @PathVariable(name = "applicant-id") final Long applicantId,
+            @RequestBody final GoQuestionPublicRequest request) {
+        applicantService.makeQuestionsPublic(applicantId, request);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/pass")

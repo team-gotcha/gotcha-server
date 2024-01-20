@@ -114,6 +114,13 @@ public class ApplicantService {
         return PassedApplicantsResponse.generateList(applicantsWithKeywords);
     }
 
+    @Transactional
+    public void makeQuestionsPublic(final Long applicantId, final GoQuestionPublicRequest request) {
+        Applicant applicant = applicantRepository.findById(applicantId)
+                .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
+        applicant.changeQuestionPublicType(request.agree());
+    }
+
     public void sendPassEmail(final PassEmailSendRequest request) {
         Interview interview = interviewRepository.findById(request.interviewId())
                 .orElseThrow(() -> new AppException(ErrorCode.INTERVIEW_NOT_FOUNT));

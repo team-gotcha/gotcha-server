@@ -114,6 +114,10 @@ public class Applicant extends BaseTimeEntity implements Comparable<Applicant> {
         this.outcome = outcome;
     }
 
+    public void changeQuestionPublicType(boolean agree) {
+        questionPublicType = questionPublicType.change(agree);
+    }
+
     public void addInterviewer(final Interviewer interviewer) {
         interviewers.add(interviewer);
         interviewer.setApplicant(this);
