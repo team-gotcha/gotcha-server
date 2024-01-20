@@ -38,18 +38,18 @@ public class QuestionController {
     public ResponseEntity<String> createIndividualQuestion(
             @RequestBody @Valid IndividualQuestionRequest request,
             @AuthenticationPrincipal MemberDetails details) {
-//        테스트용 유저 생성
-        Member member = Member.builder()
-                .email("a@gmail.co")
-                .socialId("socialId")
-                .name("이름")
-                .profileUrl("a.jpg")
-                .refreshToken("token")
-                .build();
-        memberRepository.save(member);
-
-        questionService.createIndividualQuestion(request, member);
-//        questionService.createIndividualQuestion(request, details.member());
+////        테스트용 유저 생성
+//        Member member = Member.builder()
+//                .email("a@gmail.co")
+//                .socialId("socialId")
+//                .name("이름")
+//                .profileUrl("a.jpg")
+//                .refreshToken("token")
+//                .build();
+//        memberRepository.save(member);
+//
+//        questionService.createIndividualQuestion(request, member);
+        questionService.createIndividualQuestion(request, details.member());
         return ResponseEntity.status(HttpStatus.CREATED).body("개별 질문이 입력되었습니다.");
     }
 }

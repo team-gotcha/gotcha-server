@@ -30,7 +30,7 @@ public class ProjectService {
     private final CollaboratorRepository collaboratorRepository;
     private final SubcollaboratorRepository subcollaboratorRepository;
     private final MailService mailService;
-    private final InterviewDslRepositoryImpl interviewDslRepository;
+    private final InterviewRepository interviewRepository;
 
     @Transactional
     public void createProject(ProjectRequest request) {
@@ -91,7 +91,14 @@ public class ProjectService {
     public List<ProjectListResponse> getProjectList(String email) {
         List<Collaborator> collaborators = collaboratorRepository.findAllByEmail(email);
         return collaborators.stream()
-                .map(collaborator -> ProjectListResponse.from(collaborator.getProject(), interviewDslRepository.toInterviewListDto(email, collaborator.getProject())))
+                .map(collaborator -> ProjectListResponse.from(collaborator.getProject(), toInterviewListDto(email, collaborator.getProject())))
+                .collect(Collectors.toList());
+    }
+
+    public List<InterviewListResponse> toInterviewListDto(String email, Project project) {
+        List<Interview> interviews = interviewRepository.getInterviewList(email, project);
+        return interviews.stream()
+                .map(interview -> InterviewListResponse.from(interview))
                 .collect(Collectors.toList());
     }
 }

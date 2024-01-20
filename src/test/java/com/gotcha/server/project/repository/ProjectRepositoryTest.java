@@ -30,7 +30,7 @@ class ProjectRepositoryTest {
     private TestRepository testRepository;
 
     @Autowired
-    private InterviewDslRepositoryImpl interviewDslRepository;
+    private InterviewRepository interviewRepository;
 
     @Test
     @DisplayName("사용자 이메일로 세부 면접 조회하기")
@@ -55,11 +55,40 @@ class ProjectRepositoryTest {
                 서브콜라보레이터1, 서브콜라보레이터2);
 
         // when
-        List<Interview> 조회결과 = interviewDslRepository.getInterviewList(종미.getEmail(), 프로젝트A);
+        List<Interview> 조회결과 = interviewRepository.getInterviewList(종미.getEmail(), 프로젝트A);
 
         // then
         Assertions.assertThat(조회결과)
                 .hasSize(2)
                 .containsExactlyInAnyOrder(인터뷰A, 인터뷰B);
+    }
+
+    @Test
+    @DisplayName("면접에 참여한 멤버 목록 조회하기")
+    void 면접에_참여한_멤버_목록_조회하기() {
+        // given
+        Member 멤버1 = 테스트유저("멤버1");
+        Member 멤버2 = 테스트유저("멤버2");
+        Member 멤버3 = 테스트유저("멤버3");
+        Project 프로젝트 = 테스트프로젝트();
+        Interview 면접 = 테스트면접(프로젝트, "면접1");
+        Subcollaborator 서브콜라보레이터1 = 테스트서브콜라보레이터(멤버1.getEmail(), 면접);
+        Subcollaborator 서브콜라보레이터2 = 테스트서브콜라보레이터(멤버2.getEmail(), 면접);
+        Subcollaborator 서브콜라보레이터3 = 테스트서브콜라보레이터("test1@mail.test", 면접);
+        Subcollaborator 서브콜라보레이터4 = 테스트서브콜라보레이터("test2@mail.test", 면접);
+
+        testRepository.save(
+                멤버1, 멤버2, 멤버3,
+                프로젝트,
+                면접,
+                서브콜라보레이터1, 서브콜라보레이터2, 서브콜라보레이터3, 서브콜라보레이터4);
+
+        // when
+        List<Member> 조회결과 = interviewRepository.getInterviewerList(면접);
+
+        // then
+        Assertions.assertThat(조회결과)
+                .hasSize(2)
+                .containsExactly(멤버1, 멤버2);
     }
 }

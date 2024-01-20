@@ -3,16 +3,19 @@ package com.gotcha.server.project.service;
 import com.gotcha.server.global.exception.AppException;
 import com.gotcha.server.global.exception.ErrorCode;
 import com.gotcha.server.mail.service.MailService;
-import com.gotcha.server.project.domain.Interview;
-import com.gotcha.server.project.domain.Subcollaborator;
+import com.gotcha.server.member.domain.Member;
+import com.gotcha.server.project.domain.*;
 import com.gotcha.server.project.dto.request.InterviewRequest;
+import com.gotcha.server.project.dto.response.InterviewerNamesResponse;
 import com.gotcha.server.project.repository.InterviewRepository;
+import com.gotcha.server.project.repository.ProjectRepository;
 import com.gotcha.server.project.repository.SubcollaboratorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,12 +25,13 @@ public class InterviewService {
     private final InterviewRepository interviewRepository;
     private final SubcollaboratorRepository subcollaboratorRepository;
     private final MailService mailService;
+    private final ProjectRepository projectRepository;
 
     @Transactional
     public void createInterview(InterviewRequest request){
         validInterview(request);
 
-        Interview interview = request.toEntity();
+        Interview interview = request.toEntity(projectRepository);
         interviewRepository.save(interview);
         createSubcollaborator(interview, request.getEmails());
         sendInterviewInvitation(request);
@@ -56,5 +60,16 @@ public class InterviewService {
             String content = "메인 페이지 링크"; // to-do: 메일 내용 추가하기, 가입 유무에 따라 메일 내용 다르게 보내기
             mailService.sendEmail(toEmail, title, content);
         }
+    }
+
+    public List<InterviewerNamesResponse> getInterviewerNames(Long interviewId) {
+        final Interview interview = interviewRepository.findById(interviewId)
+                .orElseThrow(() -> new AppException(ErrorCode.INTERVIEW_NOT_FOUNT));
+
+        List<Member> interviewers = interviewRepository.getInterviewerList(interview);
+
+        return interviewers.stream()
+                .map(interviewer -> InterviewerNamesResponse.from(interviewer))
+                .collect(Collectors.toList());
     }
 }

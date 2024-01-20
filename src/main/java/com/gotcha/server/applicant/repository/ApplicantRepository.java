@@ -1,6 +1,7 @@
 package com.gotcha.server.applicant.repository;
 
 import com.gotcha.server.applicant.domain.Applicant;
+import com.gotcha.server.applicant.domain.InterviewStatus;
 import com.gotcha.server.project.domain.Interview;
 import java.util.List;
 import java.util.Optional;
@@ -16,4 +17,6 @@ public interface ApplicantRepository extends JpaRepository<Applicant, Long>, App
     Optional<Applicant> findByIdWithInterviewer(@Param("applicantId") Long id);
 
     List<Applicant> findAllByInterview(Interview interview);
+
+    List<Applicant> findByInterviewAndInterviewStatus(Interview interview, InterviewStatus status);
 }

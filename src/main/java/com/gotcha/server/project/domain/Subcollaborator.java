@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Subcollaborator extends BaseTimeEntity {
+public class Subcollaborator {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "subcollaborator_id")

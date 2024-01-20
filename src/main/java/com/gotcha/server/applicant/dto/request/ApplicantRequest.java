@@ -1,7 +1,10 @@
 package com.gotcha.server.applicant.dto.request;
 
 import com.gotcha.server.applicant.domain.*;
+import com.gotcha.server.global.exception.AppException;
+import com.gotcha.server.global.exception.ErrorCode;
 import com.gotcha.server.project.domain.Interview;
+import com.gotcha.server.project.repository.InterviewRepository;
 import com.gotcha.server.question.dto.request.IndividualQuestionRequest;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,11 +29,11 @@ public class ApplicantRequest {
     private String path;
     private String email;
     private List<KeywordRequest> keywords;
-    private Interview interview;
+    private Long interviewId;
     private List<IndividualQuestionRequest> questions;
 
     @Builder
-    public ApplicantRequest(String name, LocalDate date, List<InterviewerRequest> interviewers, Integer age, String education, String position, String phoneNumber, String path, String email, List<KeywordRequest> keywords, Interview interview, List<IndividualQuestionRequest> questions) {
+    public ApplicantRequest(String name, LocalDate date, List<InterviewerRequest> interviewers, Integer age, String education, String position, String phoneNumber, String path, String email, List<KeywordRequest> keywords, Long interviewId, List<IndividualQuestionRequest> questions) {
         this.name = name;
         this.date = date;
         this.interviewers = interviewers;
@@ -41,11 +44,14 @@ public class ApplicantRequest {
         this.path = path;
         this.email = email;
         this.keywords = keywords;
-        this.interview = interview;
+        this.interviewId = interviewId;
         this.questions = questions;
     }
 
-    public Applicant toEntity() {
+    public Applicant toEntity(InterviewRepository interviewRepository) {
+        Interview interview = interviewRepository.findById(interviewId)
+                .orElseThrow(() -> new AppException(ErrorCode.INTERVIEW_NOT_FOUNT));
+
         return Applicant.builder()
                 .name(name)
                 .date(date)

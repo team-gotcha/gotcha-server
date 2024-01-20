@@ -1,5 +1,6 @@
 package com.gotcha.server.question.domain;
 
+import com.gotcha.server.global.domain.BaseTimeEntity;
 import com.gotcha.server.project.domain.Interview;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -16,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class CommonQuestion {
+public class CommonQuestion extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

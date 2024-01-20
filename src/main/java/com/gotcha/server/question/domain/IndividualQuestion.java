@@ -3,6 +3,7 @@ package com.gotcha.server.question.domain;
 import com.gotcha.server.applicant.domain.Applicant;
 import com.gotcha.server.applicant.domain.Interviewer;
 import com.gotcha.server.evaluation.domain.Evaluation;
+import com.gotcha.server.global.domain.BaseTimeEntity;
 import com.gotcha.server.global.exception.AppException;
 import com.gotcha.server.global.exception.ErrorCode;
 import com.gotcha.server.member.domain.Member;
@@ -27,7 +28,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class IndividualQuestion {
+public class IndividualQuestion extends BaseTimeEntity {
     private static final int MIN_IMPORTANCE = 3;
     private static final int MAX_IMPORTANCE = 5;
 
