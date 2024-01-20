@@ -215,7 +215,7 @@ public class ApplicantService {
                 .orElseThrow(() -> new AppException(ErrorCode.INTERVIEW_NOT_FOUNT));
 
         final List<Applicant> applicants = resetCompletedApplicants(interview);
-        final Map<Applicant, List<KeywordResponse>> keywordMap = applicantRepository.findAllByInterviewWithKeywords(applicants, interview);
+        final Map<Applicant, List<KeywordResponse>> keywordMap = keywordRepository.findAllByApplicants(applicants);
         final Map<Applicant, List<OneLinerResponse>> oneLinerMap = oneLinerRepository.getOneLinersForApplicants(applicants);
         return CompletedApplicantsResponse.generateList(applicants, keywordMap, oneLinerMap);
     }
@@ -253,10 +253,8 @@ public class ApplicantService {
         final Applicant applicant = applicantRepository.findById(applicantId)
                 .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
 
-        final List<KeywordResponse> keywords = applicantRepository.findKeywordsByApplicant(applicant);
+        final List<Keyword> keywords = keywordRepository.findAllByApplicant(applicant);
         final List<OneLinerResponse> oneLiners = oneLinerRepository.getOneLinersForApplicant(applicant);
         return CompletedApplicantDetailsResponse.from(applicant, keywords, oneLiners);
     }
-
-
 }

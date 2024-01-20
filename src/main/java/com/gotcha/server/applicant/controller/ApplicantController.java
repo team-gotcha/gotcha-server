@@ -10,8 +10,6 @@ import com.gotcha.server.auth.security.MemberDetails;
 import java.io.IOException;
 import java.util.List;
 
-import com.gotcha.server.member.domain.Member;
-import com.gotcha.server.member.repository.MemberRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

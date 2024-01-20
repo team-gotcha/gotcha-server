@@ -1,6 +1,5 @@
 package com.gotcha.server.question.controller;
 
-import com.gotcha.server.member.domain.Member;
 import com.gotcha.server.member.repository.MemberRepository;
 import com.gotcha.server.question.dto.request.IndividualQuestionRequest;
 import com.gotcha.server.auth.security.MemberDetails;
