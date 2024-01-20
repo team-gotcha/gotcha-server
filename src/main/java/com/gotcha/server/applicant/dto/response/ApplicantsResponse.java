@@ -2,6 +2,7 @@ package com.gotcha.server.applicant.dto.response;
 
 import com.gotcha.server.applicant.domain.Applicant;
 import com.gotcha.server.applicant.domain.InterviewStatus;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -16,11 +17,22 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ApplicantsResponse {
     private Long id;
+
     private String name;
+
+    @Schema(description = "면접 진행 단계")
     private InterviewStatus status;
+
+    @Schema(description = "면접 날짜")
     private LocalDate date;
+
+    @Schema(description = "면접관들의 email 목록")
     private List<String> interviewerEmails;
+
+    @Schema(description = "지원자의 모든 질문의 개수")
     private Integer questionCount;
+
+    @Schema(description = "키워드 목록 (타입별하나씩)")
     private List<KeywordResponse> keywords;
 
     public static List<ApplicantsResponse> generateList(final Map<Applicant, List<KeywordResponse>> applicantsWithKeywords) {

@@ -23,6 +23,7 @@ public class ApplicantResponse {
     private Long id;
     private LocalDate date;
     private String name;
+    private String email;
     private Integer age;
     private String education;
     private String phoneNumber;
@@ -42,6 +43,7 @@ public class ApplicantResponse {
                 .id(applicant.getId())
                 .date(applicant.getDate())
                 .name(applicant.getName())
+                .email(applicant.getEmail())
                 .age(applicant.getAge())
                 .education(applicant.getEducation())
                 .phoneNumber(applicant.getPhoneNumber())
