@@ -114,6 +114,10 @@ public class IndividualQuestion {
         this.asking = true;
     }
 
+    public void deleteDuringInterview() {
+        this.asking = false;
+    }
+
     public void addEvaluation(final Evaluation evaluation) {
         evaluations.add(evaluation);
         evaluation.setQuestion(this);
