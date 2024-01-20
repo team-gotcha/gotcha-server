@@ -15,10 +15,28 @@ repositories {
 	mavenCentral()
 }
 
+def queryDslVersion = '5.0.0'
+
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'mysql:mysql-connector-java:8.0.33'
+
+	// querydsl
+	implementation "com.querydsl:querydsl-jpa:${queryDslVersion}:jakarta"
+	implementation "com.querydsl:querydsl-core:${queryDslVersion}"
+	annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}:jakarta"
+	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+
+	// web flux
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	if (isAppleSilicon()) {
+		runtimeOnly("io.netty:netty-resolver-dns-native-macos:4.1.94.Final:osx-aarch_64")
+	}
+
+	// security
+	implementation 'org.springframework.boot:spring-boot-starter-security'
 
 	// lombok
 	compileOnly 'org.projectlombok:lombok'
@@ -27,10 +45,41 @@ dependencies {
 
 	// test
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.security:spring-security-test'
 	testCompileOnly 'org.projectlombok:lombok'
 	testAnnotationProcessor 'org.projectlombok:lombok'
+
+	//swagger
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
+
+	//stmp
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+	//s3
+	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+
+	//mongoDB
+	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+def isAppleSilicon() {
+	System.getProperty("os.name") == "Mac OS X" && System.getProperty("os.arch") == "aarch64"
+}
+
+def generated = 'src/main/generated'
+
+tasks.withType(JavaCompile) {
+	options.getGeneratedSourceOutputDirectory().set(file(generated))
+}
+
+sourceSets {
+	main.java.srcDirs += [ generated ]
+}
+
+clean {
+	delete file(generated)
 }
