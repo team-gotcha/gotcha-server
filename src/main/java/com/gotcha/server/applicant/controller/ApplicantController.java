@@ -23,7 +23,6 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class ApplicantController {
     private final ApplicantService applicantService;
-    private final MemberRepository memberRepository;
 
     @PostMapping("/interview-ready")
     public ResponseEntity<InterviewProceedResponse> proceedToInterview(
@@ -36,7 +35,7 @@ public class ApplicantController {
         return ResponseEntity.ok(applicantService.countTodayInterview(details));
     }
 
-    @GetMapping("")
+    @GetMapping
     public ResponseEntity<List<ApplicantsResponse>> findAllApplicantByInterview(@RequestParam(name = "interview-id") final Long interviewId) {
         return ResponseEntity.ok(applicantService.listApplicantsByInterview(interviewId));
     }
@@ -61,16 +60,6 @@ public class ApplicantController {
     public ResponseEntity<String> createApplicant(
             @RequestBody @Valid ApplicantRequest request,
             @AuthenticationPrincipal MemberDetails details) {
-//        //테스트용 유저 생성
-//        Member member = Member.builder()
-//                .email("a@gmail.co")
-//                .socialId("socialId")
-//                .name("이름")
-//                .profileUrl("a.jpg")
-//                .refreshToken("token")
-//                .build();
-//        memberRepository.save(member);
-//        applicantService.createApplicant(request, member);
         applicantService.createApplicant(request, details.member());
         return ResponseEntity.status(HttpStatus.CREATED).body("면접 지원자 정보가 입력되었습니다.");
     }
@@ -84,7 +73,6 @@ public class ApplicantController {
         applicantService.addApplicantFiles(resume, portfolio, applicantId);
         return ResponseEntity.status(HttpStatus.CREATED).body("면접 지원자의 파일이 저장되었습니다.");
     }
-
 
     @GetMapping("/interview-completed")
     public ResponseEntity<List<CompletedApplicantsResponse>> getCompletedApplicants(@RequestParam(value = "interview-id") Long interviewId) {
