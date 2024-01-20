@@ -1,7 +1,6 @@
 package com.gotcha.server.question.domain;
 
 import com.gotcha.server.applicant.domain.Applicant;
-import com.gotcha.server.applicant.domain.Interviewer;
 import com.gotcha.server.evaluation.domain.Evaluation;
 import com.gotcha.server.global.exception.AppException;
 import com.gotcha.server.global.exception.ErrorCode;
@@ -65,17 +64,21 @@ public class IndividualQuestion {
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Evaluation> evaluations = new ArrayList<>();
 
+    @Column(nullable = false)
+    private boolean isPublic;
+
     @Builder
     public IndividualQuestion(final String content, final Applicant applicant, final Member member,
             final IndividualQuestion commentTarget, final boolean isCommon, final boolean asking) {
         this.content = content;
-        this.importance = MIN_IMPORTANCE;
-        this.questionOrder = 0;
         this.applicant = applicant;
         this.asking = asking;
         this.isCommon = isCommon;
         this.member = member;
         this.commentTarget = commentTarget;
+        this.importance = MIN_IMPORTANCE;
+        this.questionOrder = 0;
+        this.isPublic = false;
     }
 
     public static IndividualQuestion fromCommonQuestion(final CommonQuestion commonQuestion, final Applicant applicant) {
