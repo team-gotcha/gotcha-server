@@ -6,7 +6,10 @@ import com.gotcha.server.member.dto.response.LoginResponse;
 import com.gotcha.server.member.dto.request.RefreshTokenRequest;
 import com.gotcha.server.member.dto.response.UserResponse;
 import com.gotcha.server.member.service.MemberService;
+import com.gotcha.server.project.dto.request.ProjectRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,5 +41,10 @@ public class MemberController {
     @GetMapping("/api/user")
     public ResponseEntity<UserResponse> getUserDetails(@AuthenticationPrincipal final MemberDetails details) {
         return ResponseEntity.ok(memberService.getUserDetails(details));
+    }
+
+    @GetMapping("/")
+    public ResponseEntity<String> home(){
+        return ResponseEntity.status(HttpStatus.OK).body("Hello World");
     }
 }
