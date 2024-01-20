@@ -1,0 +1,30 @@
+version: "3"
+
+services:
+  web:
+    container_name: web
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+#    environment: 환경 변수는 제외
+    volumes:
+      - .:/app
+
+  db:
+    image: mysql:5.7
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+      MYSQL_DATABASE: gotcha
+    volumes:
+      - dbdata:/var/lib/mysql
+    ports:
+      - 3307:3306
+    restart: always
+
+volumes:
+  app:
+  dbdata:
