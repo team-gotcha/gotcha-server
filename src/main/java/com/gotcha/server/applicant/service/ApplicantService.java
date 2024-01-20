@@ -5,6 +5,7 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.gotcha.server.applicant.domain.Applicant;
+import com.gotcha.server.applicant.domain.InterviewStatus;
 import com.gotcha.server.applicant.domain.Interviewer;
 import com.gotcha.server.applicant.domain.Keyword;
 import com.gotcha.server.applicant.dto.request.*;
@@ -32,6 +33,7 @@ import java.util.stream.Collectors;
 
 import com.gotcha.server.question.domain.IndividualQuestion;
 import com.gotcha.server.question.dto.request.IndividualQuestionRequest;
+import com.gotcha.server.question.repository.IndividualQuestionRepository;
 import io.micrometer.common.lang.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -54,6 +56,7 @@ public class ApplicantService {
     private final MemberRepository memberRepository;
     private final CommonQuestionRepository commonQuestionRepository;
     private final AmazonS3 amazonS3;
+    private final IndividualQuestionRepository individualQuestionRepository;
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
@@ -139,7 +142,7 @@ public class ApplicantService {
         List<IndividualQuestion> questions = createIndividualQuestions(request.getQuestions(), member);
         List<Interviewer> interviewers = createInterviewers(request.getInterviewers());
 
-        Applicant applicant = request.toEntity();
+        Applicant applicant = request.toEntity(interviewRepository);
 
         for (Interviewer interviewer : interviewers) {
             applicant.addInterviewer(interviewer);
@@ -197,7 +200,7 @@ public class ApplicantService {
 
     public List<IndividualQuestion> createIndividualQuestions(List<IndividualQuestionRequest> questionRequests, Member member) {
         return questionRequests.stream()
-                .map(request -> request.toEntity(member))
+                .map(request -> request.toEntity(member, applicantRepository, individualQuestionRepository))
                 .collect(Collectors.toList());
     }
 
@@ -218,7 +221,7 @@ public class ApplicantService {
     }
 
     public List<Applicant> resetCompletedApplicants(Interview interview) {
-        final List<Applicant> applicants = applicantRepository.findAllByInterview(interview);
+        final List<Applicant> applicants = applicantRepository.findByInterviewAndInterviewStatus(interview, InterviewStatus.COMPLETION);
         applicants.sort(Collections.reverseOrder()); // 점수 순으로 정렬
 
         setRanking(applicants);

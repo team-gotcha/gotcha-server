@@ -30,7 +30,7 @@ public class ProjectController {
         return ResponseEntity.status(HttpStatus.CREATED).body("프로젝트 생성 및 초대 이메일 발송이 완료되었습니다.");
     }
 
-    @GetMapping("{projectId}/emails")
+    @GetMapping("/{projectId}/emails")
     public ResponseEntity<ProjectResponse> getEmails(@PathVariable Long projectId){
         return ResponseEntity.status(HttpStatus.OK).body(projectService.getEmails(projectId));
     }

@@ -6,6 +6,7 @@ import static com.gotcha.server.common.TestFixture.테스트지원자;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.gotcha.server.applicant.domain.Applicant;
+import com.gotcha.server.applicant.domain.InterviewStatus;
 import com.gotcha.server.applicant.domain.Interviewer;
 import com.gotcha.server.applicant.domain.Outcome;
 import com.gotcha.server.common.RepositoryTest;
@@ -87,5 +88,37 @@ class ApplicantRepositoryTest extends RepositoryTest {
         지원자.moveToNextStatus();
         지원자.determineOutcome(결과);
         return 지원자;
+    }
+
+    @Test
+    @DisplayName("면접 별로 면접이 완료된 지원자들을 조회한다.")
+    void 면접별_면접완료_지원자_조회하기() {
+        // given
+        Member 종미 = 테스트유저("종미");
+        Member 윤정 = 테스트유저("윤정");
+        Project 조회할프로젝트 = 테스트프로젝트();
+        Interview 조회할면접 = 테스트면접(조회할프로젝트, "테스트면접1");
+        Interview 다른면접 = 테스트면접(조회할프로젝트, "테스트면접2");
+        Applicant 지원자A = 테스트지원자(조회할면접, "지원자A");
+        지원자A.moveToNextStatus();
+        지원자A.moveToNextStatus();
+        Applicant 지원자B = 테스트지원자(조회할면접, "지원자B");
+        지원자B.moveToNextStatus();
+        지원자B.moveToNextStatus();
+        Applicant 지원자C = 테스트지원자(조회할면접, "지원자C");
+        Applicant 지원자D = 테스트지원자(다른면접, "지원자D");
+
+        testRepository.save(
+                종미, 윤정,
+                조회할프로젝트, 조회할면접, 다른면접,
+                지원자A, 지원자B, 지원자C, 지원자D);
+
+        // when
+        List<Applicant> 조회결과 = applicantRepository.findByInterviewAndInterviewStatus(조회할면접, InterviewStatus.COMPLETION);
+
+        // then
+        assertThat(조회결과).hasSize(2)
+                .extracting("name")
+                .containsAll(List.of("지원자A", "지원자B"));
     }
 }

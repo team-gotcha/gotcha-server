@@ -3,6 +3,7 @@ package com.gotcha.server.applicant.domain;
 import com.gotcha.server.global.exception.AppException;
 import com.gotcha.server.global.exception.ErrorCode;
 import com.gotcha.server.member.domain.Member;
+import com.gotcha.server.global.domain.BaseTimeEntity;
 import com.gotcha.server.project.domain.Interview;
 import com.gotcha.server.question.domain.IndividualQuestion;
 import jakarta.persistence.*;
@@ -19,7 +20,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Applicant implements Comparable<Applicant> {
+public class Applicant extends BaseTimeEntity implements Comparable<Applicant> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

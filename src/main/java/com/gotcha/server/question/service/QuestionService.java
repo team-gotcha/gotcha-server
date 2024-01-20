@@ -54,7 +54,7 @@ public class QuestionService {
     public void createIndividualQuestion(IndividualQuestionRequest request, Member member){
         validQuestion(request);
 
-        IndividualQuestion question = request.toEntity(member);
+        IndividualQuestion question = request.toEntity(member, applicantRepository, individualQuestionRepository);
         individualQuestionRepository.save(question);
     }
 
