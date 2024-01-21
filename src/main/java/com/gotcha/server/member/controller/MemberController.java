@@ -44,4 +44,9 @@ public class MemberController {
     public ResponseEntity<UserResponse> getUserDetails(@AuthenticationPrincipal final MemberDetails details) {
         return ResponseEntity.ok(memberService.getUserDetails(details));
     }
+
+    @GetMapping("/")
+    public ResponseEntity<String> home(){
+        return ResponseEntity.ok("Hello World");
+    }
 }
