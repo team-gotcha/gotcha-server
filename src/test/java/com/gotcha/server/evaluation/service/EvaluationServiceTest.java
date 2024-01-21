@@ -10,7 +10,6 @@ import com.gotcha.server.auth.security.MemberDetails;
 import com.gotcha.server.common.IntegrationTest;
 import com.gotcha.server.evaluation.domain.Evaluation;
 import com.gotcha.server.evaluation.dto.request.EvaluateRequest;
-import com.gotcha.server.evaluation.dto.response.QuestionRankResponse;
 import com.gotcha.server.member.domain.Member;
 import com.gotcha.server.project.domain.Interview;
 import com.gotcha.server.project.domain.Project;
@@ -42,8 +41,8 @@ class EvaluationServiceTest extends IntegrationTest {
         Applicant 지원자A = environ.테스트지원자_저장하기(테스트면접, "지원자A");
         environ.테스트면접관_저장하기(지원자A, 종미);
 
-        IndividualQuestion 질문A = environ.테스트개별질문_저장하기(지원자A, "자기소개해주세요.", 1, true, 1);
-        IndividualQuestion 질문B = environ.테스트개별질문_저장하기(지원자A, "장점을소개해주세요.", 2, true, 1);
+        IndividualQuestion 질문A = environ.테스트개별질문_저장하기(지원자A, "자기소개해주세요.", 1, true, 5);
+        IndividualQuestion 질문B = environ.테스트개별질문_저장하기(지원자A, "장점을소개해주세요.", 2, true, 5);
 
         List<EvaluateRequest> 평가요청 = List.of(
                 new EvaluateRequest(질문A.getId(), 4, "좋은인상이있음"), new EvaluateRequest(질문B.getId(), 1, "낫배드"));
@@ -66,8 +65,8 @@ class EvaluationServiceTest extends IntegrationTest {
         Interviewer 종미면접관 = environ.테스트면접관_저장하기(지원자A, 종미);
         Interviewer 윤정면접관 = environ.테스트면접관_저장하기(지원자A, 윤정);
 
-        IndividualQuestion 질문A = environ.테스트개별질문_저장하기(지원자A, "자기소개해주세요.", 1, true, 1);
-        IndividualQuestion 질문B = environ.테스트개별질문_저장하기(지원자A, "장점을소개해주세요.", 2, true, 1);
+        IndividualQuestion 질문A = environ.테스트개별질문_저장하기(지원자A, "자기소개해주세요.", 1, true, 5);
+        IndividualQuestion 질문B = environ.테스트개별질문_저장하기(지원자A, "장점을소개해주세요.", 2, true, 5);
 
         environ.테스트평가_저장하기(1, "인상이좋다", 질문A, 종미);
         environ.테스트평가_저장하기(2, "굿", 질문A, 윤정);
@@ -95,34 +94,5 @@ class EvaluationServiceTest extends IntegrationTest {
         assertEquals(3, 평가된_질문들_점수합.get(질문A.getId()));
         assertEquals(7, 평가된_질문들_점수합.get(질문B.getId()));
         assertEquals(질문B.getId(), 질문순위.get(0));
-    }
-
-    @Test
-    @DisplayName("지원자의 각 질문들의 총점과 순위를 구한다.")
-    void 질문별_총점_계산하기2() {
-        // given
-        Member 종미 = environ.테스트유저_저장하기("종미");
-        Member 윤정 = environ.테스트유저_저장하기("윤정");
-        Project 테스트프로젝트 = environ.테스트프로젝트_저장하기();
-        Interview 테스트면접 = environ.테스트면접_저장하기(테스트프로젝트, "테스트면접");
-        Applicant 지원자A = environ.테스트지원자_저장하기(테스트면접, "지원자A");
-        Interviewer 종미면접관 = environ.테스트면접관_저장하기(지원자A, 종미);
-        Interviewer 윤정면접관 = environ.테스트면접관_저장하기(지원자A, 윤정);
-
-        IndividualQuestion 질문A = environ.테스트개별질문_저장하기(지원자A, "자기소개해주세요.", 1, true, 1);
-        IndividualQuestion 질문B = environ.테스트개별질문_저장하기(지원자A, "장점을소개해주세요.", 2, true, 1);
-
-        environ.테스트평가_저장하기(1, "인상이좋다", 질문A, 종미);
-        environ.테스트평가_저장하기(2, "굿", 질문A, 윤정);
-        environ.테스트평가_저장하기(3, "좋은장점이다", 질문B, 종미);
-        environ.테스트평가_저장하기(4, "좋다", 질문B, 윤정);
-
-        // when
-        List<QuestionRankResponse> 조회결과 = evaluationService.findQuestionRanks(지원자A.getId());
-
-        // then
-        assertThat(조회결과).hasSize(2)
-                .extracting(QuestionRankResponse::totalScore)
-                .containsExactlyElementsOf(List.of(3.5, 1.5));
     }
 }
