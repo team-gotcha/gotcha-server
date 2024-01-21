@@ -6,14 +6,11 @@ import com.gotcha.server.project.domain.Interview;
 import com.gotcha.server.project.domain.Project;
 import com.gotcha.server.project.domain.QInterview;
 import com.gotcha.server.project.domain.QSubcollaborator;
-import com.gotcha.server.project.dto.response.InterviewListResponse;
-import com.gotcha.server.project.dto.response.InterviewerNamesResponse;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor

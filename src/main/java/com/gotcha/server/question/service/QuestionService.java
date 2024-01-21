@@ -1,6 +1,8 @@
 package com.gotcha.server.question.service;
 
 import com.gotcha.server.applicant.domain.Applicant;
+import com.gotcha.server.question.domain.QuestionPublicType;
+import com.gotcha.server.question.dto.message.QuestionUpdateMessage;
 import com.gotcha.server.question.dto.request.IndividualQuestionRequest;
 import com.gotcha.server.applicant.repository.ApplicantRepository;
 import com.gotcha.server.global.exception.AppException;
@@ -12,6 +14,7 @@ import com.gotcha.server.question.domain.CommonQuestion;
 import com.gotcha.server.question.domain.IndividualQuestion;
 import com.gotcha.server.question.dto.request.CommonQuestionsRequest;
 import com.gotcha.server.question.dto.response.InterviewQuestionResponse;
+import com.gotcha.server.question.dto.response.PreparatoryQuestionResponse;
 import com.gotcha.server.question.repository.CommonQuestionRepository;
 import com.gotcha.server.question.repository.IndividualQuestionRepository;
 import java.util.List;
@@ -41,11 +44,21 @@ public class QuestionService {
         commonQuestionRepository.saveAll(questions);
     }
 
+    @Transactional
     public List<InterviewQuestionResponse> listInterviewQuestions(final Long applicantId) {
         Applicant applicant = applicantRepository.findById(applicantId)
                 .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
         List<IndividualQuestion> questions = individualQuestionRepository.findAllDuringInterview(applicant);
+        determinePublicType(applicant, questions);
         return InterviewQuestionResponse.generateList(questions);
+    }
+
+    private void determinePublicType(final Applicant applicant, final List<IndividualQuestion> questions) {
+        if(questions.size() > 0
+                && !applicant.getQuestionPublicType().equals(QuestionPublicType.PENDING)
+                && questions.get(0).getPublicType().equals(QuestionPublicType.PENDING)) {
+            questions.stream().forEach(question -> question.changePublicType(applicant));
+        }
     }
 
     @Transactional
@@ -60,5 +73,20 @@ public class QuestionService {
         if (request.getContent() == null || request.getContent().trim().isEmpty()) {
             throw new AppException(ErrorCode.CONTENT_IS_EMPTY);
         }
+    }
+
+    public List<PreparatoryQuestionResponse> listPreparatoryQuestions(final Long applicantId) {
+        Applicant applicant = applicantRepository.findById(applicantId)
+                .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
+        List<IndividualQuestion> individualQuestions = individualQuestionRepository.findAllDuringInterview(applicant);
+        return individualQuestions.stream().map(PreparatoryQuestionResponse::from).toList();
+    }
+
+    @Transactional
+    public void updateQuestion(final Long questionId, final QuestionUpdateMessage message) {
+        IndividualQuestion question = individualQuestionRepository.findById(questionId)
+                .orElseThrow(() -> new AppException(ErrorCode.QUESTION_NOT_FOUNT));
+        QuestionUpdateType updateType = message.type();
+        updateType.update(question, message.value());
     }
 }

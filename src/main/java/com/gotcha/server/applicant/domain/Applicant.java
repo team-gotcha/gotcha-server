@@ -1,8 +1,12 @@
 package com.gotcha.server.applicant.domain;
 
+import com.gotcha.server.global.exception.AppException;
+import com.gotcha.server.global.exception.ErrorCode;
+import com.gotcha.server.member.domain.Member;
 import com.gotcha.server.global.domain.BaseTimeEntity;
 import com.gotcha.server.project.domain.Interview;
 import com.gotcha.server.question.domain.IndividualQuestion;
+import com.gotcha.server.question.domain.QuestionPublicType;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -46,6 +50,9 @@ public class Applicant extends BaseTimeEntity implements Comparable<Applicant> {
     @Column(nullable = false)
     private String email;
 
+    @Column(nullable = false)
+    private QuestionPublicType questionPublicType;
+
     private LocalDate date;
     private String name;
     private Integer age;
@@ -75,6 +82,7 @@ public class Applicant extends BaseTimeEntity implements Comparable<Applicant> {
         this.interviewStatus = InterviewStatus.PREPARATION;
         this.ranking = 0;
         this.totalScore = 0;
+        this.questionPublicType = QuestionPublicType.PENDING;
     }
 
     public void updateRanking(Integer ranking){
@@ -97,8 +105,17 @@ public class Applicant extends BaseTimeEntity implements Comparable<Applicant> {
         interviewStatus = interviewStatus.moveToNextStatus();
     }
 
+    public Interviewer pickInterviewer(final Member member) {
+        return interviewers.stream().filter(i -> i.hasPermission(member))
+                .findAny().orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED_INTERVIEWER));
+    }
+
     public void determineOutcome(Outcome outcome) {
         this.outcome = outcome;
+    }
+
+    public void changeQuestionPublicType(boolean agree) {
+        questionPublicType = questionPublicType.change(agree);
     }
 
     public void addInterviewer(final Interviewer interviewer) {

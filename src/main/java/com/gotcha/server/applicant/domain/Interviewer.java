@@ -53,6 +53,6 @@ public class Interviewer {
     }
 
     public boolean hasPermission(final Member member) {
-        return this.member.equals(member);
+        return this.member.getId().equals(member.getId());
     }
 }

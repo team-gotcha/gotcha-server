@@ -7,8 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface IndividualQuestionRepository extends JpaRepository<IndividualQuestion, Long>, QuestionDslRepository {
-    @Query("select q from IndividualQuestion q "
-            + "join fetch q.applicant "
-            + "where q.id in :ids")
+    @Query("SELECT q FROM IndividualQuestion q "
+            + "JOIN fetch q.applicant "
+            + "WHERE q.id IN :ids")
     List<IndividualQuestion> findAllWithApplicantByIdIn(@Param(value = "ids") List<Long> ids);
 }
