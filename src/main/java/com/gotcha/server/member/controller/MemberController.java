@@ -50,9 +50,10 @@ public class MemberController {
     @Operation(description = "로그인한 유저의 오늘 예정된 면접 수를 조회한다.")
     public ResponseEntity<TodayInterviewResponse> countInterview(@AuthenticationPrincipal final MemberDetails details) {
         return ResponseEntity.ok(memberService.countTodayInterview(details));
+    }
 
     @GetMapping("/")
-    public ResponseEntity<String> home(){
+    public ResponseEntity<String> home() {
         return ResponseEntity.ok("Hello World");
     }
 }
