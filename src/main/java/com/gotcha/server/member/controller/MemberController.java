@@ -28,7 +28,7 @@ public class MemberController {
     }
 
     @GetMapping("/api/google/token")
-    @Operation(description = "access token과 refresh token을 발급 받는다.")
+    @Operation(description = "access token과 refresh token을 발급 받는다. 회원가입 되지 않은 유저라면 가입한다.")
     public ResponseEntity<LoginResponse> getGoogleToken(@RequestParam String code) {
         return ResponseEntity.ok(memberService.login(code));
     }
