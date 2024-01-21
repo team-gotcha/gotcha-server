@@ -41,7 +41,7 @@ public class MemberService {
         if(member == null) {
             member = memberRepository.save(googleUser.toEntity(googleToken.refresh_token()));
         }
-        return googleToken.toLoginResponse(member.getId());
+        return googleToken.toLoginResponse(member.getId(), googleUser.email());
     }
 
     public UserResponse getUserDetails(final MemberDetails details) {
