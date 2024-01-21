@@ -6,6 +6,7 @@ import com.gotcha.server.evaluation.dto.request.OneLinerRequest;
 import com.gotcha.server.evaluation.dto.response.QuestionEvaluationResponse;
 import com.gotcha.server.evaluation.dto.response.QuestionRankResponse;
 import com.gotcha.server.evaluation.service.EvaluationService;
+import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,23 +21,27 @@ public class EvaluationController {
     private final EvaluationService evaluationService;
 
     @PostMapping
+    @Operation(description = "면접 중, 사전 작성된 질문들에 코멘트와 점수(0~5점)를 기록한다.")
     public ResponseEntity<Void> evaluate(@AuthenticationPrincipal final MemberDetails details, @RequestBody final List<EvaluateRequest> requests) {
         evaluationService.evaluate(details, requests);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PostMapping("/one-liner")
+    @Operation(description = "로그인 유저(면접관)가 지원자에게 한줄평을 작성한다.")
     public ResponseEntity<Void> createOneLiner(@AuthenticationPrincipal final MemberDetails details, @RequestBody final OneLinerRequest request) {
         evaluationService.createOneLiner(details, request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @GetMapping("/questions")
+    @Operation(description = "질문에 대해 모든 면접관의 평가를 조회한다.")
     public ResponseEntity<QuestionEvaluationResponse> findEvaluationsByQuestion(@RequestParam(value = "question-id") Long questionId) {
         return ResponseEntity.ok(evaluationService.findQuestionEvaluations(questionId));
     }
 
     @GetMapping("/questions-rank")
+    @Operation(description = "지원자의 모든 면접 질문 id를 총점 순으로 조회한다.")
     public ResponseEntity<List<QuestionRankResponse>> findQuestionRanksByApplicant(@RequestParam(value = "applicant-id") Long applicantId) {
         return ResponseEntity.ok(evaluationService.findQuestionRanks(applicantId));
     }

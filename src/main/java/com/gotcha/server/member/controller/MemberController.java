@@ -6,6 +6,7 @@ import com.gotcha.server.member.dto.response.LoginResponse;
 import com.gotcha.server.member.dto.request.RefreshTokenRequest;
 import com.gotcha.server.member.dto.response.UserResponse;
 import com.gotcha.server.member.service.MemberService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -21,21 +22,25 @@ public class MemberController {
     private final MemberService memberService;
 
     @GetMapping("/api/login/google")
+    @Operation(description = "구글 소셜 로그인 url을 받는다.")
     public ResponseEntity<String> redirectGoogleLogin(){
         return ResponseEntity.ok(memberService.getLoginUrl());
     }
 
-    @GetMapping("/auth/callback/google")
-    public ResponseEntity<LoginResponse> callbackGoogleLogin(@RequestParam String code) {
+    @GetMapping("/api/google/token")
+    @Operation(description = "access token과 refresh token을 발급 받는다.")
+    public ResponseEntity<LoginResponse> getGoogleToken(@RequestParam String code) {
         return ResponseEntity.ok(memberService.login(code));
     }
 
     @PostMapping("/api/refresh")
+    @Operation(description = "access token을 재발급 받는다.")
     public ResponseEntity<RefreshTokenResponse> refreshToken(@RequestBody RefreshTokenRequest request) {
         return ResponseEntity.ok(memberService.refresh(request));
     }
 
     @GetMapping("/api/user")
+    @Operation(description = "로그인 유저의 개인 정보를 조회한다.")
     public ResponseEntity<UserResponse> getUserDetails(@AuthenticationPrincipal final MemberDetails details) {
         return ResponseEntity.ok(memberService.getUserDetails(details));
     }
