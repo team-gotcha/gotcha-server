@@ -1,5 +1,7 @@
 package com.gotcha.server.member.service;
 
+import com.gotcha.server.member.dto.response.TodayInterviewResponse;
+import com.gotcha.server.applicant.repository.InterviewerRepository;
 import com.gotcha.server.auth.dto.response.RefreshTokenResponse;
 import com.gotcha.server.auth.oauth.GoogleOAuth;
 import com.gotcha.server.auth.security.MemberDetails;
@@ -21,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class MemberService {
     private final MemberRepository memberRepository;
+    private final InterviewerRepository interviewerRepository;
     private final GoogleOAuth googleOAuth;
 
     public String getLoginUrl() {
@@ -44,15 +47,13 @@ public class MemberService {
         return googleToken.toLoginResponse(member.getId());
     }
 
-    public Member findByEmail(String email) {
-        return memberRepository
-                .findByEmail(email)
-                .orElseThrow(
-                        () -> new AppException(ErrorCode.USER_NOT_FOUND));
-    }
-
     public UserResponse getUserDetails(final MemberDetails details) {
         Member member = details.member();
         return new UserResponse(member.getProfileUrl(), member.getName(), member.getEmail());
+    }
+
+    public TodayInterviewResponse countTodayInterview(final MemberDetails details) {
+        long count = interviewerRepository.countTodayInterview(details.member());
+        return new TodayInterviewResponse(count);
     }
 }

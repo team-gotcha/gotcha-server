@@ -1,6 +1,8 @@
 package com.gotcha.server.question.service;
 
 import com.gotcha.server.applicant.domain.Applicant;
+import com.gotcha.server.evaluation.domain.QuestionEvaluations;
+import com.gotcha.server.question.dto.response.QuestionRankResponse;
 import com.gotcha.server.question.domain.QuestionPublicType;
 import com.gotcha.server.question.dto.message.QuestionUpdateMessage;
 import com.gotcha.server.question.dto.request.IndividualQuestionRequest;
@@ -88,5 +90,14 @@ public class QuestionService {
                 .orElseThrow(() -> new AppException(ErrorCode.QUESTION_NOT_FOUNT));
         QuestionUpdateType updateType = message.type();
         updateType.update(question, message.value());
+    }
+
+    public List<QuestionRankResponse> findQuestionRanks(final Long applicantId) {
+        Applicant applicant = applicantRepository.findById(applicantId)
+                .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
+
+        List<IndividualQuestion> questions = individualQuestionRepository.findAllAfterEvaluation(applicant);
+        QuestionEvaluations evaluations = new QuestionEvaluations(questions);
+        return evaluations.createQuestionRanks();
     }
 }

@@ -33,12 +33,6 @@ public class ApplicantController {
         return ResponseEntity.ok(applicantService.proceedToInterview(request, details));
     }
 
-    @GetMapping("/todays")
-    @Operation(description = "로그인한 유저의 오늘 예정된 면접 수를 조회한다.")
-    public ResponseEntity<TodayInterviewResponse> countInterview(@AuthenticationPrincipal final MemberDetails details) {
-        return ResponseEntity.ok(applicantService.countTodayInterview(details));
-    }
-
     @GetMapping
     @Operation(description = "세부 면접의 모든 지원자를 면접일 순으로 조회한다. 발표 완료된(ANNOUNCED) 지원자는 조회하지 않는다.")
     public ResponseEntity<List<ApplicantsResponse>> findAllApplicantByInterview(@RequestParam(name = "interview-id") final Long interviewId) {
