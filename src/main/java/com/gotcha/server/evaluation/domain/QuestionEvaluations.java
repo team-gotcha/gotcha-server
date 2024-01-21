@@ -1,6 +1,6 @@
 package com.gotcha.server.evaluation.domain;
 
-import com.gotcha.server.evaluation.dto.response.QuestionRankResponse;
+import com.gotcha.server.question.dto.response.QuestionRankResponse;
 import com.gotcha.server.question.domain.IndividualQuestion;
 import java.util.ArrayList;
 import java.util.List;

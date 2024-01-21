@@ -11,7 +11,6 @@ import com.gotcha.server.applicant.domain.Keyword;
 import com.gotcha.server.applicant.dto.request.*;
 import com.gotcha.server.applicant.dto.response.*;
 import com.gotcha.server.applicant.repository.ApplicantRepository;
-import com.gotcha.server.applicant.repository.InterviewerRepository;
 import com.gotcha.server.applicant.repository.KeywordRepository;
 import com.gotcha.server.auth.security.MemberDetails;
 import com.gotcha.server.evaluation.dto.response.OneLinerResponse;
@@ -48,15 +47,14 @@ import org.springframework.web.multipart.MultipartFile;
 @Transactional(readOnly = true)
 public class ApplicantService {
     private final ApplicantRepository applicantRepository;
-    private final InterviewerRepository interviewerRepository;
     private final InterviewRepository interviewRepository;
     private final KeywordRepository keywordRepository;
-    private final MailService mailService;
+    private final IndividualQuestionRepository individualQuestionRepository;
     private final OneLinerRepository oneLinerRepository;
     private final MemberRepository memberRepository;
     private final CommonQuestionRepository commonQuestionRepository;
     private final AmazonS3 amazonS3;
-    private final IndividualQuestionRepository individualQuestionRepository;
+    private final MailService mailService;
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
@@ -84,11 +82,6 @@ public class ApplicantService {
                 .map(question -> IndividualQuestion.fromCommonQuestion(question, applicant))
                 .forEach(question -> applicant.addQuestion(question));
 
-    }
-
-    public TodayInterviewResponse countTodayInterview(final MemberDetails details) {
-        long count = interviewerRepository.countTodayInterview(details.member());
-        return new TodayInterviewResponse(count);
     }
 
     public List<ApplicantsResponse> listApplicantsByInterview(final Long interviewId) {

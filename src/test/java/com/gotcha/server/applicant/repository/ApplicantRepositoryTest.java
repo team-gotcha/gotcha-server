@@ -1,8 +1,6 @@
 package com.gotcha.server.applicant.repository;
 
 import static com.gotcha.server.common.TestFixture.*;
-import static com.gotcha.server.common.TestFixture.테스트면접;
-import static com.gotcha.server.common.TestFixture.테스트지원자;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.gotcha.server.applicant.domain.Applicant;

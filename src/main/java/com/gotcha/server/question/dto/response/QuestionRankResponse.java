@@ -1,4 +1,4 @@
-package com.gotcha.server.evaluation.dto.response;
+package com.gotcha.server.question.dto.response;
 
 public record QuestionRankResponse(Long id, Double totalScore) {
 

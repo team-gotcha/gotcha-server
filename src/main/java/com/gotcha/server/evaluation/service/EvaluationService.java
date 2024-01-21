@@ -6,12 +6,10 @@ import com.gotcha.server.applicant.repository.ApplicantRepository;
 import com.gotcha.server.auth.security.MemberDetails;
 import com.gotcha.server.evaluation.domain.Evaluation;
 import com.gotcha.server.evaluation.domain.OneLiner;
-import com.gotcha.server.evaluation.domain.QuestionEvaluations;
 import com.gotcha.server.evaluation.dto.request.EvaluateRequest;
 import com.gotcha.server.evaluation.dto.request.OneLinerRequest;
 import com.gotcha.server.evaluation.dto.response.EvaluationResponse;
 import com.gotcha.server.evaluation.dto.response.QuestionEvaluationResponse;
-import com.gotcha.server.evaluation.dto.response.QuestionRankResponse;
 import com.gotcha.server.evaluation.repository.EvaluationRepository;
 import com.gotcha.server.evaluation.repository.OneLinerRepository;
 import com.gotcha.server.global.exception.AppException;
@@ -92,14 +90,5 @@ public class EvaluationService {
                 .map(e -> new EvaluationResponse(e.getScore(), e.getContent()))
                 .toList();
         return new QuestionEvaluationResponse(question.getContent(), question.isCommon(), evaluations);
-    }
-
-    public List<QuestionRankResponse> findQuestionRanks(final Long applicantId) {
-        Applicant applicant = applicantRepository.findById(applicantId)
-                .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
-
-        List<IndividualQuestion> questions = individualQuestionRepository.findAllAfterEvaluation(applicant);
-        QuestionEvaluations evaluations = new QuestionEvaluations(questions);
-        return evaluations.createQuestionRanks();
     }
 }

@@ -1,5 +1,6 @@
 package com.gotcha.server.question.controller;
 
+import com.gotcha.server.question.dto.response.QuestionRankResponse;
 import com.gotcha.server.question.dto.request.IndividualQuestionRequest;
 import com.gotcha.server.auth.security.MemberDetails;
 import com.gotcha.server.question.dto.request.CommonQuestionsRequest;
@@ -47,5 +48,11 @@ public class QuestionController {
     @Operation(description = "면접 전 질문 확인 창에서 질문 목록을 조회한다.")
     public ResponseEntity<List<PreparatoryQuestionResponse>> findAllPreparatoryQuestions(@RequestParam(value = "applicant-id") Long applicantId) {
         return ResponseEntity.ok(questionService.listPreparatoryQuestions(applicantId));
+    }
+
+    @GetMapping("/rank")
+    @Operation(description = "면접 후, 지원자의 모든 면접 질문 id를 총점 순으로 조회한다.")
+    public ResponseEntity<List<QuestionRankResponse>> findQuestionRanksByApplicant(@RequestParam(value = "applicant-id") Long applicantId) {
+        return ResponseEntity.ok(questionService.findQuestionRanks(applicantId));
     }
 }

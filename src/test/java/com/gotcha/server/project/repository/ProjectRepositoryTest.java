@@ -1,7 +1,6 @@
 package com.gotcha.server.project.repository;
 
 import com.gotcha.server.common.TestRepository;
-import com.gotcha.server.global.config.QueryDslConfig;
 import com.gotcha.server.member.domain.Member;
 import com.gotcha.server.project.domain.Collaborator;
 import com.gotcha.server.project.domain.Interview;
@@ -18,12 +17,10 @@ import org.springframework.context.annotation.Import;
 import java.util.List;
 
 import static com.gotcha.server.common.TestFixture.*;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
 @DataJpaTest
-@Import({TestRepository.class, QueryDslConfig.class})
+@Import({TestRepository.class})
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class ProjectRepositoryTest {
     @Autowired
