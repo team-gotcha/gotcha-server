@@ -152,14 +152,6 @@ public class Applicant extends BaseTimeEntity implements Comparable<Applicant> {
         this.date = date;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setEmail(String email){
-        this.email = email;
-    }
-
     @Override
     public int compareTo(Applicant other) {
         return Integer.compare(this.getTotalScore(), other.getTotalScore());

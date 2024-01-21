@@ -1,5 +1,6 @@
 package com.gotcha.server.member.controller;
 
+import com.gotcha.server.member.dto.response.TodayInterviewResponse;
 import com.gotcha.server.auth.dto.response.RefreshTokenResponse;
 import com.gotcha.server.auth.security.MemberDetails;
 import com.gotcha.server.member.dto.response.LoginResponse;
@@ -43,5 +44,11 @@ public class MemberController {
     @Operation(description = "로그인 유저의 개인 정보를 조회한다.")
     public ResponseEntity<UserResponse> getUserDetails(@AuthenticationPrincipal final MemberDetails details) {
         return ResponseEntity.ok(memberService.getUserDetails(details));
+    }
+
+    @GetMapping("/todays-interview")
+    @Operation(description = "로그인한 유저의 오늘 예정된 면접 수를 조회한다.")
+    public ResponseEntity<TodayInterviewResponse> countInterview(@AuthenticationPrincipal final MemberDetails details) {
+        return ResponseEntity.ok(memberService.countTodayInterview(details));
     }
 }

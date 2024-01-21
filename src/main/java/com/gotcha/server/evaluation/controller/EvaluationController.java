@@ -4,7 +4,6 @@ import com.gotcha.server.auth.security.MemberDetails;
 import com.gotcha.server.evaluation.dto.request.EvaluateRequest;
 import com.gotcha.server.evaluation.dto.request.OneLinerRequest;
 import com.gotcha.server.evaluation.dto.response.QuestionEvaluationResponse;
-import com.gotcha.server.evaluation.dto.response.QuestionRankResponse;
 import com.gotcha.server.evaluation.service.EvaluationService;
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
@@ -38,11 +37,5 @@ public class EvaluationController {
     @Operation(description = "질문에 대해 모든 면접관의 평가를 조회한다.")
     public ResponseEntity<QuestionEvaluationResponse> findEvaluationsByQuestion(@RequestParam(value = "question-id") Long questionId) {
         return ResponseEntity.ok(evaluationService.findQuestionEvaluations(questionId));
-    }
-
-    @GetMapping("/questions-rank")
-    @Operation(description = "지원자의 모든 면접 질문 id를 총점 순으로 조회한다.")
-    public ResponseEntity<List<QuestionRankResponse>> findQuestionRanksByApplicant(@RequestParam(value = "applicant-id") Long applicantId) {
-        return ResponseEntity.ok(evaluationService.findQuestionRanks(applicantId));
     }
 }
