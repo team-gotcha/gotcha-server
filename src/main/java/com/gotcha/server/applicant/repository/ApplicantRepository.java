@@ -10,11 +10,18 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface ApplicantRepository extends JpaRepository<Applicant, Long>, ApplicantDslRepository {
-    @Query("select a from Applicant a "
-            + "join fetch a.interviewers i "
-            + "join fetch i.member "
-            + "where a.id = :applicantId")
+    @Query("SELECT a FROM Applicant a "
+            + "JOIN FETCH a.interviewers i "
+            + "JOIN FETCH i.member "
+            + "WHERE a.id = :applicantId")
     Optional<Applicant> findByIdWithInterviewer(@Param("applicantId") Long id);
+
+    @Query("SELECT a FROM Applicant a "
+            + "JOIN FETCH a.interviewers i "
+            + "JOIN FETCH i.member "
+            + "JOIN FETCH a.interview "
+            + "WHERE a.id = :applicantId")
+    Optional<Applicant> findByIdWithInterviewAndInterviewers(@Param("applicantId") Long id);
 
     List<Applicant> findAllByInterview(Interview interview);
 

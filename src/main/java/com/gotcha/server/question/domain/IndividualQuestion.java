@@ -1,7 +1,6 @@
 package com.gotcha.server.question.domain;
 
 import com.gotcha.server.applicant.domain.Applicant;
-import com.gotcha.server.applicant.domain.Interviewer;
 import com.gotcha.server.evaluation.domain.Evaluation;
 import com.gotcha.server.global.domain.BaseTimeEntity;
 import com.gotcha.server.global.exception.AppException;
@@ -66,29 +65,51 @@ public class IndividualQuestion extends BaseTimeEntity {
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Evaluation> evaluations = new ArrayList<>();
 
+    @Column(nullable = false)
+    private QuestionPublicType publicType;
+
     @Builder
-    public IndividualQuestion(final String content, final Applicant applicant, final Member member, final IndividualQuestion commentTarget) {
+    public IndividualQuestion(final String content, final Applicant applicant, final Member member,
+            final IndividualQuestion commentTarget, final boolean isCommon, final boolean asking) {
         this.content = content;
-        this.importance = MIN_IMPORTANCE;
-        this.questionOrder = 0;
         this.applicant = applicant;
-        this.asking = false;
-        this.isCommon = false;
+        this.asking = asking;
+        this.isCommon = isCommon;
         this.member = member;
         this.commentTarget = commentTarget;
+        this.importance = MIN_IMPORTANCE;
+        this.questionOrder = 0;
+        this.publicType = QuestionPublicType.PENDING;
+    }
+
+    public static IndividualQuestion fromCommonQuestion(final CommonQuestion commonQuestion, final Applicant applicant) {
+        return IndividualQuestion.builder()
+                .content(commonQuestion.getContent())
+                .applicant(applicant)
+                .asking(true)
+                .isCommon(true)
+                .build();
     }
 
     public void setApplicant(final Applicant applicant) {
         this.applicant = applicant;
     }
 
-    public void setQuestionOrder(final Integer questionOrder) {
-        this.questionOrder = questionOrder;
+    public void changePublicType(final Applicant applicant) {
+        this.publicType = applicant.getQuestionPublicType();
     }
 
-    public void setImportance(int importance) {
+    public void updateOrder(final Integer order) {
+        this.questionOrder = order;
+    }
+
+    public void updateImportance(Integer importance) {
         validateImportance(importance);
         this.importance = importance;
+    }
+
+    public void updateContent(String content) {
+        this.content = content;
     }
 
     public void validateImportance(int importance) {
@@ -99,6 +120,10 @@ public class IndividualQuestion extends BaseTimeEntity {
 
     public void askDuringInterview() {
         this.asking = true;
+    }
+
+    public void deleteDuringInterview() {
+        this.asking = false;
     }
 
     public void addEvaluation(final Evaluation evaluation) {

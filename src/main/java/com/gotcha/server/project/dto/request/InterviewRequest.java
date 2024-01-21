@@ -8,7 +8,6 @@ import com.gotcha.server.project.domain.PositionType;
 import com.gotcha.server.project.domain.Project;
 import com.gotcha.server.project.repository.ProjectRepository;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,14 +25,6 @@ public class InterviewRequest {
     private AreaType area;
     @Schema(allowableValues = {"MARKETING","PLANNING","FINANCE","DESIGN","PRODUCTION","LOGISTICS","MANAGEMENT","RND","MUSIC","DEVELOPMENT","THEATER","VIDEO","FASHION"})
     private PositionType position;
-
-    @Builder
-    public InterviewRequest(String name, Long projectId, AreaType area, PositionType position) {
-        this.name = name;
-        this.projectId = projectId;
-        this.area = area;
-        this.position = position;
-    }
 
     public Interview toEntity(ProjectRepository projectRepository) {
         Project project = projectRepository.findById(projectId)

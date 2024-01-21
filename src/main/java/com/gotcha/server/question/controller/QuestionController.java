@@ -1,12 +1,12 @@
 package com.gotcha.server.question.controller;
 
-import com.gotcha.server.member.domain.Member;
-import com.gotcha.server.member.repository.MemberRepository;
 import com.gotcha.server.question.dto.request.IndividualQuestionRequest;
 import com.gotcha.server.auth.security.MemberDetails;
 import com.gotcha.server.question.dto.request.CommonQuestionsRequest;
 import com.gotcha.server.question.dto.response.InterviewQuestionResponse;
+import com.gotcha.server.question.dto.response.PreparatoryQuestionResponse;
 import com.gotcha.server.question.service.QuestionService;
+import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 
 import jakarta.validation.Valid;
@@ -21,16 +21,17 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class QuestionController {
     private final QuestionService questionService;
-    private final MemberRepository memberRepository;
 
     @PostMapping("/common")
+    @Operation(description = "공통 질문을 생성한다.")
     public ResponseEntity<Void> createCommonQuestions(final CommonQuestionsRequest request) {
         questionService.createCommonQuestions(request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @GetMapping("/in-progress/{applicant-id}")
-    public ResponseEntity<List<InterviewQuestionResponse>> findAllInterviewQuestions(@PathVariable(name = "applicant-id") Long applicantId) {
+    @GetMapping("/in-progress")
+    @Operation(description = "지원자의 면접 중 질문 목록을 순서대로 조회한다.")
+    public ResponseEntity<List<InterviewQuestionResponse>> findAllInterviewQuestions(@RequestParam(name = "applicant-id") Long applicantId) {
         return ResponseEntity.ok(questionService.listInterviewQuestions(applicantId));
     }
 
@@ -38,18 +39,13 @@ public class QuestionController {
     public ResponseEntity<String> createIndividualQuestion(
             @RequestBody @Valid IndividualQuestionRequest request,
             @AuthenticationPrincipal MemberDetails details) {
-////        테스트용 유저 생성
-//        Member member = Member.builder()
-//                .email("a@gmail.co")
-//                .socialId("socialId")
-//                .name("이름")
-//                .profileUrl("a.jpg")
-//                .refreshToken("token")
-//                .build();
-//        memberRepository.save(member);
-//
-//        questionService.createIndividualQuestion(request, member);
         questionService.createIndividualQuestion(request, details.member());
         return ResponseEntity.status(HttpStatus.CREATED).body("개별 질문이 입력되었습니다.");
+    }
+
+    @GetMapping("/preparatory")
+    @Operation(description = "면접 전 질문 확인 창에서 질문 목록을 조회한다.")
+    public ResponseEntity<List<PreparatoryQuestionResponse>> findAllPreparatoryQuestions(@RequestParam(value = "applicant-id") Long applicantId) {
+        return ResponseEntity.ok(questionService.listPreparatoryQuestions(applicantId));
     }
 }

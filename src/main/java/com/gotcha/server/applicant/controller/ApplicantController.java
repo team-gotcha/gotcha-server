@@ -1,17 +1,17 @@
 package com.gotcha.server.applicant.controller;
 
 import com.gotcha.server.applicant.dto.request.ApplicantRequest;
+import com.gotcha.server.applicant.dto.request.GoQuestionPublicRequest;
 import com.gotcha.server.applicant.dto.request.InterviewProceedRequest;
 import com.gotcha.server.applicant.dto.request.PassEmailSendRequest;
 import com.gotcha.server.applicant.dto.response.*;
 import com.gotcha.server.applicant.service.ApplicantService;
 import com.gotcha.server.auth.security.MemberDetails;
 
+import io.swagger.v3.oas.annotations.Operation;
 import java.io.IOException;
 import java.util.List;
 
-import com.gotcha.server.member.domain.Member;
-import com.gotcha.server.member.repository.MemberRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,35 +25,49 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class ApplicantController {
     private final ApplicantService applicantService;
-    private final MemberRepository memberRepository;
 
     @PostMapping("/interview-ready")
+    @Operation(description = "로그인 유저(면접관)가 면접 준비 완료를 요청한다. 모든 면접관이 준비 완료되었다면 지원자의 면접 단계가 바뀐다.")
     public ResponseEntity<InterviewProceedResponse> proceedToInterview(
             @RequestBody final InterviewProceedRequest request, @AuthenticationPrincipal final MemberDetails details) {
         return ResponseEntity.ok(applicantService.proceedToInterview(request, details));
     }
 
     @GetMapping("/todays")
+    @Operation(description = "로그인한 유저의 오늘 예정된 면접 수를 조회한다.")
     public ResponseEntity<TodayInterviewResponse> countInterview(@AuthenticationPrincipal final MemberDetails details) {
         return ResponseEntity.ok(applicantService.countTodayInterview(details));
     }
 
-    @GetMapping("")
+    @GetMapping
+    @Operation(description = "세부 면접의 모든 지원자를 면접일 순으로 조회한다. 발표 완료된(ANNOUNCED) 지원자는 조회하지 않는다.")
     public ResponseEntity<List<ApplicantsResponse>> findAllApplicantByInterview(@RequestParam(name = "interview-id") final Long interviewId) {
         return ResponseEntity.ok(applicantService.listApplicantsByInterview(interviewId));
     }
 
     @GetMapping("/{applicant-id}")
+    @Operation(description = "지원자의 상세 정보를 조회한다.")
     public ResponseEntity<ApplicantResponse> findApplicantDetailsById(@PathVariable(name = "applicant-id") final Long applicantId) {
         return ResponseEntity.ok(applicantService.findApplicantDetailsById(applicantId));
     }
 
+    @PostMapping("/{applicant-id}/public")
+    @Operation(description = "지원자의 면접 질문 공개를 동의 혹은 비동의한다.")
+    public ResponseEntity<Void> makeQuestionsPublic(
+            @PathVariable(name = "applicant-id") final Long applicantId,
+            @RequestBody final GoQuestionPublicRequest request) {
+        applicantService.makeQuestionsPublic(applicantId, request);
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/pass")
+    @Operation(description = "면접 진행 완료(COMPLETION) 지원자 중 합격한 지원자 목록을 조회한다.")
     public ResponseEntity<List<PassedApplicantsResponse>> findAllPassedApplicantsByInterview(@RequestParam(name = "interview-id") final Long interviewId) {
         return ResponseEntity.ok(applicantService.listPassedApplicantsByInterview(interviewId));
     }
 
     @PostMapping("/send-email")
+    @Operation(description = "세부 면접 지원자들에게 합불 메일을 전송한다.")
     public ResponseEntity<Void> sendPassEmail(@RequestBody final PassEmailSendRequest request) {
         applicantService.sendPassEmail(request);
         return ResponseEntity.ok().build();
@@ -63,16 +77,6 @@ public class ApplicantController {
     public ResponseEntity<String> createApplicant(
             @RequestBody @Valid ApplicantRequest request,
             @AuthenticationPrincipal MemberDetails details) {
-//        //테스트용 유저 생성
-//        Member member = Member.builder()
-//                .email("a@gmail.co")
-//                .socialId("socialId")
-//                .name("이름")
-//                .profileUrl("a.jpg")
-//                .refreshToken("token")
-//                .build();
-//        memberRepository.save(member);
-//        applicantService.createApplicant(request, member);
         applicantService.createApplicant(request, details.member());
         return ResponseEntity.status(HttpStatus.CREATED).body("면접 지원자 정보가 입력되었습니다.");
     }
@@ -86,7 +90,6 @@ public class ApplicantController {
         applicantService.addApplicantFiles(resume, portfolio, applicantId);
         return ResponseEntity.status(HttpStatus.CREATED).body("면접 지원자의 파일이 저장되었습니다.");
     }
-
 
     @GetMapping("/interview-completed")
     public ResponseEntity<List<CompletedApplicantsResponse>> getCompletedApplicants(@RequestParam(value = "interview-id") Long interviewId) {

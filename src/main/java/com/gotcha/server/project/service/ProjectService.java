@@ -11,13 +11,10 @@ import com.gotcha.server.project.dto.response.ProjectListResponse;
 import com.gotcha.server.project.dto.response.ProjectResponse;
 import com.gotcha.server.project.dto.response.SidebarResponse;
 import com.gotcha.server.project.repository.*;
-import com.querydsl.core.types.Projections;
-import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 

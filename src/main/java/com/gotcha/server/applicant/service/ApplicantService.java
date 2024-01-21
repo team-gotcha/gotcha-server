@@ -24,6 +24,8 @@ import com.gotcha.server.member.repository.MemberRepository;
 import com.gotcha.server.project.domain.Interview;
 import com.gotcha.server.project.repository.InterviewRepository;
 
+import com.gotcha.server.question.domain.CommonQuestion;
+import com.gotcha.server.question.repository.CommonQuestionRepository;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -34,11 +36,13 @@ import com.gotcha.server.question.dto.request.IndividualQuestionRequest;
 import com.gotcha.server.question.repository.IndividualQuestionRepository;
 import io.micrometer.common.lang.Nullable;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -50,6 +54,7 @@ public class ApplicantService {
     private final MailService mailService;
     private final OneLinerRepository oneLinerRepository;
     private final MemberRepository memberRepository;
+    private final CommonQuestionRepository commonQuestionRepository;
     private final AmazonS3 amazonS3;
     private final IndividualQuestionRepository individualQuestionRepository;
 
@@ -58,20 +63,27 @@ public class ApplicantService {
 
     @Transactional
     public InterviewProceedResponse proceedToInterview(final InterviewProceedRequest request, final MemberDetails details) {
-        Applicant applicant = applicantRepository.findById(request.applicantId())
+        Applicant applicant = applicantRepository.findByIdWithInterviewAndInterviewers(request.applicantId())
                 .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
-        List<Interviewer> interviewers = interviewerRepository.findAllByApplicant(applicant);
-        Interviewer interviewer = interviewers.stream().filter(i -> i.hasPermission(details.member())).findAny()
-                .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED_INTERVIEWER));
-
+        Interviewer interviewer = applicant.pickInterviewer(details.member());
         interviewer.setPrepared();
 
+        List<Interviewer> interviewers = applicant.getInterviewers();
         long interviewerCount = interviewers.size();
         long preparedInterviewerCount = interviewers.stream().filter(Interviewer::isPrepared).count();
         if (interviewerCount <= preparedInterviewerCount) {
             applicant.moveToNextStatus();
+            saveCommonQuestionsTo(applicant);
         }
         return new InterviewProceedResponse(interviewerCount, preparedInterviewerCount);
+    }
+
+    public void saveCommonQuestionsTo(final Applicant applicant) {
+        List<CommonQuestion> commonQuestions = commonQuestionRepository.findAllByInterview(applicant.getInterview());
+        commonQuestions.stream()
+                .map(question -> IndividualQuestion.fromCommonQuestion(question, applicant))
+                .forEach(question -> applicant.addQuestion(question));
+
     }
 
     public TodayInterviewResponse countTodayInterview(final MemberDetails details) {
@@ -100,6 +112,13 @@ public class ApplicantService {
         List<Applicant> applicants = applicantRepository.findAllPassedApplicants(interview);
         Map<Applicant, List<KeywordResponse>> applicantsWithKeywords = keywordRepository.findAllByApplicants(applicants);
         return PassedApplicantsResponse.generateList(applicantsWithKeywords);
+    }
+
+    @Transactional
+    public void makeQuestionsPublic(final Long applicantId, final GoQuestionPublicRequest request) {
+        Applicant applicant = applicantRepository.findById(applicantId)
+                .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
+        applicant.changeQuestionPublicType(request.agree());
     }
 
     public void sendPassEmail(final PassEmailSendRequest request) {
@@ -203,7 +222,7 @@ public class ApplicantService {
                 .orElseThrow(() -> new AppException(ErrorCode.INTERVIEW_NOT_FOUNT));
 
         final List<Applicant> applicants = resetCompletedApplicants(interview);
-        final Map<Applicant, List<KeywordResponse>> keywordMap = applicantRepository.findAllByInterviewWithKeywords(applicants, interview);
+        final Map<Applicant, List<KeywordResponse>> keywordMap = keywordRepository.findAllByApplicants(applicants);
         final Map<Applicant, List<OneLinerResponse>> oneLinerMap = oneLinerRepository.getOneLinersForApplicants(applicants);
         return CompletedApplicantsResponse.generateList(applicants, keywordMap, oneLinerMap);
     }
@@ -241,10 +260,8 @@ public class ApplicantService {
         final Applicant applicant = applicantRepository.findById(applicantId)
                 .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
 
-        final List<KeywordResponse> keywords = applicantRepository.findKeywordsByApplicant(applicant);
+        final List<Keyword> keywords = keywordRepository.findAllByApplicant(applicant);
         final List<OneLinerResponse> oneLiners = oneLinerRepository.getOneLinersForApplicant(applicant);
         return CompletedApplicantDetailsResponse.from(applicant, keywords, oneLiners);
     }
-
-
 }
