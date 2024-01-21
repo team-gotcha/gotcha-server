@@ -44,13 +44,6 @@ public class MemberService {
         return googleToken.toLoginResponse(member.getId());
     }
 
-    public Member findByEmail(String email) {
-        return memberRepository
-                .findByEmail(email)
-                .orElseThrow(
-                        () -> new AppException(ErrorCode.USER_NOT_FOUND));
-    }
-
     public UserResponse getUserDetails(final MemberDetails details) {
         Member member = details.member();
         return new UserResponse(member.getProfileUrl(), member.getName(), member.getEmail());
