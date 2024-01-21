@@ -1,0 +1,11 @@
+version: "3.8"
+services:
+  web:
+    image: "nzeong/gotcha"
+    ports:
+      - "8080:8080"
+    restart: "always"
+    tty: true
+    environment:
+      - TZ=Asia/Seoul
+      - SPRING_PROFILES_ACTIVE=prod
