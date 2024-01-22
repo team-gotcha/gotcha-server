@@ -33,7 +33,7 @@ public class GoogleOAuth {
                 .bodyValue(params)
                 .retrieve()
                 .onStatus(status -> status.is4xxClientError(), response -> {
-                    throw new AppException(ErrorCode.INVALID_TOKEN_REQUEST);
+                    throw new AppException(ErrorCode.INVALID_GOOGLE_TOKEN_REQUEST);
                 })
                 .bodyToMono(GoogleTokenResponse.class)
                 .block();
