@@ -55,6 +55,13 @@ public class MemberService {
         return new LoginResponse(member.getId(), accessToken, refreshToken);
     }
 
+    @Transactional
+    public void logout(final MemberDetails details) {
+        Member member = details.member();
+        member.updateRefreshToken(null);
+        memberRepository.save(member);
+    }
+
     public TodayInterviewResponse countTodayInterview(final MemberDetails details) {
         long count = interviewerRepository.countTodayInterview(details.member());
         return new TodayInterviewResponse(count);
