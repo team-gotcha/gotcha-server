@@ -6,7 +6,7 @@ import com.gotcha.server.applicant.dto.request.InterviewProceedRequest;
 import com.gotcha.server.applicant.dto.request.PassEmailSendRequest;
 import com.gotcha.server.applicant.dto.response.*;
 import com.gotcha.server.applicant.service.ApplicantService;
-import com.gotcha.server.auth.security.MemberDetails;
+import com.gotcha.server.auth.dto.request.MemberDetails;
 
 import io.swagger.v3.oas.annotations.Operation;
 import java.io.IOException;

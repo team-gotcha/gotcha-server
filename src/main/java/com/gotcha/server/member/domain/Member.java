@@ -24,7 +24,7 @@ public class Member extends BaseTimeEntity {
     @Column(nullable = false)
     private String socialId;
 
-    @Column(nullable = false)
+    @Column
     private String email;
 
     @Column(nullable = false)
@@ -50,5 +50,9 @@ public class Member extends BaseTimeEntity {
         this.profileUrl = profileUrl;
         this.refreshToken = refreshToken;
         this.role = Role.ROLE_USER;
+    }
+
+    public void updateRefreshToken(final String refreshToken) {
+        this.refreshToken = refreshToken;
     }
 }

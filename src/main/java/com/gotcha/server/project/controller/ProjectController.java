@@ -1,9 +1,6 @@
 package com.gotcha.server.project.controller;
 
-import com.gotcha.server.auth.security.MemberDetails;
-import com.gotcha.server.member.domain.Member;
-import com.gotcha.server.member.domain.Role;
-import com.gotcha.server.project.domain.Collaborator;
+import com.gotcha.server.auth.dto.request.MemberDetails;
 import com.gotcha.server.project.dto.request.ProjectRequest;
 import com.gotcha.server.project.dto.response.ProjectResponse;
 import com.gotcha.server.project.dto.response.SidebarResponse;

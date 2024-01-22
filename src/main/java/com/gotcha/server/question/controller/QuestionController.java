@@ -2,7 +2,7 @@ package com.gotcha.server.question.controller;
 
 import com.gotcha.server.question.dto.response.QuestionRankResponse;
 import com.gotcha.server.question.dto.request.IndividualQuestionRequest;
-import com.gotcha.server.auth.security.MemberDetails;
+import com.gotcha.server.auth.dto.request.MemberDetails;
 import com.gotcha.server.question.dto.request.CommonQuestionsRequest;
 import com.gotcha.server.question.dto.response.InterviewQuestionResponse;
 import com.gotcha.server.question.dto.response.PreparatoryQuestionResponse;
@@ -25,7 +25,7 @@ public class QuestionController {
 
     @PostMapping("/common")
     @Operation(description = "공통 질문을 생성한다.")
-    public ResponseEntity<Void> createCommonQuestions(final CommonQuestionsRequest request) {
+    public ResponseEntity<Void> createCommonQuestions(@RequestBody final CommonQuestionsRequest request) {
         questionService.createCommonQuestions(request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

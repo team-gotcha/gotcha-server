@@ -3,7 +3,7 @@ package com.gotcha.server.evaluation.service;
 import com.gotcha.server.applicant.domain.Applicant;
 import com.gotcha.server.applicant.domain.InterviewStatus;
 import com.gotcha.server.applicant.repository.ApplicantRepository;
-import com.gotcha.server.auth.security.MemberDetails;
+import com.gotcha.server.auth.dto.request.MemberDetails;
 import com.gotcha.server.evaluation.domain.Evaluation;
 import com.gotcha.server.evaluation.domain.OneLiner;
 import com.gotcha.server.evaluation.dto.request.EvaluateRequest;

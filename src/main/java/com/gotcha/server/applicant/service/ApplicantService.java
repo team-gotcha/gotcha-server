@@ -12,7 +12,7 @@ import com.gotcha.server.applicant.dto.request.*;
 import com.gotcha.server.applicant.dto.response.*;
 import com.gotcha.server.applicant.repository.ApplicantRepository;
 import com.gotcha.server.applicant.repository.KeywordRepository;
-import com.gotcha.server.auth.security.MemberDetails;
+import com.gotcha.server.auth.dto.request.MemberDetails;
 import com.gotcha.server.evaluation.dto.response.OneLinerResponse;
 import com.gotcha.server.evaluation.repository.OneLinerRepository;
 import com.gotcha.server.global.exception.AppException;

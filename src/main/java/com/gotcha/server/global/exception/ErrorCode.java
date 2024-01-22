@@ -8,9 +8,13 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum ErrorCode {
     USER_NOT_FOUND(HttpStatus.UNAUTHORIZED, "존재하지 않는 사용자입니다."),
-    INVALID_TOKEN_REQUEST(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰 요청 입니다."),
-    INVALID_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 access token 입니다."),
-    INVALID_ID_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 id token 입니다."),
+    INVALID_AUTHORIZATION_HEADER(HttpStatus.UNAUTHORIZED, "유효하지 않은 Authorization 헤더 형식입니다."),
+    INVALID_GOOGLE_TOKEN_REQUEST(HttpStatus.UNAUTHORIZED, "유효하지 않은 구글 토큰 요청입니다."),
+    MALFORMED_JWT(HttpStatus.UNAUTHORIZED, "잘못된 JWT 서명입니다."),
+    EXPIRED_JWT(HttpStatus.UNAUTHORIZED, "만료된 JWT 토큰입니다."),
+    UNSUPPORTED_JWT(HttpStatus.UNAUTHORIZED, "지원되지 않는 JWT 토큰입니다."),
+    INVALID_JWT(HttpStatus.UNAUTHORIZED, "JWT 토큰이 잘못되었습니다."),
+    INVALID_ID_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 구글 id 토큰입니다."),
     INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 refresh token 입니다."),
     UNAUTHORIZED_INTERVIEWER(HttpStatus.UNAUTHORIZED, "면접관 권한이 없습니다."),
 
