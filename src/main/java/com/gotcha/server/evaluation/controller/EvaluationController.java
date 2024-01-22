@@ -1,6 +1,6 @@
 package com.gotcha.server.evaluation.controller;
 
-import com.gotcha.server.auth.security.MemberDetails;
+import com.gotcha.server.auth.dto.request.MemberDetails;
 import com.gotcha.server.evaluation.dto.request.EvaluateRequest;
 import com.gotcha.server.evaluation.dto.request.OneLinerRequest;
 import com.gotcha.server.evaluation.dto.response.QuestionEvaluationResponse;

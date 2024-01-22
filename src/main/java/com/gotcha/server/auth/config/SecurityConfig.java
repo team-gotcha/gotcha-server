@@ -1,4 +1,4 @@
-package com.gotcha.server.auth.security;
+package com.gotcha.server.auth.config;
 
 import com.gotcha.server.auth.oauth.GoogleAuthenticationFilter;
 import lombok.RequiredArgsConstructor;

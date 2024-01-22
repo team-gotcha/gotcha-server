@@ -10,7 +10,7 @@ import com.gotcha.server.applicant.dto.request.GoQuestionPublicRequest;
 import com.gotcha.server.applicant.dto.request.InterviewProceedRequest;
 import com.gotcha.server.applicant.dto.response.ApplicantResponse;
 import com.gotcha.server.applicant.repository.ApplicantRepository;
-import com.gotcha.server.auth.security.MemberDetails;
+import com.gotcha.server.auth.dto.request.MemberDetails;
 import com.gotcha.server.common.IntegrationTest;
 import com.gotcha.server.member.domain.Member;
 import com.gotcha.server.project.domain.Interview;

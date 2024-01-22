@@ -4,7 +4,7 @@ import com.gotcha.server.member.dto.response.TodayInterviewResponse;
 import com.gotcha.server.applicant.repository.InterviewerRepository;
 import com.gotcha.server.auth.dto.response.RefreshTokenResponse;
 import com.gotcha.server.auth.oauth.GoogleOAuth;
-import com.gotcha.server.auth.security.MemberDetails;
+import com.gotcha.server.auth.dto.request.MemberDetails;
 import com.gotcha.server.global.exception.AppException;
 import com.gotcha.server.global.exception.ErrorCode;
 import com.gotcha.server.member.domain.Member;

@@ -4,7 +4,7 @@ import com.gotcha.server.auth.dto.response.GoogleTokenResponse;
 import com.gotcha.server.auth.dto.response.GoogleUserResponse;
 import com.gotcha.server.auth.dto.response.RefreshTokenResponse;
 import com.gotcha.server.auth.dto.response.TokenInfoResponse;
-import com.gotcha.server.auth.security.MemberDetailsService;
+import com.gotcha.server.auth.service.MemberDetailsService;
 import com.gotcha.server.global.exception.AppException;
 import com.gotcha.server.global.exception.ErrorCode;
 import jakarta.servlet.http.HttpServletRequest;

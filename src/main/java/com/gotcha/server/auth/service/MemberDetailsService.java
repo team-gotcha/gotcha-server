@@ -1,5 +1,6 @@
-package com.gotcha.server.auth.security;
+package com.gotcha.server.auth.service;
 
+import com.gotcha.server.auth.dto.request.MemberDetails;
 import com.gotcha.server.global.exception.AppException;
 import com.gotcha.server.global.exception.ErrorCode;
 import com.gotcha.server.member.domain.Member;

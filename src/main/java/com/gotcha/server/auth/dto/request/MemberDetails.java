@@ -1,4 +1,4 @@
-package com.gotcha.server.auth.security;
+package com.gotcha.server.auth.dto.request;
 
 import com.gotcha.server.member.domain.Member;
 import java.util.ArrayList;

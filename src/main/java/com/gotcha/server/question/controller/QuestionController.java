@@ -2,7 +2,7 @@ package com.gotcha.server.question.controller;
 
 import com.gotcha.server.question.dto.response.QuestionRankResponse;
 import com.gotcha.server.question.dto.request.IndividualQuestionRequest;
-import com.gotcha.server.auth.security.MemberDetails;
+import com.gotcha.server.auth.dto.request.MemberDetails;
 import com.gotcha.server.question.dto.request.CommonQuestionsRequest;
 import com.gotcha.server.question.dto.response.InterviewQuestionResponse;
 import com.gotcha.server.question.dto.response.PreparatoryQuestionResponse;
