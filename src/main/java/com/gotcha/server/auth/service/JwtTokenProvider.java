@@ -1,5 +1,7 @@
 package com.gotcha.server.auth.service;
 
+import com.gotcha.server.global.exception.AppException;
+import com.gotcha.server.global.exception.ErrorCode;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -68,13 +70,13 @@ public class JwtTokenProvider {
             Jwts.parser().setSigningKey(key).parseClaimsJws(jwtToken).getBody();
             return true;
         } catch (MalformedJwtException e) {
-            throw new MalformedJwtException("잘못된 JWT 서명입니다.");
+            throw new AppException(ErrorCode.MALFORMED_JWT);
         } catch (ExpiredJwtException e) {
-            throw new JwtException("만료된 JWT 토큰입니다.");
+            throw new AppException(ErrorCode.EXPIRED_JWT);
         } catch (UnsupportedJwtException e) {
-            throw new UnsupportedJwtException("지원되지 않는 JWT 토큰입니다.");
+            throw new AppException(ErrorCode.UNSUPPORTED_JWT);
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("JWT 토큰이 잘못되었습니다.");
+            throw new AppException(ErrorCode.INVALID_JWT);
         }
     }
 }
