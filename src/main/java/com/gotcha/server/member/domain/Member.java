@@ -51,4 +51,8 @@ public class Member extends BaseTimeEntity {
         this.refreshToken = refreshToken;
         this.role = Role.ROLE_USER;
     }
+
+    public void updateRefreshToken(final String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
 }
