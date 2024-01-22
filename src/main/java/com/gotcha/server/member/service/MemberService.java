@@ -52,7 +52,7 @@ public class MemberService {
         String accessToken = jwtTokenProvider.createAccessToken(member.getSocialId());
         String refreshToken = jwtTokenProvider.createRefreshToken(member.getSocialId());
         member.updateRefreshToken(refreshToken);
-        return new LoginResponse(member.getId(), accessToken, refreshToken);
+        return new LoginResponse(member.getId(), accessToken, refreshToken, member.getEmail());
     }
 
     @Transactional
