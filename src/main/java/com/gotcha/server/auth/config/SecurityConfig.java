@@ -1,6 +1,6 @@
 package com.gotcha.server.auth.config;
 
-import com.gotcha.server.auth.oauth.GoogleAuthenticationFilter;
+import com.gotcha.server.auth.infra.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,7 +20,7 @@ import java.util.Collections;
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
-    private final GoogleAuthenticationFilter googleAuthenticationFilter;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -38,7 +38,7 @@ public class SecurityConfig {
                         .anyRequest().permitAll()
                 );
 
-        http.addFilterBefore(googleAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum ErrorCode {
     USER_NOT_FOUND(HttpStatus.UNAUTHORIZED, "존재하지 않는 사용자입니다."),
+    INVALID_AUTHORIZATION_HEADER(HttpStatus.UNAUTHORIZED, "유효하지 않은 Authorization 헤더 형식입니다."),
     INVALID_TOKEN_REQUEST(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰 요청 입니다."),
     INVALID_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 access token 입니다."),
     INVALID_ID_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 id token 입니다."),

@@ -1,12 +1,14 @@
-package com.gotcha.server.auth.oauth;
+package com.gotcha.server.auth.infra;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gotcha.server.auth.dto.response.TokenInfoResponse;
+import com.gotcha.server.auth.controller.AuthorizationResolver;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
@@ -16,22 +18,25 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 @Component
 @RequiredArgsConstructor
-public class GoogleAuthenticationFilter extends OncePerRequestFilter {
-    private final GoogleOAuth googleOAuth;
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
+    private final AuthorizationResolver authorizationResolver;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) {
+    public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) {
         try {
-            String token = googleOAuth.resolveToken(request);
-            if(token != null) {
-                TokenInfoResponse tokenInfo = googleOAuth.requestTokenInfo(token);
-                Authentication authentication = googleOAuth.getAuthentication(tokenInfo);
+            String authorization = extractAuthorizationHeader(request);
+            if (Objects.nonNull(authorization)) {
+                Authentication authentication = authorizationResolver.resolve(authorization);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
-            chain.doFilter(request, response);
+            filterChain.doFilter(request, response);
         } catch (Exception e) {
             setErrorResponse(response, e.getMessage());
         }
+    }
+
+    private String extractAuthorizationHeader(HttpServletRequest request) {
+        return request.getHeader(HttpHeaders.AUTHORIZATION);
     }
 
     private void setErrorResponse(HttpServletResponse response, String errorMessage){
@@ -39,7 +44,7 @@ public class GoogleAuthenticationFilter extends OncePerRequestFilter {
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
-        ErrorResponse errorResponse = new ErrorResponse(errorMessage, HttpStatus.UNAUTHORIZED.value());
+        JwtAuthenticationFilter.ErrorResponse errorResponse = new JwtAuthenticationFilter.ErrorResponse(errorMessage, HttpStatus.UNAUTHORIZED.value());
         try {
             response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
         } catch (IOException e){
