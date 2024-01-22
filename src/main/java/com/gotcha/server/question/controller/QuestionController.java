@@ -25,7 +25,7 @@ public class QuestionController {
 
     @PostMapping("/common")
     @Operation(description = "공통 질문을 생성한다.")
-    public ResponseEntity<Void> createCommonQuestions(final CommonQuestionsRequest request) {
+    public ResponseEntity<Void> createCommonQuestions(@RequestBody final CommonQuestionsRequest request) {
         questionService.createCommonQuestions(request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
