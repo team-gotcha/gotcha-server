@@ -24,6 +24,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
+
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -106,6 +109,14 @@ public class IndividualQuestion extends BaseTimeEntity {
     public void updateImportance(Integer importance) {
         validateImportance(importance);
         this.importance = importance;
+    }
+
+    public void changeAsking() {
+        if(this.asking == FALSE) {
+            this.asking = TRUE;
+        } else {
+            this.asking = FALSE;
+        }
     }
 
     public void updateContent(String content) {

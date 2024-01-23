@@ -1,5 +1,6 @@
 package com.gotcha.server.question.controller;
 
+import com.gotcha.server.question.dto.request.AskingFlagsRequest;
 import com.gotcha.server.question.dto.response.IndividualQuestionsResponse;
 import com.gotcha.server.question.dto.response.QuestionRankResponse;
 import com.gotcha.server.question.dto.request.IndividualQuestionRequest;
@@ -61,5 +62,12 @@ public class QuestionController {
     @Operation(description = "면접 후, 지원자의 모든 면접 질문 id를 총점 순으로 조회한다.")
     public ResponseEntity<List<QuestionRankResponse>> findQuestionRanksByApplicant(@RequestParam(value = "applicant-id") Long applicantId) {
         return ResponseEntity.ok(questionService.findQuestionRanks(applicantId));
+    }
+
+    @PatchMapping("/asking-flags")
+    @Operation(description = "지원자 상세 페이지의 댓글들의 '면접 때 질문하기' 값을 바꾼다.")
+    public ResponseEntity<String> changeAskingFlags(@RequestBody @Valid AskingFlagsRequest request) {
+        questionService.changeAskingFlags(request);
+        return ResponseEntity.status(HttpStatus.OK).body("면접 때 질문하기 값이 업데이트 되었습니다.");
     }
 }

@@ -2,6 +2,7 @@ package com.gotcha.server.question.service;
 
 import com.gotcha.server.applicant.domain.Applicant;
 import com.gotcha.server.evaluation.domain.QuestionEvaluations;
+import com.gotcha.server.question.dto.request.AskingFlagsRequest;
 import com.gotcha.server.question.dto.response.IndividualQuestionsResponse;
 import com.gotcha.server.question.dto.response.QuestionRankResponse;
 import com.gotcha.server.question.domain.QuestionPublicType;
@@ -119,5 +120,13 @@ public class QuestionService {
         List<IndividualQuestion> questions = individualQuestionRepository.findAllAfterEvaluation(applicant);
         QuestionEvaluations evaluations = new QuestionEvaluations(questions);
         return evaluations.createQuestionRanks();
+    }
+
+    @Transactional
+    public void changeAskingFlags(AskingFlagsRequest request) {
+        IndividualQuestion question = individualQuestionRepository.findById(request.questionId())
+                .orElseThrow(() -> new AppException(ErrorCode.QUESTION_NOT_FOUNT));
+        question.changeAsking();
+        individualQuestionRepository.save(question);
     }
 }
