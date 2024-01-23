@@ -7,7 +7,8 @@ import org.springframework.http.HttpStatus;
 @Getter
 @AllArgsConstructor
 public enum ErrorCode {
-    USER_NOT_FOUND(HttpStatus.UNAUTHORIZED, "존재하지 않는 사용자입니다."),
+    USER_NOT_FOUND(HttpStatus.UNAUTHORIZED, "로그인한 사용자가 존재하지 않습니다."),
+    TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED, "토큰이 존재하지 않습니다."),
     INVALID_AUTHORIZATION_HEADER(HttpStatus.UNAUTHORIZED, "유효하지 않은 Authorization 헤더 형식입니다."),
     INVALID_GOOGLE_TOKEN_REQUEST(HttpStatus.UNAUTHORIZED, "유효하지 않은 구글 토큰 요청입니다."),
     MALFORMED_JWT(HttpStatus.UNAUTHORIZED, "잘못된 JWT 서명입니다."),
