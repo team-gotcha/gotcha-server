@@ -96,7 +96,7 @@ public class StompIntegrationTest {
     void 질문_수정하기() throws Exception {
         // given
         given(individualQuestionRepository.findById(1L)).willReturn(
-                Optional.of(테스트개별질문(null, "자기소개해주세요.", 0, true, 5)));
+                Optional.of(테스트개별질문(null, "자기소개해주세요.", 0, true, 5, null)));
 
         String URL = String.format("ws://localhost:%d/ws", port);
         String jwtToken = testTokenCreator.create();

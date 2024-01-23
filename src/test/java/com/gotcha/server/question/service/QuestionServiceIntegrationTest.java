@@ -13,6 +13,7 @@ import com.gotcha.server.project.domain.Project;
 import com.gotcha.server.question.domain.IndividualQuestion;
 import com.gotcha.server.question.domain.QuestionPublicType;
 import com.gotcha.server.question.dto.message.QuestionUpdateMessage;
+import com.gotcha.server.question.dto.response.IndividualQuestionsResponse;
 import com.gotcha.server.question.dto.response.QuestionRankResponse;
 import com.gotcha.server.question.repository.IndividualQuestionRepository;
 import java.util.List;
@@ -33,6 +34,26 @@ public class QuestionServiceIntegrationTest extends IntegrationTest {
     @Autowired
     private IndividualQuestionRepository questionRepository;
 
+    @Test
+    @DisplayName("면접 전 질문 목록을 조회한다. 이때 작성자에 대한 정보를 포함한다.")
+    void 면접전_질문목록_조회하기() {
+        // given
+        Member 종미 = environ.테스트유저_저장하기("종미");
+        Project 테스트프로젝트 = environ.테스트프로젝트_저장하기();
+        Interview 테스트면접 = environ.테스트면접_저장하기(테스트프로젝트, "테스트면접");
+        Applicant 지원자A = environ.테스트지원자_저장하기(테스트면접, "지원자A");
+        IndividualQuestion 질문A = environ.테스트개별질문_저장하기(지원자A, "자기소개해주세요.", 1, true, 5, 종미);
+        IndividualQuestion 질문B = environ.테스트개별질문_저장하기(지원자A, "장점을소개해주세요.", 2, true, 5, 종미);
+
+        // when
+        List<IndividualQuestionsResponse> 조회결과 = questionService.listIndividualQuestions(지원자A.getId());
+
+        // then
+        assertThat(조회결과).hasSize(2)
+                .extracting(IndividualQuestionsResponse::getWriterName)
+                .contains("종미");
+    }
+
     @ParameterizedTest
     @MethodSource("수정항목_설정하기")
     @DisplayName("질문의 내용, 순서, 중요도를 하나의 메서드로 수정한다")
@@ -41,7 +62,7 @@ public class QuestionServiceIntegrationTest extends IntegrationTest {
         Project 테스트프로젝트 = environ.테스트프로젝트_저장하기();
         Interview 테스트면접 = environ.테스트면접_저장하기(테스트프로젝트, "테스트면접");
         Applicant 지원자A = environ.테스트지원자_저장하기(테스트면접, "지원자A");
-        IndividualQuestion 질문 = environ.테스트개별질문_저장하기(지원자A, "자기소개해주세요", 3, true, 3);
+        IndividualQuestion 질문 = environ.테스트개별질문_저장하기(지원자A, "자기소개해주세요", 3, true, 3, null);
 
         QuestionUpdateMessage 수정요청 = new QuestionUpdateMessage(수정내용, 수정항목);
 
@@ -71,7 +92,7 @@ public class QuestionServiceIntegrationTest extends IntegrationTest {
         Project 테스트프로젝트 = environ.테스트프로젝트_저장하기();
         Interview 테스트면접 = environ.테스트면접_저장하기(테스트프로젝트, "테스트면접");
         Applicant 지원자A = environ.테스트지원자_저장하기(테스트면접, "지원자A");
-        IndividualQuestion 질문 = environ.테스트개별질문_저장하기(지원자A, "자기소개해주세요", 3, true, 3);
+        IndividualQuestion 질문 = environ.테스트개별질문_저장하기(지원자A, "자기소개해주세요", 3, true, 3, null);
 
         environ.테스트지원자_질문공개하기(지원자A);
 
@@ -96,8 +117,8 @@ public class QuestionServiceIntegrationTest extends IntegrationTest {
         Interviewer 종미면접관 = environ.테스트면접관_저장하기(지원자A, 종미);
         Interviewer 윤정면접관 = environ.테스트면접관_저장하기(지원자A, 윤정);
 
-        IndividualQuestion 질문A = environ.테스트개별질문_저장하기(지원자A, "자기소개해주세요.", 1, true, 5);
-        IndividualQuestion 질문B = environ.테스트개별질문_저장하기(지원자A, "장점을소개해주세요.", 2, true, 5);
+        IndividualQuestion 질문A = environ.테스트개별질문_저장하기(지원자A, "자기소개해주세요.", 1, true, 5, 종미);
+        IndividualQuestion 질문B = environ.테스트개별질문_저장하기(지원자A, "장점을소개해주세요.", 2, true, 5, 종미);
 
         environ.테스트평가_저장하기(1, "인상이좋다", 질문A, 종미);
         environ.테스트평가_저장하기(2, "굿", 질문A, 윤정);
