@@ -29,9 +29,7 @@ public class ApplicantRequest {
     private Long interviewId;
     private List<IndividualQuestionRequest> questions;
 
-    public Applicant toEntity(InterviewRepository interviewRepository) {
-        Interview interview = interviewRepository.findById(interviewId)
-                .orElseThrow(() -> new AppException(ErrorCode.INTERVIEW_NOT_FOUNT));
+    public Applicant toEntity(Interview interview) {
         return Applicant.builder()
                 .name(name)
                 .date(date)
