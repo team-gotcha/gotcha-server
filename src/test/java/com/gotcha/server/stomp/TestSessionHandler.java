@@ -13,14 +13,19 @@ import org.springframework.messaging.simp.stomp.StompSessionHandler;
 @Slf4j
 public class TestSessionHandler implements StompSessionHandler {
     private final BlockingQueue<QuestionUpdateMessage> blockingQueue;
+    private final String jwtToken;
 
-    public TestSessionHandler(BlockingQueue<QuestionUpdateMessage> blockingQueue) {
+    public TestSessionHandler(BlockingQueue<QuestionUpdateMessage> blockingQueue, String jwtToken) {
         this.blockingQueue = blockingQueue;
+        this.jwtToken = jwtToken;
     }
 
     @Override
     public void afterConnected(StompSession session, StompHeaders connectedHeaders) {
-        session.subscribe("/sub/question/1", this);
+        StompHeaders subHeaders = new StompHeaders();
+        subHeaders.setLogin("Bearer " + jwtToken);
+        subHeaders.setDestination("/sub/question/1");
+        session.subscribe(subHeaders, this);
     }
 
     @Override
