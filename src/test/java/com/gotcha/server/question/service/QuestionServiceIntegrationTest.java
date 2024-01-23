@@ -96,8 +96,8 @@ public class QuestionServiceIntegrationTest extends IntegrationTest {
         Interviewer 종미면접관 = environ.테스트면접관_저장하기(지원자A, 종미);
         Interviewer 윤정면접관 = environ.테스트면접관_저장하기(지원자A, 윤정);
 
-        IndividualQuestion 질문A = environ.테스트개별질문_저장하기(지원자A, "자기소개해주세요.", 1, true, 1);
-        IndividualQuestion 질문B = environ.테스트개별질문_저장하기(지원자A, "장점을소개해주세요.", 2, true, 1);
+        IndividualQuestion 질문A = environ.테스트개별질문_저장하기(지원자A, "자기소개해주세요.", 1, true, 5);
+        IndividualQuestion 질문B = environ.테스트개별질문_저장하기(지원자A, "장점을소개해주세요.", 2, true, 5);
 
         environ.테스트평가_저장하기(1, "인상이좋다", 질문A, 종미);
         environ.테스트평가_저장하기(2, "굿", 질문A, 윤정);
@@ -110,6 +110,6 @@ public class QuestionServiceIntegrationTest extends IntegrationTest {
         // then
         assertThat(조회결과).hasSize(2)
                 .extracting(QuestionRankResponse::totalScore)
-                .containsExactlyElementsOf(List.of(3.5, 1.5));
+                .containsExactlyElementsOf(List.of(17.5, 7.5));
     }
 }
