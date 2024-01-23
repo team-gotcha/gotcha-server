@@ -1,5 +1,6 @@
 package com.gotcha.server.question.controller;
 
+import com.gotcha.server.question.dto.response.IndividualQuestionsResponse;
 import com.gotcha.server.question.dto.response.QuestionRankResponse;
 import com.gotcha.server.question.dto.request.IndividualQuestionRequest;
 import com.gotcha.server.auth.dto.request.MemberDetails;
@@ -28,6 +29,12 @@ public class QuestionController {
     public ResponseEntity<Void> createCommonQuestions(@RequestBody final CommonQuestionsRequest request) {
         questionService.createCommonQuestions(request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @GetMapping
+    @Operation(description = "면접 전 지원자의 개별 질문 목록을 조회한다.")
+    public ResponseEntity<List<IndividualQuestionsResponse>> findAllIndividualQuestions(@RequestParam(name = "applicant-id") Long applicantId) {
+        return ResponseEntity.ok(questionService.listIndividualQuestions(applicantId));
     }
 
     @GetMapping("/in-progress")

@@ -2,6 +2,7 @@ package com.gotcha.server.question.service;
 
 import com.gotcha.server.applicant.domain.Applicant;
 import com.gotcha.server.evaluation.domain.QuestionEvaluations;
+import com.gotcha.server.question.dto.response.IndividualQuestionsResponse;
 import com.gotcha.server.question.dto.response.QuestionRankResponse;
 import com.gotcha.server.question.domain.QuestionPublicType;
 import com.gotcha.server.question.dto.message.QuestionUpdateMessage;
@@ -44,6 +45,13 @@ public class QuestionService {
                 .map(content -> new CommonQuestion(content, interview))
                 .collect(Collectors.toList());
         commonQuestionRepository.saveAll(questions);
+    }
+
+    public List<IndividualQuestionsResponse> listIndividualQuestions(final Long applicantId) {
+        Applicant applicant = applicantRepository.findById(applicantId)
+                .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
+        List<IndividualQuestion> questions = individualQuestionRepository.findAllBeforeInterview(applicant);
+        return questions.stream().map(IndividualQuestionsResponse::from).toList();
     }
 
     @Transactional
