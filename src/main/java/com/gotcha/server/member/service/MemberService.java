@@ -42,8 +42,8 @@ public class MemberService {
     }
 
     @Transactional
-    public LoginResponse login(String code) {
-        GoogleTokenResponse googleToken = googleOAuth.requestTokens(code);
+    public LoginResponse login(String code, String redirectUri) {
+        GoogleTokenResponse googleToken = googleOAuth.requestTokens(code, redirectUri);
         GoogleUserResponse googleUser = googleOAuth.requestUserInfo(googleToken);
         Member member = memberRepository.findBySocialId(googleUser.sub()).orElse(null);
         if(Objects.isNull(member)) {
