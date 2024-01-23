@@ -55,10 +55,11 @@ public class TestFixture {
         return new Subcollaborator(이메일, 인터뷰);
     }
 
-    public static IndividualQuestion 테스트개별질문(Applicant 지원자, String 내용, Integer 순서, boolean 면접때질문하기, Integer 중요도) {
+    public static IndividualQuestion 테스트개별질문(Applicant 지원자, String 내용, Integer 순서, boolean 면접때질문하기, Integer 중요도, Member 작성자) {
         IndividualQuestion question = IndividualQuestion.builder()
                 .applicant(지원자)
                 .content(내용)
+                .member(작성자)
                 .build();
         question.updateOrder(순서);
         question.updateImportance(중요도);

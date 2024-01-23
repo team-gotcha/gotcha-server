@@ -14,9 +14,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Component
 @RequiredArgsConstructor
 public class GoogleOAuth {
-    @Value("${oauth.google.redirect-url}")
-    private String REDIRECT_URI;
-
     @Value("${oauth.google.client-id}")
     private String CLIENT_ID;
 
@@ -25,8 +22,8 @@ public class GoogleOAuth {
 
     private final WebClient webClient;
 
-    public GoogleTokenResponse requestTokens(String code) {
-        Map<String, Object> params = GoogleUri.getTokenRequestParams(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, code);
+    public GoogleTokenResponse requestTokens(String code, String redirectUri) {
+        Map<String, Object> params = GoogleUri.getTokenRequestParams(CLIENT_ID, CLIENT_SECRET, redirectUri, code);
         return webClient.post()
                 .uri(GoogleUri.TOKEN_REQUEST.getUri())
                 .accept(MediaType.APPLICATION_JSON)

@@ -199,9 +199,23 @@ public class ApplicantService {
     }
 
     public List<IndividualQuestion> createIndividualQuestions(List<IndividualQuestionRequest> questionRequests, Member member) {
-        return questionRequests.stream()
-                .map(request -> request.toEntity(member, applicantRepository, individualQuestionRepository))
-                .collect(Collectors.toList());
+        List<IndividualQuestion> individualQuestions = new ArrayList<>();
+        for(IndividualQuestionRequest request: questionRequests) {
+            Applicant applicant = applicantRepository.findById(request.getApplicantId())
+                .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
+            IndividualQuestion individualQuestion = findCommentTarget(request.getCommentTargetId());
+            IndividualQuestion question = request.toEntity(member, applicant, individualQuestion);
+            individualQuestions.add(question);
+        }
+        return individualQuestions;
+    }
+
+    private IndividualQuestion findCommentTarget(final Long id) {
+        if(Objects.isNull(id)) {
+            return null;
+        }
+        return individualQuestionRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.QUESTION_NOT_FOUNT));
     }
 
     public List<Interviewer> createInterviewers(List<InterviewerRequest> interviewerRequests) {

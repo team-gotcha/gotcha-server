@@ -18,12 +18,17 @@ public class AuthorizationResolver {
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberDetailsService memberDetailsService;
 
-    public Authentication resolve(final String headerValue) {
+    public Authentication resolveAuthentication(final String headerValue) {
+        String token = resolveToken(headerValue);
+        UserDetails userDetails = memberDetailsService.loadUserByUsername(jwtTokenProvider.getPayload(token));
+        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+    }
+
+    public String resolveToken(final String headerValue) {
         validateAuthorizationHeader(headerValue);
         String token = extractToken(headerValue);
         jwtTokenProvider.validateToken(token);
-        UserDetails userDetails = memberDetailsService.loadUserByUsername(jwtTokenProvider.getPayload(token));
-        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+        return token;
     }
 
     private String extractToken(final String headerValue) {

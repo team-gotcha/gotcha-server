@@ -26,7 +26,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             String authorization = extractAuthorizationHeader(request);
             if (Objects.nonNull(authorization)) {
-                Authentication authentication = authorizationResolver.resolve(authorization);
+                Authentication authentication = authorizationResolver.resolveAuthentication(authorization);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
             filterChain.doFilter(request, response);
