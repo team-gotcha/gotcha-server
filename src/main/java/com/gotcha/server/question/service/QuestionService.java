@@ -21,6 +21,7 @@ import com.gotcha.server.question.dto.response.PreparatoryQuestionResponse;
 import com.gotcha.server.question.repository.CommonQuestionRepository;
 import com.gotcha.server.question.repository.IndividualQuestionRepository;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -75,7 +76,10 @@ public class QuestionService {
     public void createIndividualQuestion(IndividualQuestionRequest request, Member member){
         validQuestion(request);
 
-        IndividualQuestion question = request.toEntity(member, applicantRepository, individualQuestionRepository);
+        Applicant applicant = applicantRepository.findById(request.getApplicantId())
+                .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
+        IndividualQuestion individualQuestion = findCommentTarget(request.getCommentTargetId());
+        IndividualQuestion question = request.toEntity(member, applicant, individualQuestion);
         individualQuestionRepository.save(question);
     }
 
@@ -83,6 +87,14 @@ public class QuestionService {
         if (request.getContent() == null || request.getContent().trim().isEmpty()) {
             throw new AppException(ErrorCode.CONTENT_IS_EMPTY);
         }
+    }
+
+    private IndividualQuestion findCommentTarget(final Long id) {
+        if(Objects.isNull(id)) {
+            return null;
+        }
+        return individualQuestionRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.QUESTION_NOT_FOUNT));
     }
 
     public List<PreparatoryQuestionResponse> listPreparatoryQuestions(final Long applicantId) {
