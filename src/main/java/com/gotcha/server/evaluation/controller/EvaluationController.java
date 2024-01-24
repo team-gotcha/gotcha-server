@@ -28,9 +28,9 @@ public class EvaluationController {
 
     @PostMapping("/one-liner")
     @Operation(description = "로그인 유저(면접관)가 지원자에게 한줄평을 작성한다.")
-    public ResponseEntity<Void> createOneLiner(@AuthenticationPrincipal final MemberDetails details, @RequestBody final OneLinerRequest request) {
+    public ResponseEntity<String> createOneLiner(@AuthenticationPrincipal final MemberDetails details, @RequestBody final OneLinerRequest request) {
         evaluationService.createOneLiner(details, request);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.status(HttpStatus.CREATED).body("한줄평이 입력되었습니다.");
     }
 
     @GetMapping("/questions")
