@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 public class PassedApplicantsResponse {
     private Long id;
     private String name;
-    private Integer score;
+    private Double score;
     private Integer rank;
     private List<String> keywords;
     private Boolean favorite;

@@ -21,20 +21,20 @@ public class EvaluationController {
 
     @PostMapping
     @Operation(description = "면접 중, 사전 작성된 질문들에 코멘트와 점수(0~5점)를 기록한다.")
-    public ResponseEntity<Void> evaluate(
+    public ResponseEntity<String> evaluate(
             @AuthenticationPrincipal final MemberDetails details,
             @RequestBody final List<EvaluateRequest> requests) {
         evaluationService.evaluate(details, requests);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.status(HttpStatus.CREATED).body("사전 작성된 질문들에 코멘트와 점수가 기록되었습니다.");
     }
 
     @PostMapping("/one-liner")
     @Operation(description = "로그인 유저(면접관)가 지원자에게 한줄평을 작성한다.")
-    public ResponseEntity<Void> createOneLiner(
+    public ResponseEntity<String> createOneLiner(
             @AuthenticationPrincipal final MemberDetails details,
             @RequestBody final OneLinerRequest request) {
         evaluationService.createOneLiner(details, request);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.status(HttpStatus.CREATED).body("한줄평이 입력되었습니다.");
     }
 
     @GetMapping("/questions")
