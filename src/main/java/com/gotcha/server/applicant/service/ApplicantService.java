@@ -11,6 +11,7 @@ import com.gotcha.server.applicant.domain.Keyword;
 import com.gotcha.server.applicant.dto.request.*;
 import com.gotcha.server.applicant.dto.response.*;
 import com.gotcha.server.applicant.repository.ApplicantRepository;
+import com.gotcha.server.applicant.repository.InterviewerRepository;
 import com.gotcha.server.applicant.repository.KeywordRepository;
 import com.gotcha.server.auth.dto.request.MemberDetails;
 import com.gotcha.server.evaluation.domain.QuestionEvaluations;
@@ -222,8 +223,15 @@ public class ApplicantService {
     }
 
     public List<Interviewer> createInterviewers(List<InterviewerRequest> interviewerRequests) {
+        Set<Long> existingMemberIds = new HashSet<>();
         return interviewerRequests.stream()
-                .map(request -> request.toEntity(memberRepository.findById(request.getId()).orElseThrow(() -> new AppException(ErrorCode.MEMBER_NOT_FOUND))))
+                .map(request -> {
+                    if (!existingMemberIds.add(request.getId())) {
+                        throw new AppException(ErrorCode.DUPLICATE_INTERVIEWER);
+                    }
+                    return request.toEntity(memberRepository.findById(request.getId())
+                            .orElseThrow(() -> new AppException(ErrorCode.MEMBER_NOT_FOUND)));}
+                )
                 .collect(Collectors.toList());
     }
 
