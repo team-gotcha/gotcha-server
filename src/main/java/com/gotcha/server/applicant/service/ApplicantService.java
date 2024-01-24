@@ -124,12 +124,15 @@ public class ApplicantService {
                 () -> favoriteRepository.save(new Favorite(member, applicant)));
     }
 
-    public List<PassedApplicantsResponse> listPassedApplicantsByInterview(final Long interviewId) {
+    public List<PassedApplicantsResponse> listPassedApplicantsByInterview(final Long interviewId,  final MemberDetails details) {
         Interview interview = interviewRepository.findById(interviewId)
                 .orElseThrow(() -> new AppException(ErrorCode.INTERVIEW_NOT_FOUNT));
         List<Applicant> applicants = applicantRepository.findAllPassedApplicants(interview);
+
         Map<Applicant, List<KeywordResponse>> applicantsWithKeywords = keywordRepository.findAllByApplicants(applicants);
-        return PassedApplicantsResponse.generateList(applicantsWithKeywords);
+        Map<Applicant, Boolean> favoritesCheck = checkFavorites(applicants, details.member());
+
+        return PassedApplicantsResponse.generateList(applicantsWithKeywords, favoritesCheck);
     }
 
     @Transactional

@@ -18,8 +18,11 @@ public class PassedApplicantsResponse {
     private Integer score;
     private Integer rank;
     private List<String> keywords;
+    private Boolean favorite;
 
-    public static List<PassedApplicantsResponse> generateList(final Map<Applicant, List<KeywordResponse>> applicantsWithKeywords) {
+    public static List<PassedApplicantsResponse> generateList(
+            final Map<Applicant, List<KeywordResponse>> applicantsWithKeywords,
+            final Map<Applicant, Boolean> favoritesCheck) {
         return applicantsWithKeywords.keySet().stream()
                 .map(applicant -> PassedApplicantsResponse.builder()
                         .id(applicant.getId())
@@ -27,6 +30,7 @@ public class PassedApplicantsResponse {
                         .score(applicant.getTotalScore())
                         .rank(applicant.getRanking())
                         .keywords(applicantsWithKeywords.get(applicant).stream().map(KeywordResponse::name).toList())
+                        .favorite(favoritesCheck.get(applicant))
                         .build())
                 .toList();
     }

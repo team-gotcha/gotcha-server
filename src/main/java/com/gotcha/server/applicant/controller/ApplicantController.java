@@ -70,8 +70,9 @@ public class ApplicantController {
     @GetMapping("/pass")
     @Operation(description = "면접 진행 완료(COMPLETION) 지원자 중 합격한 지원자 목록을 조회한다.")
     public ResponseEntity<List<PassedApplicantsResponse>> findAllPassedApplicantsByInterview(
-            @RequestParam(name = "interview-id") final Long interviewId) {
-        return ResponseEntity.ok(applicantService.listPassedApplicantsByInterview(interviewId));
+            @RequestParam(name = "interview-id") final Long interviewId,
+            @AuthenticationPrincipal final MemberDetails details) {
+        return ResponseEntity.ok(applicantService.listPassedApplicantsByInterview(interviewId, details));
     }
 
     @PostMapping("/send-email")
