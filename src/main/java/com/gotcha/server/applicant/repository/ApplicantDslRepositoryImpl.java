@@ -18,6 +18,7 @@ import org.springframework.stereotype.Repository;
 public class ApplicantDslRepositoryImpl implements ApplicantDslRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
+    // Todo: one to may fetch join은 한 번만 되므로 IndividualQuestion에 대한 쿼리 한번 더 나감
     @Override
     public List<Applicant> findAllByInterviewWithInterviewer(final Interview interview) {
         QApplicant qApplicant = QApplicant.applicant;
