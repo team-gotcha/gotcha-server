@@ -28,9 +28,9 @@ public class ApplicantDslRepositoryImpl implements ApplicantDslRepository {
         return jpaQueryFactory
                 .select(qApplicant)
                 .from(qApplicant)
-                .innerJoin(qApplicant.interviewers, qInterviewer)
+                .leftJoin(qApplicant.interviewers, qInterviewer)
                 .fetchJoin()
-                .innerJoin(qInterviewer.member, qMember)
+                .leftJoin(qInterviewer.member, qMember)
                 .fetchJoin()
                 .leftJoin(qApplicant.questions, qQuestion)
                 .where(qApplicant.interview.eq(interview), qApplicant.interviewStatus.ne(InterviewStatus.ANNOUNCED))
