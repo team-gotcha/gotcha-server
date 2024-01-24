@@ -5,12 +5,14 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.gotcha.server.applicant.domain.Applicant;
+import com.gotcha.server.applicant.domain.Favorite;
 import com.gotcha.server.applicant.domain.InterviewStatus;
 import com.gotcha.server.applicant.domain.Interviewer;
 import com.gotcha.server.applicant.domain.Keyword;
 import com.gotcha.server.applicant.dto.request.*;
 import com.gotcha.server.applicant.dto.response.*;
 import com.gotcha.server.applicant.repository.ApplicantRepository;
+import com.gotcha.server.applicant.repository.FavoriteRepository;
 import com.gotcha.server.applicant.repository.KeywordRepository;
 import com.gotcha.server.auth.dto.request.MemberDetails;
 import com.gotcha.server.evaluation.dto.response.OneLinerResponse;
@@ -53,6 +55,7 @@ public class ApplicantService {
     private final OneLinerRepository oneLinerRepository;
     private final MemberRepository memberRepository;
     private final CommonQuestionRepository commonQuestionRepository;
+    private final FavoriteRepository favoriteRepository;
     private final AmazonS3 amazonS3;
     private final MailService mailService;
 
@@ -97,6 +100,18 @@ public class ApplicantService {
                 .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
         List<Keyword> keywords = keywordRepository.findAllByApplicant(applicant);
         return ApplicantResponse.from(applicant, keywords);
+    }
+
+    @Transactional
+    public void updateFavorite(final Long applicantId, final MemberDetails details) {
+        Member member = details.member();
+        Applicant applicant = applicantRepository.findById(applicantId)
+                .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
+        Optional<Favorite> favorite = favoriteRepository.findByApplicantAndMember(applicant, member);
+
+        favorite.ifPresentOrElse(
+                favoriteRepository::delete,
+                () -> favoriteRepository.save(new Favorite(member, applicant)));
     }
 
     public List<PassedApplicantsResponse> listPassedApplicantsByInterview(final Long interviewId) {

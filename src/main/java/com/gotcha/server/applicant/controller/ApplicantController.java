@@ -48,6 +48,15 @@ public class ApplicantController {
         return ResponseEntity.ok(applicantService.findApplicantDetailsById(applicantId));
     }
 
+    @PostMapping("/{applicant-id}/favorite")
+    @Operation(description = "지원자를 즐겨찾기 하거나 취소한다.")
+    public ResponseEntity<Void> updateFavorite(
+            @PathVariable(name = "applicant-id") final Long applicantId,
+            @AuthenticationPrincipal final MemberDetails details) {
+        applicantService.updateFavorite(applicantId, details);
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping("/{applicant-id}/public")
     @Operation(description = "지원자의 면접 질문 공개를 동의 혹은 비동의한다.")
     public ResponseEntity<Void> makeQuestionsPublic(
