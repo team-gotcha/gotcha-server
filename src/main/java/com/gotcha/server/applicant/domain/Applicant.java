@@ -51,6 +51,7 @@ public class Applicant extends BaseTimeEntity implements Comparable<Applicant> {
     private String email;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private QuestionPublicType questionPublicType;
 
     private LocalDate date;

@@ -6,16 +6,8 @@ import com.gotcha.server.global.domain.BaseTimeEntity;
 import com.gotcha.server.global.exception.AppException;
 import com.gotcha.server.global.exception.ErrorCode;
 import com.gotcha.server.member.domain.Member;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -69,6 +61,7 @@ public class IndividualQuestion extends BaseTimeEntity {
     private List<Evaluation> evaluations = new ArrayList<>();
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private QuestionPublicType publicType;
 
     @Builder

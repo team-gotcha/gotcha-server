@@ -159,6 +159,7 @@ public class ApplicantService {
         applicantRepository.save(applicant);
     }
 
+    @Transactional
     public void addApplicantFiles(MultipartFile resume, MultipartFile portfolio, Long applicantId) throws IOException {
         String resumeLink = saveUploadFile(resume);
         String portfolioLink = saveUploadFile(portfolio);
@@ -166,9 +167,7 @@ public class ApplicantService {
         Applicant applicant = applicantRepository.findById(applicantId)
                 .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
         applicant.updateResumeLink(resumeLink);
-        applicant.updatePortfolio(portfolioLink);
-
-        applicantRepository.save(applicant);
+        applicant.updatePortfolio(portfolioLink); // save 없어도 jpa에 의해 db update
     }
 
     @Transactional
@@ -228,6 +227,7 @@ public class ApplicantService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public List<CompletedApplicantsResponse> getCompletedApplicants(Long interviewId) {
         final Interview interview = interviewRepository.findById(interviewId)
                 .orElseThrow(() -> new AppException(ErrorCode.INTERVIEW_NOT_FOUNT));
@@ -247,37 +247,27 @@ public class ApplicantService {
         return applicants;
     }
 
-    @Transactional
     public void setRanking(List<Applicant> applicants) {
         int currentRank = 1;
         Double currentScore = applicants.get(0).getTotalScore();
 
         for (int i = 0; i < applicants.size(); i++) {
             Applicant applicant = applicants.get(i);
-            Applicant applicantDB = applicantRepository.findById(applicant.getId())
-                    .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
-
             if (applicant.getTotalScore() < currentScore) {
                 currentRank++;
                 currentScore = applicant.getTotalScore();
             }
 
-            applicantDB.updateRanking(currentRank);
-            applicantRepository.save(applicantDB);
+            applicant.updateRanking(currentRank);
         }
     }
 
-    @Transactional
     public void setTotalScore(List<Applicant> applicants) {
         for (Applicant applicant : applicants) {
             List<IndividualQuestion> questions = individualQuestionRepository.findAllAfterEvaluation(applicant);
-            Applicant applicantDB = applicantRepository.findById(applicant.getId())
-                    .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
-
-            System.out.println("applicant id: "+applicant.getId());
 
             if (questions.isEmpty()) {
-                applicantDB.updateTotalScore(0.0);
+                applicant.updateTotalScore(0.0);
             } else {
                 QuestionEvaluations evaluations = new QuestionEvaluations(questions);
                 double perfectScore = evaluations.calculatePerfectScore(questions);
@@ -289,8 +279,7 @@ public class ApplicantService {
                 double finalTotalScore = totalScore * 20 / perfectScore;
                 double roundedFinalTotalScore = Math.round(finalTotalScore * 100.0) / 100.0; // 소수점 두자리까지만
 
-                applicantDB.updateTotalScore(roundedFinalTotalScore);
-                applicantRepository.save(applicantDB);
+                applicant.updateTotalScore(roundedFinalTotalScore);
             }
         }
     }
