@@ -74,4 +74,13 @@ public class QuestionController {
         questionService.changeAskingFlags(request);
         return ResponseEntity.status(HttpStatus.OK).body("면접 때 질문하기 값이 업데이트 되었습니다.");
     }
+
+    @PostMapping("{question-id}/like")
+    @Operation(description = "개별 질문을 '좋아요'하거나 취소한다.")
+    public ResponseEntity<Void> like(
+            @PathVariable(value = "question-id") final Long questionId,
+            @AuthenticationPrincipal final MemberDetails details) {
+        questionService.like(questionId, details);
+        return ResponseEntity.ok().build();
+    }
 }

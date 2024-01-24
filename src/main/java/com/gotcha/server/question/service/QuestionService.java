@@ -1,7 +1,9 @@
 package com.gotcha.server.question.service;
 
 import com.gotcha.server.applicant.domain.Applicant;
+import com.gotcha.server.auth.dto.request.MemberDetails;
 import com.gotcha.server.evaluation.domain.QuestionEvaluations;
+import com.gotcha.server.question.domain.Like;
 import com.gotcha.server.question.dto.request.AskingFlagsRequest;
 import com.gotcha.server.question.dto.response.IndividualQuestionsResponse;
 import com.gotcha.server.question.dto.response.QuestionRankResponse;
@@ -21,8 +23,10 @@ import com.gotcha.server.question.dto.response.InterviewQuestionResponse;
 import com.gotcha.server.question.dto.response.PreparatoryQuestionResponse;
 import com.gotcha.server.question.repository.CommonQuestionRepository;
 import com.gotcha.server.question.repository.IndividualQuestionRepository;
+import com.gotcha.server.question.repository.LikeRepository;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -36,6 +40,7 @@ public class QuestionService {
     private final IndividualQuestionRepository individualQuestionRepository;
     private final InterviewRepository interviewRepository;
     private final ApplicantRepository applicantRepository;
+    private final LikeRepository likeRepository;
 
     @Transactional
     public void createCommonQuestions(final CommonQuestionsRequest request) {
@@ -128,5 +133,17 @@ public class QuestionService {
                 .orElseThrow(() -> new AppException(ErrorCode.QUESTION_NOT_FOUNT));
         question.changeAsking();
         individualQuestionRepository.save(question);
+    }
+
+    @Transactional
+    public void like(final Long questionId, final MemberDetails details) {
+        Member member = details.member();
+        IndividualQuestion question = individualQuestionRepository.findById(questionId)
+                .orElseThrow(() -> new AppException(ErrorCode.QUESTION_NOT_FOUNT));
+        Optional<Like> like = likeRepository.findByQuestionAndMember(question, member);
+
+        like.ifPresentOrElse(
+                likeRepository::delete,
+                () -> likeRepository.save(new Like(member, question)));
     }
 }
