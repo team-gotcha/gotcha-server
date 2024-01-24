@@ -145,7 +145,7 @@ public class ApplicantService {
         List<IndividualQuestion> questions = createIndividualQuestions(request.getQuestions(), member);
         List<Interviewer> interviewers = createInterviewers(request.getInterviewers());
 
-        Applicant applicant = request.toEntity(interviewRepository);
+        Applicant applicant = request.toEntity(findInterviewById(request.getInterviewId()));
 
         for (Interviewer interviewer : interviewers) {
             applicant.addInterviewer(interviewer);
@@ -158,6 +158,11 @@ public class ApplicantService {
         }
 
         applicantRepository.save(applicant);
+    }
+
+    public Interview findInterviewById(Long interviewId){
+        return interviewRepository.findById(interviewId)
+                .orElseThrow(() -> new AppException(ErrorCode.INTERVIEW_NOT_FOUNT));
     }
 
     @Transactional
@@ -203,23 +208,9 @@ public class ApplicantService {
     }
 
     public List<IndividualQuestion> createIndividualQuestions(List<IndividualQuestionRequest> questionRequests, Member member) {
-        List<IndividualQuestion> individualQuestions = new ArrayList<>();
-        for (IndividualQuestionRequest request : questionRequests) {
-            Applicant applicant = applicantRepository.findById(request.getApplicantId())
-                    .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
-            IndividualQuestion individualQuestion = findCommentTarget(request.getCommentTargetId());
-            IndividualQuestion question = request.toEntity(member, applicant, individualQuestion);
-            individualQuestions.add(question);
-        }
-        return individualQuestions;
-    }
-
-    private IndividualQuestion findCommentTarget(final Long id) {
-        if (Objects.isNull(id)) {
-            return null;
-        }
-        return individualQuestionRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.QUESTION_NOT_FOUNT));
+        return questionRequests.stream()
+                .map(request -> request.toEntity(member, null, null))
+                .collect(Collectors.toList());
     }
 
     public List<Interviewer> createInterviewers(List<InterviewerRequest> interviewerRequests) {
