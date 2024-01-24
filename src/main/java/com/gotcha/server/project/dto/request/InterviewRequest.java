@@ -8,7 +8,6 @@ import com.gotcha.server.project.domain.PositionType;
 import com.gotcha.server.project.domain.Project;
 import com.gotcha.server.project.repository.ProjectRepository;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

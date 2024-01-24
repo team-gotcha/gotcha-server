@@ -1,10 +1,7 @@
 package com.gotcha.server.applicant.dto.request;
 
 import com.gotcha.server.applicant.domain.*;
-import com.gotcha.server.global.exception.AppException;
-import com.gotcha.server.global.exception.ErrorCode;
 import com.gotcha.server.project.domain.Interview;
-import com.gotcha.server.project.repository.InterviewRepository;
 import com.gotcha.server.question.dto.request.IndividualQuestionRequest;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

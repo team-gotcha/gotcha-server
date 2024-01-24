@@ -25,19 +25,23 @@ public class MemberController {
 
     @GetMapping("/api/login/google")
     @Operation(description = "access token과 refresh token을 발급 받는다. 회원가입 되지 않은 유저라면 가입한다.")
-    public ResponseEntity<LoginResponse> getGoogleToken(@RequestParam String code, @RequestParam(value = "redirect-uri") String redirectUri) {
+    public ResponseEntity<LoginResponse> getGoogleToken(
+            @RequestParam final String code,
+            @RequestParam(value = "redirect-uri") final String redirectUri) {
         return ResponseEntity.ok(memberService.login(code, redirectUri));
     }
 
     @PostMapping("/api/refresh")
     @Operation(description = "access token을 재발급 받는다.")
-    public ResponseEntity<RefreshTokenResponse> refreshToken(@RequestBody RefreshTokenRequest request) {
+    public ResponseEntity<RefreshTokenResponse> refreshToken(
+            @RequestBody final RefreshTokenRequest request) {
         return ResponseEntity.ok(memberService.refresh(request));
     }
 
     @GetMapping("/api/todays-interview")
     @Operation(description = "로그인한 유저의 오늘 예정된 면접 수를 조회한다.")
-    public ResponseEntity<TodayInterviewResponse> countInterview(@AuthenticationPrincipal final MemberDetails details) {
+    public ResponseEntity<TodayInterviewResponse> countInterview(
+            @AuthenticationPrincipal final MemberDetails details) {
         return ResponseEntity.ok(memberService.countTodayInterview(details));
     }
 
@@ -51,7 +55,8 @@ public class MemberController {
     @PatchMapping("/api/user/email")
     @Operation(description = "유저의 이메일을 수정한다.")
     public ResponseEntity<Void> modifyEmail(
-            @AuthenticationPrincipal final MemberDetails details, @RequestBody final EmailModifyRequest request) {
+            @AuthenticationPrincipal final MemberDetails details,
+            @RequestBody final EmailModifyRequest request) {
         memberService.modifyEmail(details, request);
         return ResponseEntity.ok().build();
     }

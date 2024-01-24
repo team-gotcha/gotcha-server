@@ -29,19 +29,22 @@ public class ApplicantController {
     @PostMapping("/interview-ready")
     @Operation(description = "로그인 유저(면접관)가 면접 준비 완료를 요청한다. 모든 면접관이 준비 완료되었다면 지원자의 면접 단계가 바뀐다.")
     public ResponseEntity<InterviewProceedResponse> proceedToInterview(
-            @RequestBody final InterviewProceedRequest request, @AuthenticationPrincipal final MemberDetails details) {
+            @RequestBody final InterviewProceedRequest request,
+            @AuthenticationPrincipal final MemberDetails details) {
         return ResponseEntity.ok(applicantService.proceedToInterview(request, details));
     }
 
     @GetMapping
     @Operation(description = "세부 면접의 모든 지원자를 면접일 순으로 조회한다. 발표 완료된(ANNOUNCED) 지원자는 조회하지 않는다.")
-    public ResponseEntity<List<ApplicantsResponse>> findAllApplicantByInterview(@RequestParam(name = "interview-id") final Long interviewId) {
+    public ResponseEntity<List<ApplicantsResponse>> findAllApplicantByInterview(
+            @RequestParam(name = "interview-id") final Long interviewId) {
         return ResponseEntity.ok(applicantService.listApplicantsByInterview(interviewId));
     }
 
     @GetMapping("/{applicant-id}")
     @Operation(description = "지원자의 상세 정보를 조회한다.")
-    public ResponseEntity<ApplicantResponse> findApplicantDetailsById(@PathVariable(name = "applicant-id") final Long applicantId) {
+    public ResponseEntity<ApplicantResponse> findApplicantDetailsById(
+            @PathVariable(name = "applicant-id") final Long applicantId) {
         return ResponseEntity.ok(applicantService.findApplicantDetailsById(applicantId));
     }
 
@@ -56,7 +59,8 @@ public class ApplicantController {
 
     @GetMapping("/pass")
     @Operation(description = "면접 진행 완료(COMPLETION) 지원자 중 합격한 지원자 목록을 조회한다.")
-    public ResponseEntity<List<PassedApplicantsResponse>> findAllPassedApplicantsByInterview(@RequestParam(name = "interview-id") final Long interviewId) {
+    public ResponseEntity<List<PassedApplicantsResponse>> findAllPassedApplicantsByInterview(
+            @RequestParam(name = "interview-id") final Long interviewId) {
         return ResponseEntity.ok(applicantService.listPassedApplicantsByInterview(interviewId));
     }
 
@@ -69,16 +73,16 @@ public class ApplicantController {
 
     @PostMapping
     public ResponseEntity<String> createApplicant(
-            @RequestBody @Valid ApplicantRequest request,
-            @AuthenticationPrincipal MemberDetails details) {
+            @RequestBody final ApplicantRequest request,
+            @AuthenticationPrincipal final MemberDetails details) {
         applicantService.createApplicant(request, details.member());
         return ResponseEntity.status(HttpStatus.CREATED).body("면접 지원자 정보가 입력되었습니다.");
     }
 
     @PostMapping("/files")
     public ResponseEntity<String> addApplicantFiles(
-            @RequestParam(required = false) MultipartFile resume,
-            @RequestParam(required = false) MultipartFile portfolio,
+            @RequestParam(required = false) final MultipartFile resume,
+            @RequestParam(required = false) final MultipartFile portfolio,
             @RequestParam(name = "applicant-id") final Long applicantId
     ) throws IOException {
         applicantService.addApplicantFiles(resume, portfolio, applicantId);
@@ -86,12 +90,14 @@ public class ApplicantController {
     }
 
     @GetMapping("/interview-completed")
-    public ResponseEntity<List<CompletedApplicantsResponse>> getCompletedApplicants(@RequestParam(value = "interview-id") Long interviewId) {
+    public ResponseEntity<List<CompletedApplicantsResponse>> getCompletedApplicants(
+            @RequestParam(value = "interview-id") final Long interviewId) {
         return ResponseEntity.status(HttpStatus.OK).body(applicantService.getCompletedApplicants(interviewId));
     }
 
     @GetMapping("/interview-completed/details")
-    public ResponseEntity<CompletedApplicantDetailsResponse> getCompletedApplicantDetails(@RequestParam(value = "applicant-id") Long applicantId) {
+    public ResponseEntity<CompletedApplicantDetailsResponse> getCompletedApplicantDetails(
+            @RequestParam(value = "applicant-id") final Long applicantId) {
         return ResponseEntity.status(HttpStatus.OK).body(applicantService.getCompletedApplicantDetails(applicantId));
     }
 }
