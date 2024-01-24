@@ -6,16 +6,8 @@ import com.gotcha.server.global.domain.BaseTimeEntity;
 import com.gotcha.server.global.exception.AppException;
 import com.gotcha.server.global.exception.ErrorCode;
 import com.gotcha.server.member.domain.Member;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +15,9 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
 
 @Getter
 @Entity
@@ -66,6 +61,7 @@ public class IndividualQuestion extends BaseTimeEntity {
     private List<Evaluation> evaluations = new ArrayList<>();
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private QuestionPublicType publicType;
 
     @Builder
@@ -108,6 +104,14 @@ public class IndividualQuestion extends BaseTimeEntity {
         this.importance = importance;
     }
 
+    public void changeAsking() {
+        if(this.asking == FALSE) {
+            this.asking = TRUE;
+        } else {
+            this.asking = FALSE;
+        }
+    }
+
     public void updateContent(String content) {
         this.content = content;
     }
@@ -141,11 +145,19 @@ public class IndividualQuestion extends BaseTimeEntity {
     }
 
     public double calculateEvaluationScore() {
+        BigDecimal evaluationCount = new BigDecimal(evaluations.size()); // 질문 평가자 수
+        BigDecimal totalSumWithWeight = calculateTotalSumWithWeight();
+        return totalSumWithWeight.divide(evaluationCount).doubleValue();
+    }
+
+    public BigDecimal calculateTotalSumWithWeight(){
         int totalSum = evaluations.stream()
                 .mapToInt(Evaluation::getScore)
                 .sum();
-        BigDecimal evaluationCount = new BigDecimal(evaluations.size());
-        BigDecimal totalSumWithWeight = new BigDecimal(multiplyWeight(totalSum));
-        return totalSumWithWeight.divide(evaluationCount).doubleValue();
+        return new BigDecimal(multiplyWeight(totalSum));
+    }
+
+    public BigDecimal calculatePerfectScore(){
+        return new BigDecimal(multiplyWeight(5)); // 가중치 * 5
     }
 }

@@ -25,6 +25,7 @@ public enum ErrorCode {
     INVALID_IMPORTANCE(HttpStatus.BAD_REQUEST, "중요도의 범위는 3~5입니다."),
     CONTENT_IS_EMPTY(HttpStatus.BAD_REQUEST, "내용을 입력해주세요."),
     MULTIPLE_APPLICANT_EVALUATION(HttpStatus.BAD_REQUEST, "동일하지 않은 지원자에 대한 평가 요청입니다.."),
+    DUPLICATE_INTERVIEWER(HttpStatus.BAD_REQUEST, "면접관이 중복되었습니다."),
 
     PROJECT_NOT_FOUNT(HttpStatus.NOT_FOUND, "존재하지 않는 프로젝트입니다."),
     APPLICANT_NOT_FOUNT(HttpStatus.NOT_FOUND, "존재하지 않는 지원자입니다."),
