@@ -22,6 +22,7 @@ public enum ErrorCode {
     NO_PARAMETER(HttpStatus.BAD_REQUEST, " 파라미터가 없습니다."),
     NAME_IS_EMPTY(HttpStatus.BAD_REQUEST, "면접 이름을 입력해주세요."),
     INVALID_EMAIL(HttpStatus.BAD_REQUEST, "유효하지 않은 이메일 주소입니다."),
+    INVALID_GOOGLE_EMAIL(HttpStatus.BAD_REQUEST, "구글 이메일 주소가 아닙니다."),
     INVALID_IMPORTANCE(HttpStatus.BAD_REQUEST, "중요도의 범위는 3~5입니다."),
     CONTENT_IS_EMPTY(HttpStatus.BAD_REQUEST, "내용을 입력해주세요."),
     MULTIPLE_APPLICANT_EVALUATION(HttpStatus.BAD_REQUEST, "동일하지 않은 지원자에 대한 평가 요청입니다.."),

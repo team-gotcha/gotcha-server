@@ -1,5 +1,6 @@
 package com.gotcha.server.member.controller;
 
+import com.gotcha.server.member.dto.request.EmailModifyRequest;
 import com.gotcha.server.member.dto.response.TodayInterviewResponse;
 import com.gotcha.server.auth.dto.response.RefreshTokenResponse;
 import com.gotcha.server.auth.dto.request.MemberDetails;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -43,6 +45,14 @@ public class MemberController {
     @Operation(description = "로그아웃한다.")
     public ResponseEntity<Void> logout(@AuthenticationPrincipal final MemberDetails details) {
         memberService.logout(details);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/api/user/email")
+    @Operation(description = "유저의 이메일을 수정한다.")
+    public ResponseEntity<Void> modifyEmail(
+            @AuthenticationPrincipal final MemberDetails details, @RequestBody final EmailModifyRequest request) {
+        memberService.modifyEmail(details, request);
         return ResponseEntity.ok().build();
     }
 

@@ -1,6 +1,7 @@
 package com.gotcha.server.member.service;
 
 import com.gotcha.server.auth.service.JwtTokenProvider;
+import com.gotcha.server.member.dto.request.EmailModifyRequest;
 import com.gotcha.server.member.dto.response.TodayInterviewResponse;
 import com.gotcha.server.applicant.repository.InterviewerRepository;
 import com.gotcha.server.auth.dto.response.RefreshTokenResponse;
@@ -65,5 +66,12 @@ public class MemberService {
     public TodayInterviewResponse countTodayInterview(final MemberDetails details) {
         long count = interviewerRepository.countTodayInterview(details.member());
         return new TodayInterviewResponse(count);
+    }
+
+    @Transactional
+    public void modifyEmail(final MemberDetails details, final EmailModifyRequest request) {
+        Member member = details.member();
+        member.updateEmail(request.email());
+        memberRepository.save(member);
     }
 }
