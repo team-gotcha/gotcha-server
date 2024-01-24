@@ -37,8 +37,9 @@ public class ApplicantController {
     @GetMapping
     @Operation(description = "세부 면접의 모든 지원자를 면접일 순으로 조회한다. 발표 완료된(ANNOUNCED) 지원자는 조회하지 않는다.")
     public ResponseEntity<List<ApplicantsResponse>> findAllApplicantByInterview(
-            @RequestParam(name = "interview-id") final Long interviewId) {
-        return ResponseEntity.ok(applicantService.listApplicantsByInterview(interviewId));
+            @RequestParam(name = "interview-id") final Long interviewId,
+            @AuthenticationPrincipal final MemberDetails details) {
+        return ResponseEntity.ok(applicantService.listApplicantsByInterview(interviewId, details));
     }
 
     @GetMapping("/{applicant-id}")

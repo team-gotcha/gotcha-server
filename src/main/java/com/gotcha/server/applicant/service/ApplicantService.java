@@ -87,12 +87,22 @@ public class ApplicantService {
 
     }
 
-    public List<ApplicantsResponse> listApplicantsByInterview(final Long interviewId) {
+    public List<ApplicantsResponse> listApplicantsByInterview(final Long interviewId, final MemberDetails details) {
         Interview interview = interviewRepository.findById(interviewId)
                 .orElseThrow(() -> new AppException(ErrorCode.INTERVIEW_NOT_FOUNT));
         List<Applicant> applicants = applicantRepository.findAllByInterviewWithInterviewer(interview);
+
         Map<Applicant, List<KeywordResponse>> applicantsWithKeywords = keywordRepository.findAllByApplicants(applicants);
-        return ApplicantsResponse.generateList(applicantsWithKeywords);
+        Map<Applicant, Boolean> favoritesCheck = checkFavorites(applicants, details.member());
+
+        return ApplicantsResponse.generateList(applicantsWithKeywords, favoritesCheck);
+    }
+
+    public Map<Applicant, Boolean> checkFavorites(final List<Applicant> applicants, final Member member) {
+        List<Applicant> favorites = favoriteRepository.findAllByMemberAndApplicantIn(member, applicants)
+                .stream().map(Favorite::getApplicant).toList();
+        return applicants.stream()
+                .collect(Collectors.toMap(applicant -> applicant, applicant -> favorites.contains(applicant)));
     }
 
     public ApplicantResponse findApplicantDetailsById(final Long applicantId) {
