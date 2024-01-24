@@ -12,6 +12,7 @@ import com.gotcha.server.applicant.domain.KeywordType;
 import com.gotcha.server.applicant.dto.request.GoQuestionPublicRequest;
 import com.gotcha.server.applicant.dto.request.InterviewProceedRequest;
 import com.gotcha.server.applicant.dto.response.ApplicantResponse;
+import com.gotcha.server.applicant.dto.response.ApplicantsResponse;
 import com.gotcha.server.applicant.repository.ApplicantRepository;
 import com.gotcha.server.applicant.repository.FavoriteRepository;
 import com.gotcha.server.auth.dto.request.MemberDetails;
@@ -153,5 +154,27 @@ class ApplicantServiceTest extends IntegrationTest {
         // then
         Optional<Favorite> 즐겨찾기 = favoriteRepository.findByApplicantAndMember(지원자A, 종미);
         assertTrue(즐겨찾기.isEmpty());
+    }
+
+    @Test
+    void 지원자목록_조회시_즐겨찾기_여부_반환하기() {
+        // given
+        Project 테스트프로젝트 = environ.테스트프로젝트_저장하기();
+        Interview 테스트면접 = environ.테스트면접_저장하기(테스트프로젝트, "테스트면접");
+        Applicant 지원자A = environ.테스트지원자_저장하기(테스트면접, "지원자A");
+        Applicant 지원자B = environ.테스트지원자_저장하기(테스트면접, "지원자B");
+        Applicant 지원자C = environ.테스트지원자_저장하기(테스트면접, "지원자C");
+        Applicant 지원자D = environ.테스트지원자_저장하기(테스트면접, "지원자D");
+        Member 종미 = environ.테스트유저_저장하기("종미");
+        environ.테스트즐겨찾기_저장하기(지원자B, 종미);
+        environ.테스트즐겨찾기_저장하기(지원자D, 종미);
+
+        // when
+        List<ApplicantsResponse> 지원자목록 = applicantService.listApplicantsByInterview(테스트면접.getId(), new MemberDetails(종미));
+
+        // then
+        assertThat(지원자목록).hasSize(4)
+                .extracting(ApplicantsResponse::getFavorite)
+                .contains(false, true, false, true);
     }
 }

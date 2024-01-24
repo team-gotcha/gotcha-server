@@ -3,10 +3,12 @@ package com.gotcha.server.common;
 import static com.gotcha.server.common.TestFixture.*;
 
 import com.gotcha.server.applicant.domain.Applicant;
+import com.gotcha.server.applicant.domain.Favorite;
 import com.gotcha.server.applicant.domain.Interviewer;
 import com.gotcha.server.applicant.domain.Keyword;
 import com.gotcha.server.applicant.domain.KeywordType;
 import com.gotcha.server.applicant.repository.ApplicantRepository;
+import com.gotcha.server.applicant.repository.FavoriteRepository;
 import com.gotcha.server.applicant.repository.InterviewerRepository;
 import com.gotcha.server.applicant.repository.KeywordRepository;
 import com.gotcha.server.evaluation.domain.Evaluation;
@@ -36,6 +38,7 @@ public class IntegrationTestEnviron {
     private final IndividualQuestionRepository individualQuestionRepository;
     private final EvaluationRepository evaluationRepository;
     private final CommonQuestionRepository commonQuestionRepository;
+    private final FavoriteRepository favoriteRepository;
 
     public Member 테스트유저_저장하기(String 이름) {
         return memberRepository.save(테스트유저(이름));
@@ -76,5 +79,9 @@ public class IntegrationTestEnviron {
 
     public Evaluation 테스트평가_저장하기(Integer 점수, String 평가내용, IndividualQuestion 질문, Member 면접관) {
         return evaluationRepository.save(테스트평가(점수, 평가내용, 질문, 면접관));
+    }
+
+    public Favorite 테스트즐겨찾기_저장하기(Applicant 지원자, Member 면접관) {
+        return favoriteRepository.save(테스트즐겨찾기(지원자, 면접관));
     }
 }
