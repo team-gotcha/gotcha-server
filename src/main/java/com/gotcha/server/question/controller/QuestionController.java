@@ -70,7 +70,7 @@ public class QuestionController {
 
     @PatchMapping("/asking-flags")
     @Operation(description = "지원자 상세 페이지의 댓글들의 '면접 때 질문하기' 값을 바꾼다.")
-    public ResponseEntity<String> changeAskingFlags(@RequestBody @Valid AskingFlagsRequest request) {
+    public ResponseEntity<String> changeAskingFlags(@RequestBody final AskingFlagsRequest request) {
         questionService.changeAskingFlags(request);
         return ResponseEntity.status(HttpStatus.OK).body("면접 때 질문하기 값이 업데이트 되었습니다.");
     }
