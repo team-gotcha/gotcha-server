@@ -51,6 +51,7 @@ public class Applicant extends BaseTimeEntity implements Comparable<Applicant> {
     private String email;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private QuestionPublicType questionPublicType;
 
     private LocalDate date;
@@ -60,7 +61,7 @@ public class Applicant extends BaseTimeEntity implements Comparable<Applicant> {
     private String phoneNumber;
     private String position;
     private String path;
-    private Integer totalScore;
+    private Double totalScore;
     private Integer ranking;
     private String resumeLink;
     private String portfolio;
@@ -81,7 +82,7 @@ public class Applicant extends BaseTimeEntity implements Comparable<Applicant> {
         this.outcome = Outcome.PENDING;
         this.interviewStatus = InterviewStatus.PREPARATION;
         this.ranking = 0;
-        this.totalScore = 0;
+        this.totalScore = 0.0;
         this.questionPublicType = QuestionPublicType.PENDING;
     }
 
@@ -97,7 +98,7 @@ public class Applicant extends BaseTimeEntity implements Comparable<Applicant> {
         this.portfolio = portfolio;
     }
 
-    public void updateTotalScore(Integer totalScore){
+    public void updateTotalScore(Double totalScore){
         this.totalScore = totalScore;
     }
 
@@ -154,6 +155,6 @@ public class Applicant extends BaseTimeEntity implements Comparable<Applicant> {
 
     @Override
     public int compareTo(Applicant other) {
-        return Integer.compare(this.getTotalScore(), other.getTotalScore());
+        return Double.compare(this.getTotalScore(), other.getTotalScore());
     }
 }

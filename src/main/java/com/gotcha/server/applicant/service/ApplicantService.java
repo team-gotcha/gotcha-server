@@ -11,8 +11,10 @@ import com.gotcha.server.applicant.domain.Keyword;
 import com.gotcha.server.applicant.dto.request.*;
 import com.gotcha.server.applicant.dto.response.*;
 import com.gotcha.server.applicant.repository.ApplicantRepository;
+import com.gotcha.server.applicant.repository.InterviewerRepository;
 import com.gotcha.server.applicant.repository.KeywordRepository;
 import com.gotcha.server.auth.dto.request.MemberDetails;
+import com.gotcha.server.evaluation.domain.QuestionEvaluations;
 import com.gotcha.server.evaluation.dto.response.OneLinerResponse;
 import com.gotcha.server.evaluation.repository.OneLinerRepository;
 import com.gotcha.server.global.exception.AppException;
@@ -25,6 +27,7 @@ import com.gotcha.server.project.repository.InterviewRepository;
 
 import com.gotcha.server.question.domain.CommonQuestion;
 import com.gotcha.server.question.repository.CommonQuestionRepository;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -162,6 +165,7 @@ public class ApplicantService {
                 .orElseThrow(() -> new AppException(ErrorCode.INTERVIEW_NOT_FOUNT));
     }
 
+    @Transactional
     public void addApplicantFiles(MultipartFile resume, MultipartFile portfolio, Long applicantId) throws IOException {
         String resumeLink = saveUploadFile(resume);
         String portfolioLink = saveUploadFile(portfolio);
@@ -169,7 +173,7 @@ public class ApplicantService {
         Applicant applicant = applicantRepository.findById(applicantId)
                 .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
         applicant.updateResumeLink(resumeLink);
-        applicant.updatePortfolio(portfolioLink);
+        applicant.updatePortfolio(portfolioLink); // save 없어도 jpa에 의해 db update
     }
 
     @Transactional
@@ -209,13 +213,20 @@ public class ApplicantService {
                 .collect(Collectors.toList());
     }
 
-
     public List<Interviewer> createInterviewers(List<InterviewerRequest> interviewerRequests) {
+        Set<Long> existingMemberIds = new HashSet<>();
         return interviewerRequests.stream()
-                .map(request -> request.toEntity(memberRepository.findById(request.getId()).orElseThrow(() -> new AppException(ErrorCode.MEMBER_NOT_FOUND))))
+                .map(request -> {
+                    if (!existingMemberIds.add(request.getId())) {
+                        throw new AppException(ErrorCode.DUPLICATE_INTERVIEWER);
+                    }
+                    return request.toEntity(memberRepository.findById(request.getId())
+                            .orElseThrow(() -> new AppException(ErrorCode.MEMBER_NOT_FOUND)));}
+                )
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public List<CompletedApplicantsResponse> getCompletedApplicants(Long interviewId) {
         final Interview interview = interviewRepository.findById(interviewId)
                 .orElseThrow(() -> new AppException(ErrorCode.INTERVIEW_NOT_FOUNT));
@@ -228,21 +239,19 @@ public class ApplicantService {
 
     public List<Applicant> resetCompletedApplicants(Interview interview) {
         final List<Applicant> applicants = applicantRepository.findByInterviewAndInterviewStatus(interview, InterviewStatus.COMPLETION);
-        applicants.sort(Collections.reverseOrder()); // 점수 순으로 정렬
-
-        setRanking(applicants);
         setTotalScore(applicants);
+        applicants.sort(Collections.reverseOrder()); // 점수 순으로 정렬
+        setRanking(applicants);
 
         return applicants;
     }
 
     public void setRanking(List<Applicant> applicants) {
         int currentRank = 1;
-        int currentScore = applicants.get(0).getTotalScore();
+        Double currentScore = applicants.get(0).getTotalScore();
 
         for (int i = 0; i < applicants.size(); i++) {
             Applicant applicant = applicants.get(i);
-
             if (applicant.getTotalScore() < currentScore) {
                 currentRank++;
                 currentScore = applicant.getTotalScore();
@@ -253,6 +262,25 @@ public class ApplicantService {
     }
 
     public void setTotalScore(List<Applicant> applicants) {
+        for (Applicant applicant : applicants) {
+            List<IndividualQuestion> questions = individualQuestionRepository.findAllAfterEvaluation(applicant);
+
+            if (questions.isEmpty()) {
+                applicant.updateTotalScore(0.0);
+            } else {
+                QuestionEvaluations evaluations = new QuestionEvaluations(questions);
+                double perfectScore = evaluations.calculatePerfectScore(questions);
+                double totalSumWithWeight = evaluations.calculateTotalQuestionsScore(questions).values().stream()
+                        .mapToDouble(Double::doubleValue)
+                        .sum();
+
+                double totalScore = totalSumWithWeight / (double) questions.size();
+                double finalTotalScore = totalScore * 20 / perfectScore;
+                double roundedFinalTotalScore = Math.round(finalTotalScore * 100.0) / 100.0; // 소수점 두자리까지만
+
+                applicant.updateTotalScore(roundedFinalTotalScore);
+            }
+        }
     }
 
     public CompletedApplicantDetailsResponse getCompletedApplicantDetails(Long applicantId) {

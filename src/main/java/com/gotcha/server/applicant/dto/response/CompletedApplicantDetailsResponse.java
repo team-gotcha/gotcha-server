@@ -13,13 +13,13 @@ import java.util.List;
 @NoArgsConstructor
 public class CompletedApplicantDetailsResponse {
     private String applicantName;
-    private Integer totalScore;
+    private Double totalScore;
     private Integer ranking;
     private List<KeywordResponse> keywords;
     private List<OneLinerResponse> oneLiners;
 
     @Builder
-    public CompletedApplicantDetailsResponse(String applicantName, Integer totalScore, Integer ranking, List<KeywordResponse> keywords, List<OneLinerResponse> oneLiners) {
+    public CompletedApplicantDetailsResponse(String applicantName, Double totalScore, Integer ranking, List<KeywordResponse> keywords, List<OneLinerResponse> oneLiners) {
         this.applicantName = applicantName;
         this.totalScore = totalScore;
         this.ranking = ranking;

@@ -75,7 +75,7 @@ public class ApplicantController {
         return ResponseEntity.status(HttpStatus.CREATED).body("면접 지원자 정보가 입력되었습니다.");
     }
 
-    @PostMapping("/files")
+    @PatchMapping("/files")
     public ResponseEntity<String> addApplicantFiles(
             @RequestParam(required = false) MultipartFile resume,
             @RequestParam(required = false) MultipartFile portfolio,
