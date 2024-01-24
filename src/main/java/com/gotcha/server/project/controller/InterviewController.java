@@ -21,14 +21,13 @@ public class InterviewController {
     private final InterviewService interviewService;
 
     @PostMapping
-    public ResponseEntity<String> createInterview(
-            @RequestBody @Valid InterviewRequest request) {
+    public ResponseEntity<String> createInterview(@RequestBody final InterviewRequest request) {
         interviewService.createInterview(request);
         return ResponseEntity.status(HttpStatus.CREATED).body("세부 면접 생성 및 초대 이메일 발송이 완료되었습니다.");
     }
 
     @GetMapping("/{interviewId}/names")
-    public ResponseEntity<List<InterviewerNamesResponse>> getNames(@PathVariable Long interviewId){
+    public ResponseEntity<List<InterviewerNamesResponse>> getNames(@PathVariable final Long interviewId){
         return ResponseEntity.status(HttpStatus.OK).body(interviewService.getInterviewerNames(interviewId));
     }
 

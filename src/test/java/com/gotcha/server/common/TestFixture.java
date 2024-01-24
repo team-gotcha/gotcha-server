@@ -1,6 +1,7 @@
 package com.gotcha.server.common;
 
 import com.gotcha.server.applicant.domain.Applicant;
+import com.gotcha.server.applicant.domain.Favorite;
 import com.gotcha.server.applicant.domain.Interviewer;
 import com.gotcha.server.applicant.domain.Keyword;
 import com.gotcha.server.applicant.domain.KeywordType;
@@ -80,5 +81,9 @@ public class TestFixture {
                 .member(면접관)
                 .question(질문)
                 .build();
+    }
+
+    public static Favorite 테스트즐겨찾기(Applicant 지원자, Member 면접관) {
+        return new Favorite(면접관, 지원자);
     }
 }

@@ -2,14 +2,19 @@ package com.gotcha.server.applicant.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gotcha.server.applicant.domain.Applicant;
+import com.gotcha.server.applicant.domain.Favorite;
 import com.gotcha.server.applicant.domain.Interviewer;
 import com.gotcha.server.applicant.domain.KeywordType;
 import com.gotcha.server.applicant.dto.request.GoQuestionPublicRequest;
 import com.gotcha.server.applicant.dto.request.InterviewProceedRequest;
 import com.gotcha.server.applicant.dto.response.ApplicantResponse;
+import com.gotcha.server.applicant.dto.response.ApplicantsResponse;
 import com.gotcha.server.applicant.repository.ApplicantRepository;
+import com.gotcha.server.applicant.repository.FavoriteRepository;
 import com.gotcha.server.auth.dto.request.MemberDetails;
 import com.gotcha.server.common.IntegrationTest;
 import com.gotcha.server.member.domain.Member;
@@ -19,10 +24,13 @@ import com.gotcha.server.question.domain.IndividualQuestion;
 import com.gotcha.server.question.domain.QuestionPublicType;
 import com.gotcha.server.question.repository.IndividualQuestionRepository;
 import java.util.List;
+import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+@Slf4j
 class ApplicantServiceTest extends IntegrationTest {
     @Autowired
     private ApplicantService applicantService;
@@ -32,6 +40,9 @@ class ApplicantServiceTest extends IntegrationTest {
 
     @Autowired
     private ApplicantRepository applicantRepository;
+
+    @Autowired
+    private FavoriteRepository favoriteRepository;
 
     @Test
     void 지원자_상세정보_조회하기() {
@@ -106,5 +117,64 @@ class ApplicantServiceTest extends IntegrationTest {
         Applicant 변경된지원자 = applicantRepository.findById(지원자A.getId()).get();
         assertEquals(QuestionPublicType.PENDING, 지원자A.getQuestionPublicType());
         assertEquals(QuestionPublicType.PRIVATE, 변경된지원자.getQuestionPublicType());
+    }
+
+    @Test
+    void 지원자_즐겨찾기() {
+        // given
+        Project 테스트프로젝트 = environ.테스트프로젝트_저장하기();
+        Interview 테스트면접 = environ.테스트면접_저장하기(테스트프로젝트, "테스트면접");
+        Applicant 지원자A = environ.테스트지원자_저장하기(테스트면접, "지원자A");
+        Member 종미 = environ.테스트유저_저장하기("종미");
+
+        MemberDetails 로그인한_종미 = new MemberDetails(종미);
+
+        // when
+        applicantService.updateFavorite(지원자A.getId(), 로그인한_종미);
+
+        // then
+        Optional<Favorite> 즐겨찾기 = favoriteRepository.findByApplicantAndMember(지원자A, 종미);
+        assertNotNull(즐겨찾기);
+    }
+
+    @Test
+    void 지원자_즐겨찾기_취소하기() {
+        // given
+        Project 테스트프로젝트 = environ.테스트프로젝트_저장하기();
+        Interview 테스트면접 = environ.테스트면접_저장하기(테스트프로젝트, "테스트면접");
+        Applicant 지원자A = environ.테스트지원자_저장하기(테스트면접, "지원자A");
+        Member 종미 = environ.테스트유저_저장하기("종미");
+
+        MemberDetails 로그인한_종미 = new MemberDetails(종미);
+
+        // when
+        applicantService.updateFavorite(지원자A.getId(), 로그인한_종미);
+        applicantService.updateFavorite(지원자A.getId(), 로그인한_종미);
+
+        // then
+        Optional<Favorite> 즐겨찾기 = favoriteRepository.findByApplicantAndMember(지원자A, 종미);
+        assertTrue(즐겨찾기.isEmpty());
+    }
+
+    @Test
+    void 지원자목록_조회시_즐겨찾기_여부_반환하기() {
+        // given
+        Project 테스트프로젝트 = environ.테스트프로젝트_저장하기();
+        Interview 테스트면접 = environ.테스트면접_저장하기(테스트프로젝트, "테스트면접");
+        Applicant 지원자A = environ.테스트지원자_저장하기(테스트면접, "지원자A");
+        Applicant 지원자B = environ.테스트지원자_저장하기(테스트면접, "지원자B");
+        Applicant 지원자C = environ.테스트지원자_저장하기(테스트면접, "지원자C");
+        Applicant 지원자D = environ.테스트지원자_저장하기(테스트면접, "지원자D");
+        Member 종미 = environ.테스트유저_저장하기("종미");
+        environ.테스트즐겨찾기_저장하기(지원자B, 종미);
+        environ.테스트즐겨찾기_저장하기(지원자D, 종미);
+
+        // when
+        List<ApplicantsResponse> 지원자목록 = applicantService.listApplicantsByInterview(테스트면접.getId(), new MemberDetails(종미));
+
+        // then
+        assertThat(지원자목록).hasSize(4)
+                .extracting(ApplicantsResponse::getFavorite)
+                .contains(false, true, false, true);
     }
 }

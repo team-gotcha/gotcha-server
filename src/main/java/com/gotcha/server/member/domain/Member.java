@@ -1,6 +1,8 @@
 package com.gotcha.server.member.domain;
 
 import com.gotcha.server.global.domain.BaseTimeEntity;
+import com.gotcha.server.global.exception.AppException;
+import com.gotcha.server.global.exception.ErrorCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -54,5 +56,16 @@ public class Member extends BaseTimeEntity {
 
     public void updateRefreshToken(final String refreshToken) {
         this.refreshToken = refreshToken;
+    }
+
+    public void updateEmail(final String email) {
+        validateEmail(email);
+        this.email = email;
+    }
+
+    private void validateEmail(final String email) {
+        if(!email.endsWith("@gmail.com")) {
+            throw new AppException(ErrorCode.INVALID_GOOGLE_EMAIL);
+        }
     }
 }

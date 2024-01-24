@@ -5,13 +5,14 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.gotcha.server.applicant.domain.Applicant;
+import com.gotcha.server.applicant.domain.Favorite;
 import com.gotcha.server.applicant.domain.InterviewStatus;
 import com.gotcha.server.applicant.domain.Interviewer;
 import com.gotcha.server.applicant.domain.Keyword;
 import com.gotcha.server.applicant.dto.request.*;
 import com.gotcha.server.applicant.dto.response.*;
 import com.gotcha.server.applicant.repository.ApplicantRepository;
-import com.gotcha.server.applicant.repository.InterviewerRepository;
+import com.gotcha.server.applicant.repository.FavoriteRepository;
 import com.gotcha.server.applicant.repository.KeywordRepository;
 import com.gotcha.server.auth.dto.request.MemberDetails;
 import com.gotcha.server.evaluation.domain.QuestionEvaluations;
@@ -56,6 +57,7 @@ public class ApplicantService {
     private final OneLinerRepository oneLinerRepository;
     private final MemberRepository memberRepository;
     private final CommonQuestionRepository commonQuestionRepository;
+    private final FavoriteRepository favoriteRepository;
     private final AmazonS3 amazonS3;
     private final MailService mailService;
 
@@ -87,12 +89,22 @@ public class ApplicantService {
 
     }
 
-    public List<ApplicantsResponse> listApplicantsByInterview(final Long interviewId) {
+    public List<ApplicantsResponse> listApplicantsByInterview(final Long interviewId, final MemberDetails details) {
         Interview interview = interviewRepository.findById(interviewId)
                 .orElseThrow(() -> new AppException(ErrorCode.INTERVIEW_NOT_FOUNT));
         List<Applicant> applicants = applicantRepository.findAllByInterviewWithInterviewer(interview);
+
         Map<Applicant, List<KeywordResponse>> applicantsWithKeywords = keywordRepository.findAllByApplicants(applicants);
-        return ApplicantsResponse.generateList(applicantsWithKeywords);
+        Map<Applicant, Boolean> favoritesCheck = checkFavorites(applicants, details.member());
+
+        return ApplicantsResponse.generateList(applicantsWithKeywords, favoritesCheck);
+    }
+
+    public Map<Applicant, Boolean> checkFavorites(final List<Applicant> applicants, final Member member) {
+        List<Applicant> favorites = favoriteRepository.findAllByMemberAndApplicantIn(member, applicants)
+                .stream().map(Favorite::getApplicant).toList();
+        return applicants.stream()
+                .collect(Collectors.toMap(applicant -> applicant, applicant -> favorites.contains(applicant)));
     }
 
     public ApplicantResponse findApplicantDetailsById(final Long applicantId) {
@@ -102,12 +114,27 @@ public class ApplicantService {
         return ApplicantResponse.from(applicant, keywords);
     }
 
-    public List<PassedApplicantsResponse> listPassedApplicantsByInterview(final Long interviewId) {
+    @Transactional
+    public void updateFavorite(final Long applicantId, final MemberDetails details) {
+        Member member = details.member();
+        Applicant applicant = applicantRepository.findById(applicantId)
+                .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
+        Optional<Favorite> favorite = favoriteRepository.findByApplicantAndMember(applicant, member);
+
+        favorite.ifPresentOrElse(
+                favoriteRepository::delete,
+                () -> favoriteRepository.save(new Favorite(member, applicant)));
+    }
+
+    public List<PassedApplicantsResponse> listPassedApplicantsByInterview(final Long interviewId,  final MemberDetails details) {
         Interview interview = interviewRepository.findById(interviewId)
                 .orElseThrow(() -> new AppException(ErrorCode.INTERVIEW_NOT_FOUNT));
         List<Applicant> applicants = applicantRepository.findAllPassedApplicants(interview);
+
         Map<Applicant, List<KeywordResponse>> applicantsWithKeywords = keywordRepository.findAllByApplicants(applicants);
-        return PassedApplicantsResponse.generateList(applicantsWithKeywords);
+        Map<Applicant, Boolean> favoritesCheck = checkFavorites(applicants, details.member());
+
+        return PassedApplicantsResponse.generateList(applicantsWithKeywords, favoritesCheck);
     }
 
     @Transactional

@@ -35,7 +35,12 @@ public class ApplicantsResponse {
     @Schema(description = "키워드 목록 (타입별하나씩)")
     private List<KeywordResponse> keywords;
 
-    public static List<ApplicantsResponse> generateList(final Map<Applicant, List<KeywordResponse>> applicantsWithKeywords) {
+    @Schema(description = "즐겨찾기")
+    private Boolean favorite;
+
+    public static List<ApplicantsResponse> generateList(
+            final Map<Applicant, List<KeywordResponse>> applicantsWithKeywords,
+            final Map<Applicant, Boolean> favoritesCheck) {
         return applicantsWithKeywords.keySet().stream()
                         .map(applicant -> ApplicantsResponse.builder()
                                 .id(applicant.getId())
@@ -47,6 +52,7 @@ public class ApplicantsResponse {
                                         .toList())
                                 .questionCount(applicant.getQuestions().size())
                                 .keywords(applicantsWithKeywords.get(applicant))
+                                .favorite(favoritesCheck.get(applicant))
                                 .build())
                                 .toList();
     }
