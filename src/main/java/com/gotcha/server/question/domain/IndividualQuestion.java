@@ -152,11 +152,19 @@ public class IndividualQuestion extends BaseTimeEntity {
     }
 
     public double calculateEvaluationScore() {
+        BigDecimal evaluationCount = new BigDecimal(evaluations.size()); // 질문 평가자 수
+        BigDecimal totalSumWithWeight = calculateTotalSumWithWeight();
+        return totalSumWithWeight.divide(evaluationCount).doubleValue();
+    }
+
+    public BigDecimal calculateTotalSumWithWeight(){
         int totalSum = evaluations.stream()
                 .mapToInt(Evaluation::getScore)
                 .sum();
-        BigDecimal evaluationCount = new BigDecimal(evaluations.size());
-        BigDecimal totalSumWithWeight = new BigDecimal(multiplyWeight(totalSum));
-        return totalSumWithWeight.divide(evaluationCount).doubleValue();
+        return new BigDecimal(multiplyWeight(totalSum));
+    }
+
+    public BigDecimal calculatePerfectScore(){
+        return new BigDecimal(multiplyWeight(5)); // 가중치 * 5
     }
 }

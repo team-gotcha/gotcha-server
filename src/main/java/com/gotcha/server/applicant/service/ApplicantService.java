@@ -13,6 +13,7 @@ import com.gotcha.server.applicant.dto.response.*;
 import com.gotcha.server.applicant.repository.ApplicantRepository;
 import com.gotcha.server.applicant.repository.KeywordRepository;
 import com.gotcha.server.auth.dto.request.MemberDetails;
+import com.gotcha.server.evaluation.domain.QuestionEvaluations;
 import com.gotcha.server.evaluation.dto.response.OneLinerResponse;
 import com.gotcha.server.evaluation.repository.OneLinerRepository;
 import com.gotcha.server.global.exception.AppException;
@@ -25,6 +26,7 @@ import com.gotcha.server.project.repository.InterviewRepository;
 
 import com.gotcha.server.question.domain.CommonQuestion;
 import com.gotcha.server.question.repository.CommonQuestionRepository;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -165,6 +167,8 @@ public class ApplicantService {
                 .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
         applicant.updateResumeLink(resumeLink);
         applicant.updatePortfolio(portfolioLink);
+
+        applicantRepository.save(applicant);
     }
 
     @Transactional
@@ -200,9 +204,9 @@ public class ApplicantService {
 
     public List<IndividualQuestion> createIndividualQuestions(List<IndividualQuestionRequest> questionRequests, Member member) {
         List<IndividualQuestion> individualQuestions = new ArrayList<>();
-        for(IndividualQuestionRequest request: questionRequests) {
+        for (IndividualQuestionRequest request : questionRequests) {
             Applicant applicant = applicantRepository.findById(request.getApplicantId())
-                .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
+                    .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
             IndividualQuestion individualQuestion = findCommentTarget(request.getCommentTargetId());
             IndividualQuestion question = request.toEntity(member, applicant, individualQuestion);
             individualQuestions.add(question);
@@ -211,7 +215,7 @@ public class ApplicantService {
     }
 
     private IndividualQuestion findCommentTarget(final Long id) {
-        if(Objects.isNull(id)) {
+        if (Objects.isNull(id)) {
             return null;
         }
         return individualQuestionRepository.findById(id)
@@ -236,31 +240,59 @@ public class ApplicantService {
 
     public List<Applicant> resetCompletedApplicants(Interview interview) {
         final List<Applicant> applicants = applicantRepository.findByInterviewAndInterviewStatus(interview, InterviewStatus.COMPLETION);
-        applicants.sort(Collections.reverseOrder()); // 점수 순으로 정렬
-
-        setRanking(applicants);
         setTotalScore(applicants);
+        applicants.sort(Collections.reverseOrder()); // 점수 순으로 정렬
+        setRanking(applicants);
 
         return applicants;
     }
 
+    @Transactional
     public void setRanking(List<Applicant> applicants) {
         int currentRank = 1;
-        int currentScore = applicants.get(0).getTotalScore();
+        Double currentScore = applicants.get(0).getTotalScore();
 
         for (int i = 0; i < applicants.size(); i++) {
             Applicant applicant = applicants.get(i);
+            Applicant applicantDB = applicantRepository.findById(applicant.getId())
+                    .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
 
             if (applicant.getTotalScore() < currentScore) {
                 currentRank++;
                 currentScore = applicant.getTotalScore();
             }
 
-            applicant.updateRanking(currentRank);
+            applicantDB.updateRanking(currentRank);
+            applicantRepository.save(applicantDB);
         }
     }
 
+    @Transactional
     public void setTotalScore(List<Applicant> applicants) {
+        for (Applicant applicant : applicants) {
+            List<IndividualQuestion> questions = individualQuestionRepository.findAllAfterEvaluation(applicant);
+            Applicant applicantDB = applicantRepository.findById(applicant.getId())
+                    .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
+
+            System.out.println("applicant id: "+applicant.getId());
+
+            if (questions.isEmpty()) {
+                applicantDB.updateTotalScore(0.0);
+            } else {
+                QuestionEvaluations evaluations = new QuestionEvaluations(questions);
+                double perfectScore = evaluations.calculatePerfectScore(questions);
+                double totalSumWithWeight = evaluations.calculateTotalQuestionsScore(questions).values().stream()
+                        .mapToDouble(Double::doubleValue)
+                        .sum();
+
+                double totalScore = totalSumWithWeight / (double) questions.size();
+                double finalTotalScore = totalScore * 20 / perfectScore;
+                double roundedFinalTotalScore = Math.round(finalTotalScore * 100.0) / 100.0; // 소수점 두자리까지만
+
+                applicantDB.updateTotalScore(roundedFinalTotalScore);
+                applicantRepository.save(applicantDB);
+            }
+        }
     }
 
     public CompletedApplicantDetailsResponse getCompletedApplicantDetails(Long applicantId) {
