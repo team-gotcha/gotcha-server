@@ -115,10 +115,6 @@ public class Applicant extends BaseTimeEntity implements Comparable<Applicant> {
                 .findAny().orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED_INTERVIEWER));
     }
 
-    public void determineOutcome(Outcome outcome) {
-        this.outcome = outcome;
-    }
-
     public void changeQuestionPublicType(boolean agree) {
         questionPublicType = questionPublicType.change(agree);
     }

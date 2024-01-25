@@ -84,7 +84,7 @@ class ApplicantRepositoryTest extends RepositoryTest {
         Applicant 지원자 = 테스트지원자(면접, 이름);
         지원자.moveToNextStatus();
         지원자.moveToNextStatus();
-        지원자.determineOutcome(결과);
+        지원자.updateOutCome(결과);
         return 지원자;
     }
 
