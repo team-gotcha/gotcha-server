@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gotcha.server.applicant.domain.Applicant;
 import com.gotcha.server.applicant.domain.Interviewer;
+import com.gotcha.server.auth.dto.request.MemberDetails;
 import com.gotcha.server.common.IntegrationTest;
 import com.gotcha.server.member.domain.Member;
 import com.gotcha.server.project.domain.Interview;
@@ -46,7 +47,7 @@ public class QuestionServiceIntegrationTest extends IntegrationTest {
         IndividualQuestion 질문B = environ.테스트개별질문_저장하기(지원자A, "장점을소개해주세요.", 2, true, 5, 종미);
 
         // when
-        List<IndividualQuestionsResponse> 조회결과 = questionService.listIndividualQuestions(지원자A.getId());
+        List<IndividualQuestionsResponse> 조회결과 = questionService.listIndividualQuestions(지원자A.getId(), new MemberDetails(종미));
 
         // then
         assertThat(조회결과).hasSize(2)

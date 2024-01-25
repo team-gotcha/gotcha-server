@@ -3,7 +3,7 @@ package com.gotcha.server.question.service;
 import com.gotcha.server.applicant.domain.Applicant;
 import com.gotcha.server.auth.dto.request.MemberDetails;
 import com.gotcha.server.evaluation.domain.QuestionEvaluations;
-import com.gotcha.server.question.domain.Like;
+import com.gotcha.server.question.domain.Likes;
 import com.gotcha.server.question.dto.request.AskingFlagsRequest;
 import com.gotcha.server.question.dto.response.IndividualQuestionsResponse;
 import com.gotcha.server.question.dto.response.QuestionRankResponse;
@@ -25,6 +25,7 @@ import com.gotcha.server.question.repository.CommonQuestionRepository;
 import com.gotcha.server.question.repository.IndividualQuestionRepository;
 import com.gotcha.server.question.repository.LikeRepository;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -54,11 +55,21 @@ public class QuestionService {
         commonQuestionRepository.saveAll(questions);
     }
 
-    public List<IndividualQuestionsResponse> listIndividualQuestions(final Long applicantId) {
+    public List<IndividualQuestionsResponse> listIndividualQuestions(final Long applicantId, final MemberDetails details) {
         Applicant applicant = applicantRepository.findById(applicantId)
                 .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
         List<IndividualQuestion> questions = individualQuestionRepository.findAllBeforeInterview(applicant);
-        return questions.stream().map(IndividualQuestionsResponse::from).toList();
+        Map<IndividualQuestion, Boolean> likesCheck = checkLikes(questions, details.member());
+        return questions.stream()
+                .map(question -> IndividualQuestionsResponse.from(question, likesCheck.get(question)))
+                .toList();
+    }
+
+    private Map<IndividualQuestion, Boolean> checkLikes(final List<IndividualQuestion> questions, final Member member) {
+        List<IndividualQuestion> likes = likeRepository.findAllByMemberAndQuestionIn(member, questions)
+                .stream().map(Likes::getQuestion).toList();
+        return questions.stream()
+                .collect(Collectors.toMap(question -> question, question -> likes.contains(question)));
     }
 
     @Transactional
@@ -140,10 +151,10 @@ public class QuestionService {
         Member member = details.member();
         IndividualQuestion question = individualQuestionRepository.findById(questionId)
                 .orElseThrow(() -> new AppException(ErrorCode.QUESTION_NOT_FOUNT));
-        Optional<Like> like = likeRepository.findByQuestionAndMember(question, member);
+        Optional<Likes> like = likeRepository.findByQuestionAndMember(question, member);
 
         like.ifPresentOrElse(
                 likeRepository::delete,
-                () -> likeRepository.save(new Like(member, question)));
+                () -> likeRepository.save(new Likes(member, question)));
     }
 }

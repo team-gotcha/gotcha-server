@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Like {
+public class Likes {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -28,7 +28,7 @@ public class Like {
     @JoinColumn(nullable = false, name = "question_id")
     private IndividualQuestion question;
 
-    public Like(final Member member, final IndividualQuestion question) {
+    public Likes(final Member member, final IndividualQuestion question) {
         this.member = member;
         this.question = question;
     }

@@ -35,8 +35,9 @@ public class QuestionController {
     @GetMapping
     @Operation(description = "면접 전 지원자의 개별 질문 목록을 조회한다.")
     public ResponseEntity<List<IndividualQuestionsResponse>> findAllIndividualQuestions(
-            @RequestParam(name = "applicant-id") final Long applicantId) {
-        return ResponseEntity.ok(questionService.listIndividualQuestions(applicantId));
+            @RequestParam(name = "applicant-id") final Long applicantId,
+            @AuthenticationPrincipal final MemberDetails details) {
+        return ResponseEntity.ok(questionService.listIndividualQuestions(applicantId, details));
     }
 
     @GetMapping("/in-progress")
