@@ -15,6 +15,9 @@ import com.gotcha.server.auth.dto.response.GoogleTokenResponse;
 import com.gotcha.server.auth.dto.response.GoogleUserResponse;
 import com.gotcha.server.member.dto.response.LoginResponse;
 import com.gotcha.server.member.dto.request.RefreshTokenRequest;
+import com.gotcha.server.project.domain.Collaborator;
+import com.gotcha.server.project.domain.Project;
+import com.gotcha.server.project.repository.CollaboratorRepository;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService {
     private final MemberRepository memberRepository;
     private final InterviewerRepository interviewerRepository;
+    private final CollaboratorRepository collaboratorRepository;
     private final GoogleOAuth googleOAuth;
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -46,14 +50,35 @@ public class MemberService {
     public LoginResponse login(String code, String redirectUri) {
         GoogleTokenResponse googleToken = googleOAuth.requestTokens(code, redirectUri);
         GoogleUserResponse googleUser = googleOAuth.requestUserInfo(googleToken);
+
         Member member = memberRepository.findBySocialId(googleUser.sub()).orElse(null);
         if(Objects.isNull(member)) {
             member = memberRepository.save(googleUser.toEntity());
         }
+
         String accessToken = jwtTokenProvider.createAccessToken(member.getSocialId());
         String refreshToken = jwtTokenProvider.createRefreshToken(member.getSocialId());
         member.updateRefreshToken(refreshToken);
-        return new LoginResponse(member.getId(), accessToken, refreshToken, member.getEmail());
+
+        Long projectId = findFirstProjectId(member);
+
+        return LoginResponse.builder()
+                .userId(member.getId())
+                .email(member.getEmail())
+                .projectId(projectId)
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
+    }
+
+    private Long findFirstProjectId(final Member member) {
+        String email = member.getEmail();
+        if(Objects.nonNull(email)) {
+            return collaboratorRepository.findFirstByMember(email)
+                    .orElse(null)
+                    .getProject().getId();
+        }
+        return null;
     }
 
     @Transactional
