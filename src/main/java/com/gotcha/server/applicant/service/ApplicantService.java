@@ -45,6 +45,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import static com.gotcha.server.applicant.domain.Outcome.FAIL;
+import static com.gotcha.server.applicant.domain.Outcome.PENDING;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -169,7 +172,6 @@ public class ApplicantService {
     @Transactional
     public void createApplicant(ApplicantRequest request, Member member) {
         List<Keyword> keywords = createKeywords(request.getKeywords());
-        List<IndividualQuestion> questions = createIndividualQuestions(request.getQuestions(), member);
         List<Interviewer> interviewers = createInterviewers(request.getInterviewers());
 
         Applicant applicant = request.toEntity(findInterviewById(request.getInterviewId()));
@@ -179,9 +181,6 @@ public class ApplicantService {
         }
         for (Keyword keyword : keywords) {
             applicant.addKeyword(keyword);
-        }
-        for (IndividualQuestion question : questions) {
-            applicant.addQuestion(question);
         }
 
         applicantRepository.save(applicant);
@@ -231,12 +230,6 @@ public class ApplicantService {
     public List<Keyword> createKeywords(List<KeywordRequest> keywordRequests) {
         return keywordRequests.stream()
                 .map(request -> request.toEntity())
-                .collect(Collectors.toList());
-    }
-
-    public List<IndividualQuestion> createIndividualQuestions(List<IndividualQuestionRequest> questionRequests, Member member) {
-        return questionRequests.stream()
-                .map(request -> request.toEntity(member, null, null))
                 .collect(Collectors.toList());
     }
 
