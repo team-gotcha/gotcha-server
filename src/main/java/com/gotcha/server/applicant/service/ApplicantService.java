@@ -9,6 +9,7 @@ import com.gotcha.server.applicant.domain.Favorite;
 import com.gotcha.server.applicant.domain.InterviewStatus;
 import com.gotcha.server.applicant.domain.Interviewer;
 import com.gotcha.server.applicant.domain.Keyword;
+import com.gotcha.server.applicant.dto.message.OutcomeUpdateMessage;
 import com.gotcha.server.applicant.dto.request.*;
 import com.gotcha.server.applicant.dto.response.*;
 import com.gotcha.server.applicant.repository.ApplicantRepository;
@@ -323,5 +324,13 @@ public class ApplicantService {
         final List<Keyword> keywords = keywordRepository.findAllByApplicant(applicant);
         final List<OneLinerResponse> oneLiners = oneLinerRepository.getOneLinersForApplicant(applicant);
         return CompletedApplicantDetailsResponse.from(applicant, keywords, oneLiners);
+    }
+
+    @Transactional
+    public void updateOutcome(Long applicantId, OutcomeUpdateMessage message) {
+        final Applicant applicant = applicantRepository.findById(applicantId)
+                .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
+
+        applicant.updateOutCome(message.value());
     }
 }
