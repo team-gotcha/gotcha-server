@@ -9,6 +9,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface LikeRepository extends JpaRepository<Likes, Long> {
     Optional<Likes> findByQuestionAndMember(IndividualQuestion question, Member member);
-    List<Likes> findAllByMemberAndQuestionIn(Member member, List<IndividualQuestion> questions);
     List<Likes> findAllByQuestionIn(List<IndividualQuestion> questions);
 }
