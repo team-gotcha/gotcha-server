@@ -48,7 +48,7 @@ public class IntegrationTestEnviron {
     }
 
     public Project 테스트프로젝트_저장하기() {
-        return projectRepository.save(테스트프로젝트());
+        return projectRepository.save(테스트프로젝트("테스트프로젝트"));
     }
 
     public Interview 테스트면접_저장하기(Project 프로젝트, String 면접이름) {

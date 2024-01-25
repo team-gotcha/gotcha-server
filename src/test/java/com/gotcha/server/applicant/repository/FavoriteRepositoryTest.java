@@ -23,7 +23,7 @@ class FavoriteRepositoryTest extends RepositoryTest {
     void 지원자목록에서_즐겨찾기여부_조회하기() {
         // given
         Member 종미 = 테스트유저("종미");
-        Project 프로젝트 = 테스트프로젝트();
+        Project 프로젝트 = 테스트프로젝트("테스트프로젝트");
         Interview 면접 = 테스트면접(프로젝트, "테스트면접");
         Applicant 지원자A = 테스트지원자(면접, "지원자A");
         Applicant 지원자B = 테스트지원자(면접, "지원자B");

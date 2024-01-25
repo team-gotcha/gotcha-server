@@ -26,7 +26,7 @@ class InterviewerRepositoryTest extends RepositoryTest {
     void 오늘_면접_개수_조회하기() {
         //given
         Member 종미 = 테스트유저("종미");
-        Project 테스트프로젝트 = 테스트프로젝트();
+        Project 테스트프로젝트 = 테스트프로젝트("테스트프로젝트");
         Interview 테스트면접 = 테스트면접(테스트프로젝트, "테스트면접");
         testRepository.save(종미, 테스트프로젝트, 테스트면접);
 

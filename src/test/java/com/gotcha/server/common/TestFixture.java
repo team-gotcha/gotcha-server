@@ -25,8 +25,8 @@ public class TestFixture {
                 .build();
     }
 
-    public static Project 테스트프로젝트() {
-        return Project.builder().name("테스트프로젝트").build();
+    public static Project 테스트프로젝트(String 프로젝트이름) {
+        return Project.builder().name(프로젝트이름).build();
     }
 
     public static Interview 테스트면접(Project 프로젝트, String 면접이름) {
