@@ -83,11 +83,10 @@ public class ApplicantController {
     }
 
     @PostMapping
-    public ResponseEntity<String> createApplicant(
+    public ResponseEntity<ApplicantIdResponse> createApplicant(
             @RequestBody final ApplicantRequest request,
             @AuthenticationPrincipal final MemberDetails details) {
-        applicantService.createApplicant(request, details.member());
-        return ResponseEntity.status(HttpStatus.CREATED).body("면접 지원자 정보가 입력되었습니다.");
+        return ResponseEntity.status(HttpStatus.CREATED).body(applicantService.createApplicant(request, details.member()));
     }
 
     @PatchMapping("/files")

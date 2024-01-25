@@ -170,20 +170,20 @@ public class ApplicantService {
     }
 
     @Transactional
-    public void createApplicant(ApplicantRequest request, Member member) {
+    public ApplicantIdResponse createApplicant(ApplicantRequest request, Member member) {
         List<Keyword> keywords = createKeywords(request.getKeywords());
         List<Interviewer> interviewers = createInterviewers(request.getInterviewers());
 
         Applicant applicant = request.toEntity(findInterviewById(request.getInterviewId()));
-
         for (Interviewer interviewer : interviewers) {
             applicant.addInterviewer(interviewer);
         }
         for (Keyword keyword : keywords) {
             applicant.addKeyword(keyword);
         }
-
         applicantRepository.save(applicant);
+
+        return new ApplicantIdResponse(applicant.getId());
     }
 
     public Interview findInterviewById(Long interviewId){
