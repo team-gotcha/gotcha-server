@@ -10,6 +10,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -67,5 +68,18 @@ public class Member extends BaseTimeEntity {
         if(!email.endsWith("@gmail.com")) {
             throw new AppException(ErrorCode.INVALID_GOOGLE_EMAIL);
         }
+    }
+
+    @Override
+    public boolean equals(final Object other) {
+        if(this == other) return true;
+        if(Objects.isNull(other) || getClass() != other.getClass()) return false;
+        Member anotherMember = (Member)other;
+        return Objects.equals(id, anotherMember.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

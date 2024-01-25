@@ -59,17 +59,32 @@ public class QuestionService {
         Applicant applicant = applicantRepository.findById(applicantId)
                 .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
         List<IndividualQuestion> questions = individualQuestionRepository.findAllBeforeInterview(applicant);
-        Map<IndividualQuestion, Boolean> likesCheck = checkLikes(questions, details.member());
+
+        List<Likes> likes = likeRepository.findAllByQuestionIn(questions);
+        Map<IndividualQuestion, Long> likesCount = countLikes(questions, likes);
+        Map<IndividualQuestion, Boolean> likesCheck = checkLikes(questions, details.member(), likes);
+
         return questions.stream()
-                .map(question -> IndividualQuestionsResponse.from(question, likesCheck.get(question)))
-                .toList();
+                .map(question -> IndividualQuestionsResponse
+                        .from(question, likesCheck.get(question), likesCount.get(question))).toList();
     }
 
-    private Map<IndividualQuestion, Boolean> checkLikes(final List<IndividualQuestion> questions, final Member member) {
-        List<IndividualQuestion> likes = likeRepository.findAllByMemberAndQuestionIn(member, questions)
-                .stream().map(Likes::getQuestion).toList();
+    private Map<IndividualQuestion, Long> countLikes(final List<IndividualQuestion> questions, final List<Likes> likes) {
+        Map<IndividualQuestion, Long> count = likes.stream()
+                .collect(Collectors.groupingBy(Likes::getQuestion, Collectors.counting()));
         return questions.stream()
-                .collect(Collectors.toMap(question -> question, question -> likes.contains(question)));
+                .collect(Collectors.toMap(
+                        question -> question,
+                        question -> count.getOrDefault(question, 0L)));
+    }
+
+    private Map<IndividualQuestion, Boolean> checkLikes(
+            final List<IndividualQuestion> questions, final Member member, final List<Likes> likes) {
+        List<IndividualQuestion> likedQuestions = likes.stream()
+                .filter(like -> like.isOwnedBy(member))
+                .map(Likes::getQuestion).toList();
+        return questions.stream()
+                .collect(Collectors.toMap(question -> question, question -> likedQuestions.contains(question)));
     }
 
     @Transactional

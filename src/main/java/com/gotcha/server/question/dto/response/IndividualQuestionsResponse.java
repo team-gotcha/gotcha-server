@@ -19,10 +19,10 @@ public class IndividualQuestionsResponse {
     private Long commentTargetId;
     private Boolean asking;
     private Boolean like;
-    // Todo: 좋아요 개수 추가
+    private Long likeCount;
 
     public static IndividualQuestionsResponse from(
-            final IndividualQuestion individualQuestion, final Boolean like) {
+            final IndividualQuestion individualQuestion, final Boolean like, final Long likeCount) {
         Long commentTargetId = null;
         IndividualQuestion commentTarget = individualQuestion.getCommentTarget();
         if(Objects.nonNull(commentTarget)) {
@@ -37,6 +37,7 @@ public class IndividualQuestionsResponse {
                 .commentTargetId(commentTargetId)
                 .asking(individualQuestion.isAsking())
                 .like(like)
+                .likeCount(likeCount)
                 .build();
     }
 }

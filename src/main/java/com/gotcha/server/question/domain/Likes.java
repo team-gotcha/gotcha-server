@@ -32,4 +32,8 @@ public class Likes {
         this.member = member;
         this.question = question;
     }
+
+    public boolean isOwnedBy(final Member member) {
+        return this.member.equals(member);
+    }
 }
