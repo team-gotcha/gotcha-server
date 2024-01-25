@@ -264,6 +264,19 @@ public class ApplicantService {
         return CompletedApplicantsResponse.generateList(applicants, keywordMap, oneLinerMap);
     }
 
+    @Transactional
+    public void updateCompletedApplicants(Long interviewId) {
+        final Interview interview = interviewRepository.findById(interviewId)
+                .orElseThrow(() -> new AppException(ErrorCode.INTERVIEW_NOT_FOUNT));
+        final List<Applicant> applicants = applicantRepository.findByInterviewAndInterviewStatus(interview, InterviewStatus.COMPLETION);
+
+        for(Applicant applicant : applicants){
+            if (applicant.getOutcome() == PENDING){
+                applicant.updateOutCome(FAIL);
+            }
+        }
+    }
+
     public List<Applicant> resetCompletedApplicants(Interview interview) {
         final List<Applicant> applicants = applicantRepository.findByInterviewAndInterviewStatus(interview, InterviewStatus.COMPLETION);
         setTotalScore(applicants);

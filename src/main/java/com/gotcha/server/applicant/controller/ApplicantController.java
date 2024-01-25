@@ -106,6 +106,14 @@ public class ApplicantController {
         return ResponseEntity.status(HttpStatus.OK).body(applicantService.getCompletedApplicants(interviewId));
     }
 
+    @PatchMapping("/interview-completed")
+    public ResponseEntity<String> updateCompletedApplicants(
+            @RequestParam(value = "interview-id") final Long interviewId) {
+        applicantService.updateCompletedApplicants(interviewId);
+        return ResponseEntity.status(HttpStatus.OK).body("합격자 선정이 완료되었습니다.");
+    }
+
+
     @GetMapping("/interview-completed/details")
     public ResponseEntity<CompletedApplicantDetailsResponse> getCompletedApplicantDetails(
             @RequestParam(value = "applicant-id") final Long applicantId) {
