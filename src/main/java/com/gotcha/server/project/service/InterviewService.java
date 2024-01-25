@@ -30,12 +30,15 @@ public class InterviewService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public void createInterview(InterviewRequest request){
+    public void createInterview(InterviewRequest request, Member member){
         validInterview(request);
-
         Interview interview = request.toEntity(projectRepository);
         interviewRepository.save(interview);
-        createSubcollaborator(interview, request.getEmails());
+
+        List<String> emails = request.getEmails();
+        emails.add(member.getEmail());
+
+        createSubcollaborator(interview, emails);
         sendInterviewInvitation(request);
     }
 
