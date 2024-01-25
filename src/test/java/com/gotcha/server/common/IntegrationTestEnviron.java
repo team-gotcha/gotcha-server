@@ -21,8 +21,10 @@ import com.gotcha.server.project.repository.InterviewRepository;
 import com.gotcha.server.project.repository.ProjectRepository;
 import com.gotcha.server.question.domain.CommonQuestion;
 import com.gotcha.server.question.domain.IndividualQuestion;
+import com.gotcha.server.question.domain.Likes;
 import com.gotcha.server.question.repository.CommonQuestionRepository;
 import com.gotcha.server.question.repository.IndividualQuestionRepository;
+import com.gotcha.server.question.repository.LikeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -39,6 +41,7 @@ public class IntegrationTestEnviron {
     private final EvaluationRepository evaluationRepository;
     private final CommonQuestionRepository commonQuestionRepository;
     private final FavoriteRepository favoriteRepository;
+    private final LikeRepository likeRepository;
 
     public Member 테스트유저_저장하기(String 이름) {
         return memberRepository.save(테스트유저(이름));
@@ -83,5 +86,9 @@ public class IntegrationTestEnviron {
 
     public Favorite 테스트즐겨찾기_저장하기(Applicant 지원자, Member 면접관) {
         return favoriteRepository.save(테스트즐겨찾기(지원자, 면접관));
+    }
+
+    public Likes 테스트좋아요_저장하기(IndividualQuestion 질문, Member 면접관) {
+        return likeRepository.save(테스트좋아요(질문, 면접관));
     }
 }
