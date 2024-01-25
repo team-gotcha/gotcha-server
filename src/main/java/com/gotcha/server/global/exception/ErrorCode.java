@@ -17,6 +17,7 @@ public enum ErrorCode {
     INVALID_JWT(HttpStatus.UNAUTHORIZED, "JWT 토큰이 잘못되었습니다."),
     INVALID_ID_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 구글 id 토큰입니다."),
     INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 refresh token 입니다."),
+    INVALID_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 access token 입니다."),
     UNAUTHORIZED_INTERVIEWER(HttpStatus.UNAUTHORIZED, "면접관 권한이 없습니다."),
 
     NO_PARAMETER(HttpStatus.BAD_REQUEST, " 파라미터가 없습니다."),

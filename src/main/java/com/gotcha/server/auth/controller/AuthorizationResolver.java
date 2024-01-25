@@ -27,7 +27,7 @@ public class AuthorizationResolver {
     public String resolveToken(final String headerValue) {
         validateAuthorizationHeader(headerValue);
         String token = extractToken(headerValue);
-        jwtTokenProvider.validateToken(token);
+        jwtTokenProvider.validateAccessToken(token);
         return token;
     }
 

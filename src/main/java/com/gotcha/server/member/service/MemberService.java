@@ -31,7 +31,7 @@ public class MemberService {
 
     public RefreshTokenResponse refresh(RefreshTokenRequest request) {
         String refreshToken = request.refreshToken();
-        jwtTokenProvider.validateToken(refreshToken);
+        jwtTokenProvider.validateRefreshToken(refreshToken);
         String socialId = jwtTokenProvider.getPayload(request.refreshToken());
         validateRefreshRequest(socialId, refreshToken);
         return new RefreshTokenResponse(jwtTokenProvider.createAccessToken(socialId));
