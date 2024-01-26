@@ -72,11 +72,17 @@ public class MemberService {
     }
 
     private Long findFirstProjectId(final Member member) {
+        Collaborator collaborator = findFirstCollaborator(member);
+        if(Objects.nonNull(collaborator)) {
+            return collaborator.getProject().getId();
+        }
+        return null;
+    }
+
+    private Collaborator findFirstCollaborator(final Member member) {
         String email = member.getEmail();
         if(Objects.nonNull(email)) {
-            return collaboratorRepository.findFirstByMember(email)
-                    .orElse(null)
-                    .getProject().getId();
+            return collaboratorRepository.findFirstByMember(email).orElse(null);
         }
         return null;
     }
