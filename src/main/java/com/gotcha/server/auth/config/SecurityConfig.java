@@ -22,6 +22,9 @@ import java.util.Collections;
 public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
+    /*
+     * @AuthenticationPrincipal이 필요하지 않지만, 접근 권한이 필요한 경우 등록
+     * */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
