@@ -83,6 +83,7 @@ public class ApplicantController {
     }
 
     @PostMapping
+    @Operation(description = "지원자 정보를 생성한다.")
     public ResponseEntity<ApplicantIdResponse> createApplicant(
             @RequestBody final ApplicantRequest request,
             @AuthenticationPrincipal final MemberDetails details) {
@@ -90,6 +91,7 @@ public class ApplicantController {
     }
 
     @PatchMapping("/files")
+    @Operation(description = "지원자 정보 페이지에 파일을 추가한다.")
     public ResponseEntity<String> addApplicantFiles(
             @RequestParam(required = false) final MultipartFile resume,
             @RequestParam(required = false) final MultipartFile portfolio,
@@ -100,12 +102,14 @@ public class ApplicantController {
     }
 
     @GetMapping("/interview-completed")
+    @Operation(description = "면접 완료된 지원자들의 목록을 조회한다.")
     public ResponseEntity<List<CompletedApplicantsResponse>> getCompletedApplicants(
             @RequestParam(value = "interview-id") final Long interviewId) {
         return ResponseEntity.status(HttpStatus.OK).body(applicantService.getCompletedApplicants(interviewId));
     }
 
     @PatchMapping("/interview-completed")
+    @Operation(description = "합격자 선정 완료하기 버튼을 눌러서 탈락한 지원자들의 상태를 업데이트한다.")
     public ResponseEntity<String> updateCompletedApplicants(
             @RequestParam(value = "interview-id") final Long interviewId) {
         applicantService.updateCompletedApplicants(interviewId);
@@ -114,6 +118,7 @@ public class ApplicantController {
 
 
     @GetMapping("/interview-completed/details")
+    @Operation(description = "특정 지원자의 총점, 순위, 키워드, 한줄평을 조회한다.")
     public ResponseEntity<CompletedApplicantDetailsResponse> getCompletedApplicantDetails(
             @RequestParam(value = "applicant-id") final Long applicantId) {
         return ResponseEntity.status(HttpStatus.OK).body(applicantService.getCompletedApplicantDetails(applicantId));

@@ -6,6 +6,7 @@ import com.gotcha.server.project.dto.request.ProjectRequest;
 import com.gotcha.server.project.dto.response.InterviewerNamesResponse;
 import com.gotcha.server.project.dto.response.ProjectResponse;
 import com.gotcha.server.project.service.InterviewService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,6 +24,7 @@ public class InterviewController {
     private final InterviewService interviewService;
 
     @PostMapping
+    @Operation(description = "세부 면접을 생성하고 초대 이메일을 발송한다.")
     public ResponseEntity<String> createInterview(@RequestBody final InterviewRequest request,
                                                   @AuthenticationPrincipal final MemberDetails details) {
         interviewService.createInterview(request, details.member());
@@ -30,6 +32,7 @@ public class InterviewController {
     }
 
     @GetMapping("/{interviewId}/names")
+    @Operation(description = "세부 면접에 속하는 면접관들의 이름 목록을 반환한다.")
     public ResponseEntity<List<InterviewerNamesResponse>> getNames(@PathVariable final Long interviewId){
         return ResponseEntity.status(HttpStatus.OK).body(interviewService.getInterviewerNames(interviewId));
     }

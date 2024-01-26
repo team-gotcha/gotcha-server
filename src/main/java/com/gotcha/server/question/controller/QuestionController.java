@@ -48,6 +48,7 @@ public class QuestionController {
     }
 
     @PostMapping("/individual")
+    @Operation(description = "지원자의 개별 질문과 댓글을 생성한다.")
     public ResponseEntity<String> createIndividualQuestion(
             @RequestBody final IndividualQuestionRequest request,
             @AuthenticationPrincipal final MemberDetails details) {
