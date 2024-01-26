@@ -83,11 +83,10 @@ public class ApplicantController {
     }
 
     @PostMapping
-    public ResponseEntity<String> createApplicant(
+    public ResponseEntity<ApplicantIdResponse> createApplicant(
             @RequestBody final ApplicantRequest request,
             @AuthenticationPrincipal final MemberDetails details) {
-        applicantService.createApplicant(request, details.member());
-        return ResponseEntity.status(HttpStatus.CREATED).body("면접 지원자 정보가 입력되었습니다.");
+        return ResponseEntity.status(HttpStatus.CREATED).body(applicantService.createApplicant(request, details.member()));
     }
 
     @PatchMapping("/files")
@@ -105,6 +104,14 @@ public class ApplicantController {
             @RequestParam(value = "interview-id") final Long interviewId) {
         return ResponseEntity.status(HttpStatus.OK).body(applicantService.getCompletedApplicants(interviewId));
     }
+
+    @PatchMapping("/interview-completed")
+    public ResponseEntity<String> updateCompletedApplicants(
+            @RequestParam(value = "interview-id") final Long interviewId) {
+        applicantService.updateCompletedApplicants(interviewId);
+        return ResponseEntity.status(HttpStatus.OK).body("합격자 선정이 완료되었습니다.");
+    }
+
 
     @GetMapping("/interview-completed/details")
     public ResponseEntity<CompletedApplicantDetailsResponse> getCompletedApplicantDetails(

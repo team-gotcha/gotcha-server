@@ -32,12 +32,15 @@ public class ProjectService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public void createProject(ProjectRequest request) {
+    public void createProject(ProjectRequest request, Member member) {
         validProject(request);
-
         Project project = request.toEntity();
         projectRepository.save(project);
-        createCollaborator(project, request.getEmails());
+
+        List<String> emails = request.getEmails();
+        emails.add(member.getEmail());
+
+        createCollaborator(project, emails);
         sendProjectInvitation(request);
     }
 
