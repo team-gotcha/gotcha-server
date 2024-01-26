@@ -102,6 +102,10 @@ public class Applicant extends BaseTimeEntity implements Comparable<Applicant> {
         this.totalScore = totalScore;
     }
 
+    public void updateOutCome(Outcome outcome){
+        this.outcome = outcome;
+    }
+
     public void moveToNextStatus() {
         interviewStatus = interviewStatus.moveToNextStatus();
     }
@@ -109,10 +113,6 @@ public class Applicant extends BaseTimeEntity implements Comparable<Applicant> {
     public Interviewer pickInterviewer(final Member member) {
         return interviewers.stream().filter(i -> i.hasPermission(member))
                 .findAny().orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED_INTERVIEWER));
-    }
-
-    public void determineOutcome(Outcome outcome) {
-        this.outcome = outcome;
     }
 
     public void changeQuestionPublicType(boolean agree) {

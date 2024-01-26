@@ -9,6 +9,7 @@ import com.gotcha.server.applicant.domain.Favorite;
 import com.gotcha.server.applicant.domain.InterviewStatus;
 import com.gotcha.server.applicant.domain.Interviewer;
 import com.gotcha.server.applicant.domain.Keyword;
+import com.gotcha.server.applicant.dto.message.OutcomeUpdateMessage;
 import com.gotcha.server.applicant.dto.request.*;
 import com.gotcha.server.applicant.dto.response.*;
 import com.gotcha.server.applicant.repository.ApplicantRepository;
@@ -44,6 +45,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import static com.gotcha.server.applicant.domain.Outcome.FAIL;
+import static com.gotcha.server.applicant.domain.Outcome.PENDING;
 
 @Slf4j
 @Service
@@ -167,24 +171,20 @@ public class ApplicantService {
     }
 
     @Transactional
-    public void createApplicant(ApplicantRequest request, Member member) {
+    public ApplicantIdResponse createApplicant(ApplicantRequest request, Member member) {
         List<Keyword> keywords = createKeywords(request.getKeywords());
-        List<IndividualQuestion> questions = createIndividualQuestions(request.getQuestions(), member);
         List<Interviewer> interviewers = createInterviewers(request.getInterviewers());
 
         Applicant applicant = request.toEntity(findInterviewById(request.getInterviewId()));
-
         for (Interviewer interviewer : interviewers) {
             applicant.addInterviewer(interviewer);
         }
         for (Keyword keyword : keywords) {
             applicant.addKeyword(keyword);
         }
-        for (IndividualQuestion question : questions) {
-            applicant.addQuestion(question);
-        }
-
         applicantRepository.save(applicant);
+
+        return new ApplicantIdResponse(applicant.getId());
     }
 
     public Interview findInterviewById(Long interviewId){
@@ -234,12 +234,6 @@ public class ApplicantService {
                 .collect(Collectors.toList());
     }
 
-    public List<IndividualQuestion> createIndividualQuestions(List<IndividualQuestionRequest> questionRequests, Member member) {
-        return questionRequests.stream()
-                .map(request -> request.toEntity(member, null, null))
-                .collect(Collectors.toList());
-    }
-
     public List<Interviewer> createInterviewers(List<InterviewerRequest> interviewerRequests) {
         Set<Long> existingMemberIds = new HashSet<>();
         return interviewerRequests.stream()
@@ -262,6 +256,19 @@ public class ApplicantService {
         final Map<Applicant, List<KeywordResponse>> keywordMap = keywordRepository.findAllByApplicants(applicants);
         final Map<Applicant, List<OneLinerResponse>> oneLinerMap = oneLinerRepository.getOneLinersForApplicants(applicants);
         return CompletedApplicantsResponse.generateList(applicants, keywordMap, oneLinerMap);
+    }
+
+    @Transactional
+    public void updateCompletedApplicants(Long interviewId) {
+        final Interview interview = interviewRepository.findById(interviewId)
+                .orElseThrow(() -> new AppException(ErrorCode.INTERVIEW_NOT_FOUNT));
+        final List<Applicant> applicants = applicantRepository.findByInterviewAndInterviewStatus(interview, InterviewStatus.COMPLETION);
+
+        for(Applicant applicant : applicants){
+            if (applicant.getOutcome() == PENDING){
+                applicant.updateOutCome(FAIL);
+            }
+        }
     }
 
     public List<Applicant> resetCompletedApplicants(Interview interview) {
@@ -317,5 +324,13 @@ public class ApplicantService {
         final List<Keyword> keywords = keywordRepository.findAllByApplicant(applicant);
         final List<OneLinerResponse> oneLiners = oneLinerRepository.getOneLinersForApplicant(applicant);
         return CompletedApplicantDetailsResponse.from(applicant, keywords, oneLiners);
+    }
+
+    @Transactional
+    public void updateOutcome(Long applicantId, OutcomeUpdateMessage message) {
+        final Applicant applicant = applicantRepository.findById(applicantId)
+                .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
+
+        applicant.updateOutCome(message.value());
     }
 }

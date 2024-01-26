@@ -20,8 +20,9 @@ public class ProjectController {
     private final ProjectService projectService;
 
     @PostMapping
-    public ResponseEntity<String> createProject(@RequestBody final ProjectRequest request) {
-        projectService.createProject(request);
+    public ResponseEntity<String> createProject(@RequestBody final ProjectRequest request,
+                                                @AuthenticationPrincipal final MemberDetails details) {
+        projectService.createProject(request, details.member());
         return ResponseEntity.status(HttpStatus.CREATED).body("프로젝트 생성 및 초대 이메일 발송이 완료되었습니다.");
     }
 

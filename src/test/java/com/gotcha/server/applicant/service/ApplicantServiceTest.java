@@ -1,5 +1,8 @@
 package com.gotcha.server.applicant.service;
 
+import static com.gotcha.server.applicant.domain.InterviewStatus.COMPLETION;
+import static com.gotcha.server.applicant.domain.Outcome.FAIL;
+import static com.gotcha.server.applicant.domain.Outcome.PASS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -176,5 +179,26 @@ class ApplicantServiceTest extends IntegrationTest {
         assertThat(지원자목록).hasSize(4)
                 .extracting(ApplicantsResponse::getFavorite)
                 .contains(false, true, false, true);
+    }
+
+    @Test // 로컬 db 연결문제로 테스트 못함
+    void 합격자_선정_완료하기() {
+        //given
+        Project 테스트프로젝트 = environ.테스트프로젝트_저장하기();
+        Interview 테스트면접 = environ.테스트면접_저장하기(테스트프로젝트, "테스트면접");
+        Applicant 지원자A = environ.테스트지원자_저장하기(테스트면접, "지원자A");
+        Applicant 지원자B = environ.테스트지원자_저장하기(테스트면접, "지원자B");
+        지원자A.moveToNextStatus();
+        지원자A.moveToNextStatus();
+        지원자B.moveToNextStatus();
+        지원자B.moveToNextStatus();
+        지원자B.updateOutCome(PASS);
+
+        //when
+        applicantService.updateCompletedApplicants(테스트면접.getId());
+
+        //then
+        assertEquals(FAIL, 지원자A.getOutcome());
+        assertEquals(PASS, 지원자B.getOutcome());
     }
 }

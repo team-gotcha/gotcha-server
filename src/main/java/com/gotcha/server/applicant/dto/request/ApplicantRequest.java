@@ -24,7 +24,6 @@ public class ApplicantRequest {
     private String email;
     private List<KeywordRequest> keywords;
     private Long interviewId;
-    private List<IndividualQuestionRequest> questions;
 
     public Applicant toEntity(Interview interview) {
         return Applicant.builder()
