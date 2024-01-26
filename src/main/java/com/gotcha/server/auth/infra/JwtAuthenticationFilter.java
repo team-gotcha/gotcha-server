@@ -2,6 +2,7 @@ package com.gotcha.server.auth.infra;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gotcha.server.auth.controller.AuthorizationResolver;
+import com.gotcha.server.global.exception.ErrorDto;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -44,14 +45,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
-        JwtAuthenticationFilter.ErrorResponse errorResponse = new JwtAuthenticationFilter.ErrorResponse(errorMessage, HttpStatus.UNAUTHORIZED.value());
+        ErrorDto errorResponse = new ErrorDto(HttpStatus.UNAUTHORIZED.value(), errorMessage);
         try {
             response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
         } catch (IOException e){
             e.printStackTrace();
         }
-    }
-
-    public record ErrorResponse(String message, Integer code){
     }
 }

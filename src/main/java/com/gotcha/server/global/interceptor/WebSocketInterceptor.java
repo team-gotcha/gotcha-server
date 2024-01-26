@@ -1,5 +1,8 @@
 package com.gotcha.server.global.interceptor;
 
+import static org.springframework.messaging.simp.stomp.StompCommand.CONNECT;
+import static org.springframework.messaging.simp.stomp.StompCommand.SEND;
+
 import com.gotcha.server.auth.controller.AuthorizationResolver;
 import com.gotcha.server.global.exception.AppException;
 import com.gotcha.server.global.exception.ErrorCode;
@@ -7,6 +10,7 @@ import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
@@ -23,15 +27,16 @@ public class WebSocketInterceptor implements ChannelInterceptor {
     @Override
     public Message<?> preSend(final Message<?> message, final MessageChannel channel) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
-        String headerValue = extractAuthorizationHeader(accessor);
-        if (StompCommand.CONNECT.equals(accessor.getCommand())) {
+        StompCommand command = accessor.getCommand();
+        if (command.equals(CONNECT) || command.equals(SEND)) {
+            String headerValue = extractAuthorizationHeader(accessor);
             authorizationResolver.resolveToken(headerValue);
         }
         return message;
     }
 
     private String extractAuthorizationHeader(final StompHeaderAccessor accessor) {
-        List<String> values = accessor.getNativeHeader(StompHeaderAccessor.STOMP_LOGIN_HEADER);
+        List<String> values = accessor.getNativeHeader(HttpHeaders.AUTHORIZATION);
         if(Objects.isNull(values) || values.size() == 0) {
             throw new AppException(ErrorCode.TOKEN_NOT_FOUND);
         }

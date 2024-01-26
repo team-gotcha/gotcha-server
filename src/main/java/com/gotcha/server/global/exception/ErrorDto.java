@@ -6,18 +6,11 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class ErrorDto {
-
-    private String errorCode;
+    private Integer code;
     private String message;
 
-    public ErrorDto(AppException e) {
-        this.errorCode = e.getErrorCode().toString();
+    public ErrorDto(final AppException e) {
+        this.code = e.getErrorCode().getHttpStatus().value();
         this.message = e.getErrorCode().getMessage();
     }
-
-    public ErrorDto(ErrorCode errorCode) {
-        this.errorCode = errorCode.toString();
-        this.message = errorCode.getMessage();
-    }
-
 }
