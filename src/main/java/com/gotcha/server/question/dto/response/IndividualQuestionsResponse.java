@@ -18,9 +18,11 @@ public class IndividualQuestionsResponse {
     private String writerProfile;
     private Long commentTargetId;
     private Boolean asking;
-    // Todo: 좋아요 개수 추가
+    private Boolean like;
+    private Long likeCount;
 
-    public static IndividualQuestionsResponse from(final IndividualQuestion individualQuestion) {
+    public static IndividualQuestionsResponse from(
+            final IndividualQuestion individualQuestion, final Boolean like, final Long likeCount) {
         Long commentTargetId = null;
         IndividualQuestion commentTarget = individualQuestion.getCommentTarget();
         if(Objects.nonNull(commentTarget)) {
@@ -34,6 +36,8 @@ public class IndividualQuestionsResponse {
                 .writerProfile(individualQuestion.getMember().getProfileUrl())
                 .commentTargetId(commentTargetId)
                 .asking(individualQuestion.isAsking())
+                .like(like)
+                .likeCount(likeCount)
                 .build();
     }
 }

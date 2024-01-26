@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.gotcha.server.applicant.domain.Applicant;
 import com.gotcha.server.applicant.domain.Interviewer;
+import com.gotcha.server.auth.dto.request.MemberDetails;
 import com.gotcha.server.common.IntegrationTest;
 import com.gotcha.server.member.domain.Member;
 import com.gotcha.server.project.domain.Interview;
@@ -46,12 +47,40 @@ public class QuestionServiceIntegrationTest extends IntegrationTest {
         IndividualQuestion 질문B = environ.테스트개별질문_저장하기(지원자A, "장점을소개해주세요.", 2, true, 5, 종미);
 
         // when
-        List<IndividualQuestionsResponse> 조회결과 = questionService.listIndividualQuestions(지원자A.getId());
+        List<IndividualQuestionsResponse> 조회결과 = questionService.listIndividualQuestions(지원자A.getId(), new MemberDetails(종미));
 
         // then
         assertThat(조회결과).hasSize(2)
                 .extracting(IndividualQuestionsResponse::getWriterName)
                 .contains("종미");
+    }
+
+    @Test
+    @DisplayName("면접 전 질문 목록 조회 시 좋아요 개수와 로그인 유저의 좋아요 여부를 함께 반환한다.")
+    void 질문목록_좋아요_개수_조회하기() {
+        // given
+        Member 종미 = environ.테스트유저_저장하기("종미");
+        Member 윤정 = environ.테스트유저_저장하기("윤정");
+        Project 테스트프로젝트 = environ.테스트프로젝트_저장하기();
+        Interview 테스트면접 = environ.테스트면접_저장하기(테스트프로젝트, "테스트면접");
+        Applicant 지원자A = environ.테스트지원자_저장하기(테스트면접, "지원자A");
+        IndividualQuestion 질문A = environ.테스트개별질문_저장하기(지원자A, "자기소개해주세요.", 1, true, 5, 종미);
+        IndividualQuestion 질문B = environ.테스트개별질문_저장하기(지원자A, "장점을소개해주세요.", 2, true, 5, 종미);
+        IndividualQuestion 질문C = environ.테스트개별질문_저장하기(지원자A, "협업했을때어려웠던점은?.", 3, true, 5, 종미);
+
+        environ.테스트좋아요_저장하기(질문A, 종미);
+        environ.테스트좋아요_저장하기(질문A, 윤정);
+        environ.테스트좋아요_저장하기(질문B, 종미);
+
+        // when
+        List<IndividualQuestionsResponse> 조회결과 = questionService.listIndividualQuestions(지원자A.getId(), new MemberDetails(종미));
+
+        // then
+        assertThat(조회결과).hasSize(3)
+                .extracting(IndividualQuestionsResponse::getLikeCount)
+                .containsAll(List.of(2L, 1L, 0L));
+        assertThat(조회결과).extracting(IndividualQuestionsResponse::getLike)
+                .containsAll(List.of(true, true, false));
     }
 
     @ParameterizedTest

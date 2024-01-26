@@ -34,7 +34,7 @@ class QuestionServiceUnitTest {
     void 공통질문_생성하기() {
         // given
         Long interviewId = 1L;
-        Project mockProject = 테스트프로젝트();
+        Project mockProject = 테스트프로젝트("프로젝트A");
         Interview mockInterview = 테스트면접(mockProject, "면접이름");
         CommonQuestionsRequest request = new CommonQuestionsRequest(List.of("content1", "content2"), interviewId);
 

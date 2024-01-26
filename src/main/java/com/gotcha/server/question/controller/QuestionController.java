@@ -35,8 +35,9 @@ public class QuestionController {
     @GetMapping
     @Operation(description = "면접 전 지원자의 개별 질문 목록을 조회한다.")
     public ResponseEntity<List<IndividualQuestionsResponse>> findAllIndividualQuestions(
-            @RequestParam(name = "applicant-id") final Long applicantId) {
-        return ResponseEntity.ok(questionService.listIndividualQuestions(applicantId));
+            @RequestParam(name = "applicant-id") final Long applicantId,
+            @AuthenticationPrincipal final MemberDetails details) {
+        return ResponseEntity.ok(questionService.listIndividualQuestions(applicantId, details));
     }
 
     @GetMapping("/in-progress")
@@ -73,5 +74,14 @@ public class QuestionController {
     public ResponseEntity<String> changeAskingFlags(@RequestBody final AskingFlagsRequest request) {
         questionService.changeAskingFlags(request);
         return ResponseEntity.status(HttpStatus.OK).body("면접 때 질문하기 값이 업데이트 되었습니다.");
+    }
+
+    @PostMapping("{question-id}/like")
+    @Operation(description = "개별 질문을 '좋아요'하거나 취소한다.")
+    public ResponseEntity<Void> like(
+            @PathVariable(value = "question-id") final Long questionId,
+            @AuthenticationPrincipal final MemberDetails details) {
+        questionService.like(questionId, details);
+        return ResponseEntity.ok().build();
     }
 }

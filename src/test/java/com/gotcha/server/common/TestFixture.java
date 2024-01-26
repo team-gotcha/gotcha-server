@@ -13,6 +13,7 @@ import com.gotcha.server.project.domain.Project;
 import com.gotcha.server.project.domain.Subcollaborator;
 import com.gotcha.server.question.domain.CommonQuestion;
 import com.gotcha.server.question.domain.IndividualQuestion;
+import com.gotcha.server.question.domain.Likes;
 
 public class TestFixture {
     public static Member 테스트유저(String 이름) {
@@ -24,8 +25,8 @@ public class TestFixture {
                 .build();
     }
 
-    public static Project 테스트프로젝트() {
-        return Project.builder().name("테스트프로젝트").build();
+    public static Project 테스트프로젝트(String 프로젝트이름) {
+        return Project.builder().name(프로젝트이름).build();
     }
 
     public static Interview 테스트면접(Project 프로젝트, String 면접이름) {
@@ -85,5 +86,9 @@ public class TestFixture {
 
     public static Favorite 테스트즐겨찾기(Applicant 지원자, Member 면접관) {
         return new Favorite(면접관, 지원자);
+    }
+
+    public static Likes 테스트좋아요(IndividualQuestion 질문, Member 면접관) {
+        return new Likes(면접관, 질문);
     }
 }

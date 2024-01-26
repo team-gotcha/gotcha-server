@@ -27,7 +27,7 @@ class KeywordRepositoryTest extends RepositoryTest {
     @DisplayName("지원자들의 키워드를 종류별로 하나씩 조회한다.")
     void 지원자목록의_키워드_조회하기() {
         // given
-        Project 조회할프로젝트 = 테스트프로젝트();
+        Project 조회할프로젝트 = 테스트프로젝트("테스트프로젝트");
         Interview 조회할면접 = 테스트면접(조회할프로젝트, "테스트면접1");
         Applicant 지원자A = 테스트지원자(조회할면접, "지원자A");
         Applicant 지원자B = 테스트지원자(조회할면접, "지원자B");

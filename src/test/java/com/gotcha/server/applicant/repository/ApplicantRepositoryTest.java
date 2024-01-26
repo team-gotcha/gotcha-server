@@ -26,7 +26,7 @@ class ApplicantRepositoryTest extends RepositoryTest {
         // given
         Member 종미 = 테스트유저("종미");
         Member 윤정 = 테스트유저("윤정");
-        Project 조회할프로젝트 = 테스트프로젝트();
+        Project 조회할프로젝트 = 테스트프로젝트("테스트프로젝트");
         Interview 조회할면접 = 테스트면접(조회할프로젝트, "테스트면접1");
         Interview 다른면접 = 테스트면접(조회할프로젝트, "테스트면접2");
         Applicant 지원자A = 테스트지원자(조회할면접, "지원자A");
@@ -65,7 +65,7 @@ class ApplicantRepositoryTest extends RepositoryTest {
     @DisplayName("합격한 지원자들을 조회한다.")
     void 합격한_지원자목록_조회하기() {
         // given
-        Project 조회할프로젝트 = 테스트프로젝트();
+        Project 조회할프로젝트 = 테스트프로젝트("테스트프로젝트");
         Interview 조회할면접 = 테스트면접(조회할프로젝트, "테스트면접1");
         Applicant 합격지원자A = 평가된_지원자_생성하기(조회할면접, "지원자A", Outcome.PASS);
         Applicant 합격지원자B = 평가된_지원자_생성하기(조회할면접, "지원자B", Outcome.PASS);
@@ -94,7 +94,7 @@ class ApplicantRepositoryTest extends RepositoryTest {
         // given
         Member 종미 = 테스트유저("종미");
         Member 윤정 = 테스트유저("윤정");
-        Project 조회할프로젝트 = 테스트프로젝트();
+        Project 조회할프로젝트 = 테스트프로젝트("테스트프로젝트");
         Interview 조회할면접 = 테스트면접(조회할프로젝트, "테스트면접1");
         Interview 다른면접 = 테스트면접(조회할프로젝트, "테스트면접2");
         Applicant 지원자A = 테스트지원자(조회할면접, "지원자A");

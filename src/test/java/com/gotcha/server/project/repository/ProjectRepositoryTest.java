@@ -35,8 +35,8 @@ class ProjectRepositoryTest {
         // given
         Member 종미 = 테스트유저("종미");
         Member 윤정 = 테스트유저("윤정");
-        Project 프로젝트A = 테스트프로젝트();
-        Project 프로젝트B = 테스트프로젝트();
+        Project 프로젝트A = 테스트프로젝트("프로젝트A");
+        Project 프로젝트B = 테스트프로젝트("프로젝트B");
         Collaborator 콜라보레이터1 = 테스트콜라보레이터(종미.getEmail(), 프로젝트A);
         Collaborator 콜라보레이터2 = 테스트콜라보레이터(종미.getEmail(), 프로젝트B);
         Interview 인터뷰A = 테스트면접(프로젝트A, "디자이너 면접");
@@ -67,7 +67,7 @@ class ProjectRepositoryTest {
         Member 멤버1 = 테스트유저("멤버1");
         Member 멤버2 = 테스트유저("멤버2");
         Member 멤버3 = 테스트유저("멤버3");
-        Project 프로젝트 = 테스트프로젝트();
+        Project 프로젝트 = 테스트프로젝트("테스트프로젝트");
         Interview 면접 = 테스트면접(프로젝트, "면접1");
         Subcollaborator 서브콜라보레이터1 = 테스트서브콜라보레이터(멤버1.getEmail(), 면접);
         Subcollaborator 서브콜라보레이터2 = 테스트서브콜라보레이터(멤버2.getEmail(), 면접);
