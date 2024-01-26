@@ -9,20 +9,20 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class ExceptionManager {
     @ExceptionHandler(AppException.class)
-    public ResponseEntity<?> appExceptionHandler(AppException e){
-        return ResponseEntity.status(e.getErrorCode().getHttpStatus())
-                .body(e.getErrorCode().name() + " " + e.getMessage());
+    public ResponseEntity<ErrorDto> appExceptionHandler(AppException e){
+        return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(new ErrorDto(e));
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
-    public ResponseEntity<String> handleMissingServletRequestParameter(MissingServletRequestParameterException e) {
+    public ResponseEntity<ErrorDto> handleMissingServletRequestParameter(MissingServletRequestParameterException e) {
         return ResponseEntity.status(ErrorCode.NO_PARAMETER.getHttpStatus())
-                .body(ErrorCode.NO_PARAMETER.name() + " " + e.getParameterName() + ErrorCode.NO_PARAMETER.getMessage());
+                .body(new ErrorDto(ErrorCode.NO_PARAMETER.getHttpStatus().value(),
+                        String.format(ErrorCode.NO_PARAMETER.getMessage(), e.getParameterName())));
     }
 
     @ExceptionHandler(Throwable.class)
-    public ResponseEntity<String> handleException(Throwable e) {
+    public ResponseEntity<ErrorDto> handleException(Throwable e) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("INTERNAL_SERVER_ERROR " + e.getMessage());
+                .body(new ErrorDto(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage()));
     }
 }
