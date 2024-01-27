@@ -1,12 +1,15 @@
 package com.gotcha.server.mongo.domain;
 
+import com.gotcha.server.question.domain.IndividualQuestion;
 import com.gotcha.server.question.domain.Question;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+@Getter
 @Document(collection = "questions")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class QuestionMongo implements Question {
@@ -18,21 +21,19 @@ public class QuestionMongo implements Question {
     private Integer questionOrder;
     private Boolean isCommon;
     private Long applicantId;
-    private Long writerId;
     private Boolean asking;
 
     @Builder
     public QuestionMongo(
             final Long questionId, final String content,
             final Integer importance, final Integer questionOrder,
-            final Boolean isCommon, final Long applicantId, final Long writerId) {
+            final Boolean isCommon, final Long applicantId) {
         this.questionId = questionId;
         this.content = content;
         this.importance = importance;
         this.questionOrder = questionOrder;
         this.isCommon = isCommon;
         this.applicantId = applicantId;
-        this.writerId = writerId;
         this.asking = true;
     }
 
@@ -50,5 +51,16 @@ public class QuestionMongo implements Question {
 
     public void deleteDuringInterview() {
         this.asking = false;
+    }
+
+    public static QuestionMongo from(final IndividualQuestion individualQuestion, final Long applicantId) {
+        return QuestionMongo.builder()
+                .questionId(individualQuestion.getId())
+                .content(individualQuestion.getContent())
+                .importance(individualQuestion.getImportance())
+                .questionOrder(individualQuestion.getQuestionOrder())
+                .isCommon(individualQuestion.isCommon())
+                .applicantId(applicantId)
+                .build();
     }
 }

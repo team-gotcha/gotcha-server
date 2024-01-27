@@ -21,6 +21,7 @@ import com.gotcha.server.question.domain.IndividualQuestion;
 import com.gotcha.server.question.dto.request.CommonQuestionsRequest;
 import com.gotcha.server.question.dto.response.InterviewQuestionResponse;
 import com.gotcha.server.question.dto.response.PreparatoryQuestionResponse;
+import com.gotcha.server.question.event.QuestionPreparedEvent;
 import com.gotcha.server.question.repository.CommonQuestionRepository;
 import com.gotcha.server.question.repository.IndividualQuestionRepository;
 import com.gotcha.server.question.repository.LikeRepository;
@@ -30,6 +31,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,6 +44,7 @@ public class QuestionService {
     private final InterviewRepository interviewRepository;
     private final ApplicantRepository applicantRepository;
     private final LikeRepository likeRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public void createCommonQuestions(final CommonQuestionsRequest request) {
@@ -133,6 +136,7 @@ public class QuestionService {
         Applicant applicant = applicantRepository.findById(applicantId)
                 .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
         List<IndividualQuestion> individualQuestions = individualQuestionRepository.findAllDuringInterview(applicant);
+        eventPublisher.publishEvent(new QuestionPreparedEvent(individualQuestions, applicantId));
         return individualQuestions.stream().map(PreparatoryQuestionResponse::from).toList();
     }
 
