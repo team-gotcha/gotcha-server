@@ -16,6 +16,7 @@ import com.gotcha.server.question.domain.QuestionPublicType;
 import com.gotcha.server.question.dto.message.QuestionUpdateMessage;
 import com.gotcha.server.question.dto.response.IndividualQuestionsResponse;
 import com.gotcha.server.question.dto.response.QuestionRankResponse;
+import com.gotcha.server.question.event.QuestionPreparedEvent;
 import com.gotcha.server.question.repository.IndividualQuestionRepository;
 import java.util.List;
 import java.util.stream.Stream;
@@ -26,14 +27,20 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.event.ApplicationEvents;
+import org.springframework.test.context.event.RecordApplicationEvents;
 
 @Slf4j
+@RecordApplicationEvents
 public class QuestionServiceIntegrationTest extends IntegrationTest {
     @Autowired
     private QuestionService questionService;
 
     @Autowired
     private IndividualQuestionRepository questionRepository;
+
+    @Autowired
+    ApplicationEvents events;
 
     @Test
     @DisplayName("면접 전 질문 목록을 조회한다. 이때 작성자에 대한 정보를 포함한다.")
@@ -161,5 +168,20 @@ public class QuestionServiceIntegrationTest extends IntegrationTest {
         assertThat(조회결과).hasSize(2)
                 .extracting(QuestionRankResponse::totalScore)
                 .containsExactlyElementsOf(List.of(17.5, 7.5));
+    }
+
+    @Test
+    @DisplayName("면접 질문 확인 시 이벤트가 발생한다.")
+    void 면접질문_준비_이벤트_발생시키기() {
+        // given
+        Project 테스트프로젝트 = environ.테스트프로젝트_저장하기();
+        Interview 테스트면접 = environ.테스트면접_저장하기(테스트프로젝트, "테스트면접");
+        Applicant 지원자A = environ.테스트지원자_저장하기(테스트면접, "지원자A");
+
+        // when
+        questionService.listPreparatoryQuestions(지원자A.getId());
+
+        // then
+        assertEquals(1L, events.stream(QuestionPreparedEvent.class).count());
     }
 }
