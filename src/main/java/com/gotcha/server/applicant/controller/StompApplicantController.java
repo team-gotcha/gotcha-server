@@ -22,7 +22,7 @@ public class StompApplicantController {
     @Operation(description = "실시간으로 지원자의 합격 여부를 수정한다.")
     public OutcomeUpdateMessage updateOutcome(
             @DestinationVariable(value = "applicant-id") Long applicantId, @Payload OutcomeUpdateMessage message) {
-        applicantService.updateOutcome(applicantId, message);
+        applicantService.updateMongoOutcome(applicantId, message);
         return message;
     }
 }
