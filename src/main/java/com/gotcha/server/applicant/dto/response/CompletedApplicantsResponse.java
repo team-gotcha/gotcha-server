@@ -15,6 +15,7 @@ import java.util.Map;
 public class CompletedApplicantsResponse {
     private String interviewName;
     private String applicantName;
+    private Long applicantId;
     private LocalDate date;
     private List<String> interviewers;
     private String email;
@@ -25,9 +26,10 @@ public class CompletedApplicantsResponse {
     private List<OneLinerResponse> oneLiners;
 
     @Builder
-    public CompletedApplicantsResponse(String interviewName, List<String> interviewers, List<KeywordResponse> keywords, String email, LocalDate date, String name, InterviewStatus interviewStatus, Double totalScore, Integer ranking, List<OneLinerResponse> oneLiners) {
+    public CompletedApplicantsResponse(String interviewName, List<String> interviewers, List<KeywordResponse> keywords, String email, LocalDate date, String name, Long applicantId, InterviewStatus interviewStatus, Double totalScore, Integer ranking, List<OneLinerResponse> oneLiners) {
         this.interviewName = interviewName;
         this.interviewers = interviewers;
+        this.applicantId = applicantId;
         this.keywords = keywords;
         this.email = email;
         this.date = date;
@@ -42,6 +44,7 @@ public class CompletedApplicantsResponse {
         return applicants.stream()
                 .map(applicant -> CompletedApplicantsResponse.builder()
                         .interviewName(applicant.getInterview().getName())
+                        .applicantId(applicant.getId())
                         .interviewers(getInterviewersNames(applicant))
                         .keywords(keywordMap.get(applicant))
                         .oneLiners(oneLinerMap.get(applicant))
