@@ -1,6 +1,6 @@
 package com.gotcha.server.question.service;
 
-import com.gotcha.server.question.domain.IndividualQuestion;
+import com.gotcha.server.question.domain.Question;
 import java.util.function.BiConsumer;
 
 public enum QuestionUpdateType {
@@ -9,13 +9,13 @@ public enum QuestionUpdateType {
     CONTENT((question, value) -> question.updateContent((String) value)),
     DELETE((question, value) -> question.deleteDuringInterview());
 
-    private BiConsumer<IndividualQuestion, Object> expression;
+    private BiConsumer<Question, Object> expression;
 
-    QuestionUpdateType(final BiConsumer<IndividualQuestion, Object> expression) {
+    QuestionUpdateType(final BiConsumer<Question, Object> expression) {
         this.expression = expression;
     }
 
-    public void update(final IndividualQuestion question, final Object value) {
+    public void update(final Question question, final Object value) {
         expression.accept(question, value);
     }
 }
