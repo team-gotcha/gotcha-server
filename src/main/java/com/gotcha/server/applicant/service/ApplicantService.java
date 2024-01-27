@@ -4,11 +4,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.gotcha.server.applicant.domain.Applicant;
-import com.gotcha.server.applicant.domain.Favorite;
-import com.gotcha.server.applicant.domain.InterviewStatus;
-import com.gotcha.server.applicant.domain.Interviewer;
-import com.gotcha.server.applicant.domain.Keyword;
+import com.gotcha.server.applicant.domain.*;
 import com.gotcha.server.applicant.dto.message.OutcomeUpdateMessage;
 import com.gotcha.server.applicant.dto.request.*;
 import com.gotcha.server.applicant.dto.response.*;
@@ -24,6 +20,9 @@ import com.gotcha.server.global.exception.ErrorCode;
 import com.gotcha.server.mail.service.MailService;
 import com.gotcha.server.member.domain.Member;
 import com.gotcha.server.member.repository.MemberRepository;
+import com.gotcha.server.mongo.domain.ApplicantMongo;
+import com.gotcha.server.mongo.repository.ApplicantMongoRepository;
+import com.gotcha.server.mongo.repository.BookRepository;
 import com.gotcha.server.project.domain.Interview;
 import com.gotcha.server.project.repository.InterviewRepository;
 
@@ -63,6 +62,7 @@ public class ApplicantService {
     private final FavoriteRepository favoriteRepository;
     private final AmazonS3 amazonS3;
     private final MailService mailService;
+    private final ApplicantMongoRepository applicantMongoRepository;
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
@@ -187,6 +187,12 @@ public class ApplicantService {
             applicant.addKeyword(keyword);
         }
         applicantRepository.save(applicant);
+
+        ApplicantMongo applicantMongo = ApplicantMongo.builder()
+                .applicantId(applicant.getId())
+                .outcome(PENDING)
+                .build();
+        applicantMongoRepository.insert(applicantMongo);
 
         return new ApplicantIdResponse(applicant.getId());
     }
@@ -336,5 +342,14 @@ public class ApplicantService {
                 .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
 
         applicant.updateOutCome(message.value());
+    }
+
+    @Transactional
+    public void updateMongoOutcome(Long applicantId, OutcomeUpdateMessage message) {
+        final ApplicantMongo applicant = applicantMongoRepository.findByApplicantId(applicantId)
+                .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
+
+        applicant.updateOutCome(message.value());
+        applicantMongoRepository.save(applicant);
     }
 }
