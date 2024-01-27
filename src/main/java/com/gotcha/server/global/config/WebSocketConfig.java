@@ -1,5 +1,6 @@
 package com.gotcha.server.global.config;
 
+import com.gotcha.server.global.exception.StompTokenErrorHandler;
 import com.gotcha.server.global.interceptor.WebSocketInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
@@ -14,6 +15,7 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     private final WebSocketInterceptor webSocketInterceptor;
+    private final StompTokenErrorHandler stompExceptionManager;
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
@@ -24,8 +26,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
-                .setAllowedOriginPatterns("*")
-                .withSockJS();
+                .setAllowedOriginPatterns("*");
+        registry.setErrorHandler(stompExceptionManager);
     }
 
     @Override
