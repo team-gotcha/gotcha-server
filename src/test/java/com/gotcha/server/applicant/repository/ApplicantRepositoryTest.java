@@ -82,8 +82,7 @@ class ApplicantRepositoryTest extends RepositoryTest {
 
     private Applicant 평가된_지원자_생성하기(Interview 면접, String 이름, Outcome 결과) {
         Applicant 지원자 = 테스트지원자(면접, 이름);
-        지원자.moveToNextStatus();
-        지원자.moveToNextStatus();
+        지원자.setInterviewStatus(InterviewStatus.COMPLETION);
         지원자.updateOutCome(결과);
         return 지원자;
     }
@@ -98,11 +97,9 @@ class ApplicantRepositoryTest extends RepositoryTest {
         Interview 조회할면접 = 테스트면접(조회할프로젝트, "테스트면접1");
         Interview 다른면접 = 테스트면접(조회할프로젝트, "테스트면접2");
         Applicant 지원자A = 테스트지원자(조회할면접, "지원자A");
-        지원자A.moveToNextStatus();
-        지원자A.moveToNextStatus();
+        지원자A.setInterviewStatus(InterviewStatus.COMPLETION);
         Applicant 지원자B = 테스트지원자(조회할면접, "지원자B");
-        지원자B.moveToNextStatus();
-        지원자B.moveToNextStatus();
+        지원자B.setInterviewStatus(InterviewStatus.COMPLETION);
         Applicant 지원자C = 테스트지원자(조회할면접, "지원자C");
         Applicant 지원자D = 테스트지원자(다른면접, "지원자D");
 

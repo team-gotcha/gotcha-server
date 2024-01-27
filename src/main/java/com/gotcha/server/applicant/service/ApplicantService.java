@@ -36,7 +36,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import com.gotcha.server.question.domain.IndividualQuestion;
-import com.gotcha.server.question.dto.request.IndividualQuestionRequest;
 import com.gotcha.server.question.repository.IndividualQuestionRepository;
 import io.micrometer.common.lang.Nullable;
 import lombok.RequiredArgsConstructor;
@@ -79,18 +78,23 @@ public class ApplicantService {
         long interviewerCount = interviewers.size();
         long preparedInterviewerCount = interviewers.stream().filter(Interviewer::isPrepared).count();
         if (interviewerCount <= preparedInterviewerCount) {
-            applicant.moveToNextStatus();
             saveCommonQuestionsTo(applicant);
         }
         return new InterviewProceedResponse(interviewerCount, preparedInterviewerCount);
     }
 
-    public void saveCommonQuestionsTo(final Applicant applicant) {
+    private void saveCommonQuestionsTo(final Applicant applicant) {
         List<CommonQuestion> commonQuestions = commonQuestionRepository.findAllByInterview(applicant.getInterview());
         commonQuestions.stream()
                 .map(question -> IndividualQuestion.fromCommonQuestion(question, applicant))
                 .forEach(question -> applicant.addQuestion(question));
+    }
 
+    @Transactional
+    public void enterInterviewProcess(final Long applicantId) {
+        Applicant applicant = applicantRepository.findByIdWithInterviewAndInterviewers(applicantId)
+                .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
+        applicant.setInterviewStatus(InterviewStatus.IN_PROGRESS);
     }
 
     public List<ApplicantsResponse> listApplicantsByInterview(final Long interviewId, final MemberDetails details) {
@@ -167,7 +171,7 @@ public class ApplicantService {
                 applicant.getEmail(),
                 String.format("%s님의 %s %s %s 면접 지원 결과 내용입니다.", applicant.getName(), projectName, interviewName, positionName),
                 applicant.getOutcome().createPassEmailMessage(applicant.getName(), projectName, interviewName, positionName));
-        applicant.moveToNextStatus();
+        applicant.setInterviewStatus(InterviewStatus.ANNOUNCED);
     }
 
     @Transactional

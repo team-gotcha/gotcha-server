@@ -106,8 +106,8 @@ public class Applicant extends BaseTimeEntity implements Comparable<Applicant> {
         this.outcome = outcome;
     }
 
-    public void moveToNextStatus() {
-        interviewStatus = interviewStatus.moveToNextStatus();
+    public void setInterviewStatus(final InterviewStatus status) {
+        this.interviewStatus = status;
     }
 
     public Interviewer pickInterviewer(final Member member) {

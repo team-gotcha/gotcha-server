@@ -37,9 +37,7 @@ public class EvaluationService {
     public void evaluate(final MemberDetails details, final List<EvaluateRequest> requests) {
         List<IndividualQuestion> questions = getQuestionsBeingEvaluated(requests);
         Applicant applicant = validateApplicantOfQuestions(questions);
-        if(applicant.getInterviewStatus() != InterviewStatus.COMPLETION) {
-            applicant.moveToNextStatus();
-        }
+        applicant.setInterviewStatus(InterviewStatus.COMPLETION);
 
         Map<Long, IndividualQuestion> questionMap = questions.stream().collect(Collectors.toMap(IndividualQuestion::getId, q->q));
         List<Evaluation> evaluations = requests.stream()
