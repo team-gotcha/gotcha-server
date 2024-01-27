@@ -58,6 +58,13 @@ public class ApplicantController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/{applicant-id}/entering-interview")
+    @Operation(description = "지원자가 면접 진행 상태로 전환된다.")
+    public ResponseEntity<Void> enterInterview(@PathVariable(name = "applicant-id") final Long applicantId) {
+        applicantService.enterInterviewProcess(applicantId);
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping("/{applicant-id}/public")
     @Operation(description = "지원자의 면접 질문 공개를 동의 혹은 비동의한다.")
     public ResponseEntity<Void> makeQuestionsPublic(
