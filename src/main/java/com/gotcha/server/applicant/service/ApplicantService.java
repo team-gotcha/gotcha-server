@@ -12,6 +12,7 @@ import com.gotcha.server.applicant.domain.Keyword;
 import com.gotcha.server.applicant.dto.message.OutcomeUpdateMessage;
 import com.gotcha.server.applicant.dto.request.*;
 import com.gotcha.server.applicant.dto.response.*;
+import com.gotcha.server.applicant.event.InterviewStartedEvent;
 import com.gotcha.server.applicant.repository.ApplicantRepository;
 import com.gotcha.server.applicant.repository.FavoriteRepository;
 import com.gotcha.server.applicant.repository.KeywordRepository;
@@ -61,7 +62,6 @@ public class ApplicantService {
     private final IndividualQuestionRepository individualQuestionRepository;
     private final OneLinerRepository oneLinerRepository;
     private final MemberRepository memberRepository;
-    private final CommonQuestionRepository commonQuestionRepository;
     private final FavoriteRepository favoriteRepository;
     private final ApplicationEventPublisher eventPublisher;
     private final AmazonS3 amazonS3;
@@ -81,16 +81,9 @@ public class ApplicantService {
         long interviewerCount = interviewers.size();
         long preparedInterviewerCount = interviewers.stream().filter(Interviewer::isPrepared).count();
         if (interviewerCount <= preparedInterviewerCount) {
-            saveCommonQuestionsTo(applicant);
+            eventPublisher.publishEvent(new InterviewStartedEvent(applicant));
         }
         return new InterviewProceedResponse(interviewerCount, preparedInterviewerCount);
-    }
-
-    private void saveCommonQuestionsTo(final Applicant applicant) {
-        List<CommonQuestion> commonQuestions = commonQuestionRepository.findAllByInterview(applicant.getInterview());
-        commonQuestions.stream()
-                .map(question -> IndividualQuestion.fromCommonQuestion(question, applicant))
-                .forEach(question -> applicant.addQuestion(question));
     }
 
     @Transactional

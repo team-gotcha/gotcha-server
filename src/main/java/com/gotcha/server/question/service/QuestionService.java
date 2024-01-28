@@ -1,6 +1,7 @@
 package com.gotcha.server.question.service;
 
 import com.gotcha.server.applicant.domain.Applicant;
+import com.gotcha.server.applicant.event.InterviewStartedEvent;
 import com.gotcha.server.auth.dto.request.MemberDetails;
 import com.gotcha.server.evaluation.domain.QuestionEvaluations;
 import com.gotcha.server.mongo.domain.QuestionMongo;
@@ -191,5 +192,15 @@ public class QuestionService {
                 .collect(Collectors.toMap(question -> question.getId(), question -> question));
         mongoQuestions
                 .forEach(question -> question.updateQuestion(individualQuestionsWithId.get(question.getQuestionId())));
+    }
+
+    @Transactional
+    @EventListener(InterviewStartedEvent.class)
+    public void saveCommonQuestionsToApplicant(final InterviewStartedEvent event) {
+        Applicant applicant = event.applicant();
+        List<CommonQuestion> commonQuestions = commonQuestionRepository.findAllByInterview(applicant.getInterview());
+        commonQuestions.stream()
+                .map(question -> IndividualQuestion.fromCommonQuestion(question, applicant))
+                .forEach(question -> applicant.addQuestion(question));
     }
 }
