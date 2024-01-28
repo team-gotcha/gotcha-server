@@ -5,6 +5,7 @@ import com.gotcha.server.applicant.dto.message.OutcomeUpdateMessage;
 import com.gotcha.server.applicant.dto.request.*;
 import com.gotcha.server.applicant.dto.response.*;
 import com.gotcha.server.applicant.event.InterviewStartedEvent;
+import com.gotcha.server.applicant.event.OutcomePublishedEvent;
 import com.gotcha.server.applicant.repository.ApplicantRepository;
 import com.gotcha.server.applicant.repository.FavoriteRepository;
 import com.gotcha.server.applicant.repository.KeywordRepository;
@@ -55,7 +56,6 @@ public class ApplicantService {
     private final FavoriteRepository favoriteRepository;
     private final ApplicationEventPublisher eventPublisher;
     private final S3Service s3Service;
-    private final MailService mailService;
     private final ApplicantMongoRepository applicantMongoRepository;
 
     @Transactional
@@ -142,17 +142,9 @@ public class ApplicantService {
 
         List<Applicant> applicants = applicantRepository.findAllByInterview(interview);
         for (Applicant applicant : applicants) {
-            sendEmailAndChangeStatus(applicant, projectName, interviewName, positionName);
+            applicant.setInterviewStatus(InterviewStatus.ANNOUNCED);
+            eventPublisher.publishEvent(new OutcomePublishedEvent(applicant, projectName, interviewName, positionName));
         }
-    }
-
-    public void sendEmailAndChangeStatus(
-            final Applicant applicant, final String projectName, final String interviewName, final String positionName) {
-        mailService.sendEmail(
-                applicant.getEmail(),
-                String.format("%s님의 %s %s %s 면접 지원 결과 내용입니다.", applicant.getName(), projectName, interviewName, positionName),
-                applicant.getOutcome().createPassEmailMessage(applicant.getName(), projectName, interviewName, positionName));
-        applicant.setInterviewStatus(InterviewStatus.ANNOUNCED);
     }
 
     @Transactional
