@@ -36,6 +36,7 @@ public class ApplicantDslRepositoryImpl implements ApplicantDslRepository {
                 .leftJoin(qApplicant.questions, qQuestion)
                 .where(qApplicant.interview.eq(interview), qApplicant.interviewStatus.ne(InterviewStatus.ANNOUNCED))
                 .orderBy(qApplicant.date.asc())
+                .distinct()
                 .fetch();
     }
 
