@@ -24,7 +24,6 @@ public class StompQuestionService {
     private final QuestionMongoRepository questionMongoRepository;
     private final ApplicationEventPublisher eventPublisher;
 
-    @Transactional
     @EventListener(QuestionPreparedEvent.class)
     public void migrateQuestions(final QuestionPreparedEvent event) {
         Long applicantId = event.applicantId();
@@ -34,12 +33,12 @@ public class StompQuestionService {
         questionMongoRepository.saveAll(mongoQuestions);
     }
 
-    @Transactional
     public void updateQuestion(final Long questionId, final QuestionUpdateMessage message) {
         QuestionMongo question = questionMongoRepository.findByQuestionId(questionId)
                 .orElseThrow(() -> new AppException(ErrorCode.QUESTION_NOT_FOUNT));
         QuestionUpdateType updateType = message.type();
         updateType.update(question, message.value());
+        questionMongoRepository.save(question);
     }
 
     @EventListener(QuestionDeterminedEvent.class)
