@@ -1,4 +1,4 @@
-package com.gotcha.server.global.config;
+package com.gotcha.server.external.config;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;

@@ -15,6 +15,7 @@ import com.gotcha.server.project.domain.Subcollaborator;
 import com.gotcha.server.question.domain.CommonQuestion;
 import com.gotcha.server.question.domain.IndividualQuestion;
 import com.gotcha.server.question.domain.Likes;
+import java.time.LocalDate;
 
 public class TestFixture {
     public static Member 테스트유저(String 이름) {
@@ -34,11 +35,12 @@ public class TestFixture {
         return Interview.builder().project(프로젝트).name(면접이름).build();
     }
 
-    public static Applicant 테스트지원자(Interview 면접, String 이름) {
+    public static Applicant 테스트지원자(Interview 면접, String 이름, LocalDate 면접날짜) {
         return Applicant.builder()
                 .name(이름)
                 .interview(면접)
                 .email(String.format("%s email", 이름))
+                .date(면접날짜)
                 .build();
     }
 

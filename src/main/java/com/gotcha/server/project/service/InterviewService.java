@@ -2,7 +2,7 @@ package com.gotcha.server.project.service;
 
 import com.gotcha.server.global.exception.AppException;
 import com.gotcha.server.global.exception.ErrorCode;
-import com.gotcha.server.mail.service.MailService;
+import com.gotcha.server.external.service.MailService;
 import com.gotcha.server.member.domain.Member;
 import com.gotcha.server.member.repository.MemberRepository;
 import com.gotcha.server.project.domain.*;

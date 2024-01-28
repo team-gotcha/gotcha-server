@@ -1,5 +1,6 @@
 package com.gotcha.server.applicant.domain;
 
+import com.gotcha.server.applicant.dto.response.PreparedInterviewersResponse;
 import com.gotcha.server.global.exception.AppException;
 import com.gotcha.server.global.exception.ErrorCode;
 import com.gotcha.server.member.domain.Member;
@@ -67,7 +68,9 @@ public class Applicant extends BaseTimeEntity implements Comparable<Applicant> {
     private String portfolio;
 
     @Builder
-    public Applicant(Interview interview, String email, LocalDate date, String name, Integer age, String education, String phoneNumber, String position, String path, String resumeLink, String portfolio) {
+    public Applicant(final Interview interview, final String email, final LocalDate date,
+            final String name, final Integer age, final String education, final String phoneNumber,
+            final String position, final String path, final String resumeLink, final String portfolio) {
         this.interview = interview;
         this.email = email;
         this.date = date;
@@ -110,9 +113,10 @@ public class Applicant extends BaseTimeEntity implements Comparable<Applicant> {
         this.interviewStatus = status;
     }
 
-    public Interviewer pickInterviewer(final Member member) {
-        return interviewers.stream().filter(i -> i.hasPermission(member))
+    public void setInterviewerPrepared(final Member member) {
+         Interviewer interviewer = interviewers.stream().filter(i -> i.hasPermission(member))
                 .findAny().orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED_INTERVIEWER));
+         interviewer.setPrepared();
     }
 
     public void changeQuestionPublicType(boolean agree) {
@@ -126,7 +130,6 @@ public class Applicant extends BaseTimeEntity implements Comparable<Applicant> {
 
     public void removeInterviewer(final Interviewer interviewer) {
         interviewers.remove(interviewer);
-        interviewer.setApplicant(null);
     }
 
     public void addQuestion(final IndividualQuestion question) {
@@ -136,7 +139,6 @@ public class Applicant extends BaseTimeEntity implements Comparable<Applicant> {
 
     public void removeQuestion(final IndividualQuestion question) {
         questions.remove(question);
-        question.setApplicant(null);
     }
 
     public void addKeyword(Keyword keyword) {
@@ -146,11 +148,12 @@ public class Applicant extends BaseTimeEntity implements Comparable<Applicant> {
 
     public void removeKeyword(Keyword keyword) {
         keywords.remove(keyword);
-        keyword.setApplicant(null);
     }
 
-    public void setDate(LocalDate date) {
-        this.date = date;
+    public PreparedInterviewersResponse getPreparedInterviewerInfo() {
+        long interviewerCount = interviewers.size();
+        long preparedInterviewerCount = interviewers.stream().filter(Interviewer::isPrepared).count();
+        return new PreparedInterviewersResponse(interviewerCount, preparedInterviewerCount);
     }
 
     @Override

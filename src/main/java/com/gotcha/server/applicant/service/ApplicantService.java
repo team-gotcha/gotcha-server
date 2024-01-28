@@ -1,13 +1,11 @@
 package com.gotcha.server.applicant.service;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.gotcha.server.applicant.domain.*;
 import com.gotcha.server.applicant.dto.message.OutcomeUpdateMessage;
 import com.gotcha.server.applicant.dto.request.*;
 import com.gotcha.server.applicant.dto.response.*;
+import com.gotcha.server.applicant.event.InterviewStartedEvent;
+import com.gotcha.server.applicant.event.OutcomePublishedEvent;
 import com.gotcha.server.applicant.repository.ApplicantRepository;
 import com.gotcha.server.applicant.repository.FavoriteRepository;
 import com.gotcha.server.applicant.repository.KeywordRepository;
@@ -15,32 +13,27 @@ import com.gotcha.server.auth.dto.request.MemberDetails;
 import com.gotcha.server.evaluation.domain.QuestionEvaluations;
 import com.gotcha.server.evaluation.dto.response.OneLinerResponse;
 import com.gotcha.server.evaluation.repository.OneLinerRepository;
+import com.gotcha.server.external.service.S3Service;
 import com.gotcha.server.global.exception.AppException;
 import com.gotcha.server.global.exception.ErrorCode;
-import com.gotcha.server.mail.service.MailService;
+import com.gotcha.server.external.service.MailService;
 import com.gotcha.server.member.domain.Member;
 import com.gotcha.server.member.repository.MemberRepository;
 import com.gotcha.server.mongo.domain.ApplicantMongo;
 import com.gotcha.server.mongo.repository.ApplicantMongoRepository;
-import com.gotcha.server.mongo.repository.BookRepository;
 import com.gotcha.server.project.domain.Interview;
 import com.gotcha.server.project.repository.InterviewRepository;
 
-import com.gotcha.server.question.domain.CommonQuestion;
 import com.gotcha.server.question.event.QuestionDeterminedEvent;
-import com.gotcha.server.question.repository.CommonQuestionRepository;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import com.gotcha.server.question.domain.IndividualQuestion;
 import com.gotcha.server.question.repository.IndividualQuestionRepository;
-import io.micrometer.common.lang.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,38 +53,22 @@ public class ApplicantService {
     private final IndividualQuestionRepository individualQuestionRepository;
     private final OneLinerRepository oneLinerRepository;
     private final MemberRepository memberRepository;
-    private final CommonQuestionRepository commonQuestionRepository;
     private final FavoriteRepository favoriteRepository;
     private final ApplicationEventPublisher eventPublisher;
-    private final AmazonS3 amazonS3;
-    private final MailService mailService;
+    private final S3Service s3Service;
     private final ApplicantMongoRepository applicantMongoRepository;
 
-    @Value("${cloud.aws.s3.bucket}")
-    private String bucket;
-
     @Transactional
-    public InterviewProceedResponse proceedToInterview(final InterviewProceedRequest request, final MemberDetails details) {
+    public PreparedInterviewersResponse prepareInterview(final InterviewProceedRequest request, final MemberDetails details) {
         Applicant applicant = applicantRepository.findByIdWithInterviewAndInterviewers(request.applicantId())
                 .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
-        Interviewer interviewer = applicant.pickInterviewer(details.member());
-        interviewer.setPrepared();
+        applicant.setInterviewerPrepared(details.member());
 
-        List<Interviewer> interviewers = applicant.getInterviewers();
-        long interviewerCount = interviewers.size();
-        long preparedInterviewerCount = interviewers.stream().filter(Interviewer::isPrepared).count();
         if (applicant.getInterviewStatus() == InterviewStatus.PREPARATION) {
-            saveCommonQuestionsTo(applicant);
+            eventPublisher.publishEvent(new InterviewStartedEvent(applicant));
             applicant.setInterviewStatus(InterviewStatus.IN_PROGRESS);
         }
-        return new InterviewProceedResponse(interviewerCount, preparedInterviewerCount);
-    }
-
-    private void saveCommonQuestionsTo(final Applicant applicant) {
-        List<CommonQuestion> commonQuestions = commonQuestionRepository.findAllByInterview(applicant.getInterview());
-        commonQuestions.stream()
-                .map(question -> IndividualQuestion.fromCommonQuestion(question, applicant))
-                .forEach(question -> applicant.addQuestion(question));
+        return applicant.getPreparedInterviewerInfo();
     }
 
     @Transactional
@@ -112,7 +89,7 @@ public class ApplicantService {
         return ApplicantsResponse.generateList(applicantsWithKeywords, favoritesCheck);
     }
 
-    public Map<Applicant, Boolean> checkFavorites(final List<Applicant> applicants, final Member member) {
+    private Map<Applicant, Boolean> checkFavorites(final List<Applicant> applicants, final Member member) {
         List<Applicant> favorites = favoriteRepository.findAllByMemberAndApplicantIn(member, applicants)
                 .stream().map(Favorite::getApplicant).toList();
         return applicants.stream()
@@ -156,6 +133,7 @@ public class ApplicantService {
         applicant.changeQuestionPublicType(request.agree());
     }
 
+    @Transactional
     public void sendPassEmail(final PassEmailSendRequest request) {
         Interview interview = interviewRepository.findById(request.interviewId())
                 .orElseThrow(() -> new AppException(ErrorCode.INTERVIEW_NOT_FOUNT));
@@ -165,17 +143,9 @@ public class ApplicantService {
 
         List<Applicant> applicants = applicantRepository.findAllByInterview(interview);
         for (Applicant applicant : applicants) {
-            sendEmailAndChangeStatus(applicant, projectName, interviewName, positionName);
+            applicant.setInterviewStatus(InterviewStatus.ANNOUNCED);
+            eventPublisher.publishEvent(new OutcomePublishedEvent(applicant, projectName, interviewName, positionName));
         }
-    }
-
-    public void sendEmailAndChangeStatus(
-            final Applicant applicant, final String projectName, final String interviewName, final String positionName) {
-        mailService.sendEmail(
-                applicant.getEmail(),
-                String.format("%s님의 %s %s %s 면접 지원 결과 내용입니다.", applicant.getName(), projectName, interviewName, positionName),
-                applicant.getOutcome().createPassEmailMessage(applicant.getName(), projectName, interviewName, positionName));
-        applicant.setInterviewStatus(InterviewStatus.ANNOUNCED);
     }
 
     @Transactional
@@ -208,38 +178,14 @@ public class ApplicantService {
 
     @Transactional
     public void addApplicantFiles(MultipartFile resume, MultipartFile portfolio, Long applicantId) throws IOException {
-        String resumeLink = saveUploadFile(resume);
-        String portfolioLink = saveUploadFile(portfolio);
-
         Applicant applicant = applicantRepository.findById(applicantId)
                 .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
+
+        String resumeLink = s3Service.saveUploadFile(resume);
+        String portfolioLink = s3Service.saveUploadFile(portfolio);
+
         applicant.updateResumeLink(resumeLink);
         applicant.updatePortfolio(portfolioLink); // save 없어도 jpa에 의해 db update
-    }
-
-    @Transactional
-    public String saveUploadFile(@Nullable MultipartFile multipartFile) throws IOException {
-        if (multipartFile != null) {
-            ObjectMetadata objectMetadata = new ObjectMetadata();
-            objectMetadata.setContentType(multipartFile.getContentType());
-            objectMetadata.setContentLength(multipartFile.getSize());
-
-            String originalFilename = multipartFile.getOriginalFilename();
-            int index = Objects.requireNonNull(originalFilename).lastIndexOf(".");
-            String ext = originalFilename.substring(index + 1);
-
-            String storeFileName = UUID.randomUUID() + "." + ext;
-            String key = "upload/" + storeFileName;
-
-            try (InputStream inputStream = multipartFile.getInputStream()) {
-                amazonS3.putObject(new PutObjectRequest(bucket, key, inputStream, objectMetadata)
-                        .withCannedAcl(CannedAccessControlList.PublicRead));
-            }
-
-            return amazonS3.getUrl(bucket, key).toString();
-        } else {
-            return null;
-        }
     }
 
     public List<Keyword> createKeywords(List<KeywordRequest> keywordRequests) {

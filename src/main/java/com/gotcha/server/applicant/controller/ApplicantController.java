@@ -12,7 +12,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import java.io.IOException;
 import java.util.List;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,10 +27,10 @@ public class ApplicantController {
 
     @PostMapping("/interview-ready")
     @Operation(description = "로그인 유저(면접관)가 면접 준비 완료를 요청한다. 모든 면접관이 준비 완료되었다면 지원자의 면접 단계가 바뀐다.")
-    public ResponseEntity<InterviewProceedResponse> proceedToInterview(
+    public ResponseEntity<PreparedInterviewersResponse> proceedToInterview(
             @RequestBody final InterviewProceedRequest request,
             @AuthenticationPrincipal final MemberDetails details) {
-        return ResponseEntity.ok(applicantService.proceedToInterview(request, details));
+        return ResponseEntity.ok(applicantService.prepareInterview(request, details));
     }
 
     @GetMapping
