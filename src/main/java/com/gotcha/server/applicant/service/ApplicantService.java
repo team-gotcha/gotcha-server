@@ -1,9 +1,5 @@
 package com.gotcha.server.applicant.service;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.gotcha.server.applicant.domain.*;
 import com.gotcha.server.applicant.dto.message.OutcomeUpdateMessage;
 import com.gotcha.server.applicant.dto.request.*;
@@ -16,6 +12,7 @@ import com.gotcha.server.auth.dto.request.MemberDetails;
 import com.gotcha.server.evaluation.domain.QuestionEvaluations;
 import com.gotcha.server.evaluation.dto.response.OneLinerResponse;
 import com.gotcha.server.evaluation.repository.OneLinerRepository;
+import com.gotcha.server.external.service.S3Service;
 import com.gotcha.server.global.exception.AppException;
 import com.gotcha.server.global.exception.ErrorCode;
 import com.gotcha.server.external.service.MailService;
@@ -29,16 +26,13 @@ import com.gotcha.server.project.repository.InterviewRepository;
 import com.gotcha.server.question.event.QuestionDeterminedEvent;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import com.gotcha.server.question.domain.IndividualQuestion;
 import com.gotcha.server.question.repository.IndividualQuestionRepository;
-import io.micrometer.common.lang.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,12 +54,9 @@ public class ApplicantService {
     private final MemberRepository memberRepository;
     private final FavoriteRepository favoriteRepository;
     private final ApplicationEventPublisher eventPublisher;
-    private final AmazonS3 amazonS3;
+    private final S3Service s3Service;
     private final MailService mailService;
     private final ApplicantMongoRepository applicantMongoRepository;
-
-    @Value("${cloud.aws.s3.bucket}")
-    private String bucket;
 
     @Transactional
     public PreparedInterviewersResponse prepareInterview(final InterviewProceedRequest request, final MemberDetails details) {
@@ -194,38 +185,14 @@ public class ApplicantService {
 
     @Transactional
     public void addApplicantFiles(MultipartFile resume, MultipartFile portfolio, Long applicantId) throws IOException {
-        String resumeLink = saveUploadFile(resume);
-        String portfolioLink = saveUploadFile(portfolio);
-
         Applicant applicant = applicantRepository.findById(applicantId)
                 .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
+
+        String resumeLink = s3Service.saveUploadFile(resume);
+        String portfolioLink = s3Service.saveUploadFile(portfolio);
+
         applicant.updateResumeLink(resumeLink);
         applicant.updatePortfolio(portfolioLink); // save 없어도 jpa에 의해 db update
-    }
-
-    @Transactional
-    public String saveUploadFile(@Nullable MultipartFile multipartFile) throws IOException {
-        if (multipartFile != null) {
-            ObjectMetadata objectMetadata = new ObjectMetadata();
-            objectMetadata.setContentType(multipartFile.getContentType());
-            objectMetadata.setContentLength(multipartFile.getSize());
-
-            String originalFilename = multipartFile.getOriginalFilename();
-            int index = Objects.requireNonNull(originalFilename).lastIndexOf(".");
-            String ext = originalFilename.substring(index + 1);
-
-            String storeFileName = UUID.randomUUID() + "." + ext;
-            String key = "upload/" + storeFileName;
-
-            try (InputStream inputStream = multipartFile.getInputStream()) {
-                amazonS3.putObject(new PutObjectRequest(bucket, key, inputStream, objectMetadata)
-                        .withCannedAcl(CannedAccessControlList.PublicRead));
-            }
-
-            return amazonS3.getUrl(bucket, key).toString();
-        } else {
-            return null;
-        }
     }
 
     public List<Keyword> createKeywords(List<KeywordRequest> keywordRequests) {
