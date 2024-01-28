@@ -5,26 +5,32 @@ import com.gotcha.server.auth.dto.response.GoogleUserResponse;
 import com.gotcha.server.global.exception.AppException;
 import com.gotcha.server.global.exception.ErrorCode;
 import java.util.Map;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Component
-@RequiredArgsConstructor
 public class GoogleOAuth {
-    @Value("${oauth.google.client-id}")
-    private String CLIENT_ID;
+    private final String clientId;
+    private final String clientSecret;
+    private final WebClient googleTokenWebClient;
+    private final WebClient googleUserWebClient;
 
-    @Value("${oauth.google.client-secret}")
-    private String CLIENT_SECRET;
-
-    private final WebClient webClient;
+    public GoogleOAuth(
+            @Value("${oauth.google.client-id}") final String clientId,
+            @Value("${oauth.google.client-secret}") final String clientSecret,
+            final WebClient googleTokenWebClient, final WebClient googleUserWebClient) {
+        this.clientId = clientId;
+        this.clientSecret = clientSecret;
+        this.googleTokenWebClient = googleTokenWebClient;
+        this.googleUserWebClient = googleUserWebClient;
+    }
 
     public GoogleTokenResponse requestTokens(String code, String redirectUri) {
-        Map<String, Object> params = GoogleUri.getTokenRequestParams(CLIENT_ID, CLIENT_SECRET, redirectUri, code);
-        return webClient.post()
+        Map<String, Object> params = GoogleUri.getTokenRequestParams(clientId, clientSecret, redirectUri, code);
+        return googleTokenWebClient.post()
                 .uri(GoogleUri.TOKEN_REQUEST.getUri())
                 .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(params)
@@ -37,11 +43,11 @@ public class GoogleOAuth {
     }
 
     public GoogleUserResponse requestUserInfo(GoogleTokenResponse tokenResponse) {
-        return webClient.get()
+        return googleUserWebClient.get()
                 .uri(uriBuilder -> uriBuilder
-                        .path(GoogleUri.TOKEN_INFO_REQUEST.getUri())
-                        .queryParam("id_token", tokenResponse.id_token())
+                        .path(GoogleUri.USER_INFO_REQUEST.getUri())
                         .build())
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + tokenResponse.access_token())
                 .retrieve()
                 .onStatus(status -> status.is4xxClientError(), response -> {
                     throw new AppException(ErrorCode.INVALID_ID_TOKEN);
