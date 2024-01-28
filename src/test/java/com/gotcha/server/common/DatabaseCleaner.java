@@ -4,7 +4,10 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,6 +17,9 @@ public class DatabaseCleaner implements InitializingBean {
 
     @PersistenceContext
     private EntityManager entityManager;
+
+    @Autowired
+    private MongoTemplate mongoTemplate;
 
     @Override
     public void afterPropertiesSet() {
@@ -30,9 +36,17 @@ public class DatabaseCleaner implements InitializingBean {
         entityManager.createNativeQuery("SET foreign_key_checks = 1").executeUpdate();
     }
 
+    private void truncateMongo() {
+        Set<String> collectionNames = mongoTemplate.getCollectionNames();
+        for (String collectionName : collectionNames) {
+            mongoTemplate.dropCollection(collectionName);
+        }
+    }
+
     @Transactional
     public void clear() {
         entityManager.clear();
         truncate();
+        truncateMongo();
     }
 }

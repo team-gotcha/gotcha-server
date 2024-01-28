@@ -15,6 +15,8 @@ import com.gotcha.server.evaluation.domain.Evaluation;
 import com.gotcha.server.evaluation.repository.EvaluationRepository;
 import com.gotcha.server.member.domain.Member;
 import com.gotcha.server.member.repository.MemberRepository;
+import com.gotcha.server.mongo.domain.QuestionMongo;
+import com.gotcha.server.mongo.repository.QuestionMongoRepository;
 import com.gotcha.server.project.domain.Interview;
 import com.gotcha.server.project.domain.Project;
 import com.gotcha.server.project.repository.InterviewRepository;
@@ -25,6 +27,7 @@ import com.gotcha.server.question.domain.Likes;
 import com.gotcha.server.question.repository.CommonQuestionRepository;
 import com.gotcha.server.question.repository.IndividualQuestionRepository;
 import com.gotcha.server.question.repository.LikeRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -42,6 +45,7 @@ public class IntegrationTestEnviron {
     private final CommonQuestionRepository commonQuestionRepository;
     private final FavoriteRepository favoriteRepository;
     private final LikeRepository likeRepository;
+    private final QuestionMongoRepository questionMongoRepository;
 
     public Member 테스트유저_저장하기(String 이름) {
         return memberRepository.save(테스트유저(이름));
@@ -90,5 +94,18 @@ public class IntegrationTestEnviron {
 
     public Likes 테스트좋아요_저장하기(IndividualQuestion 질문, Member 면접관) {
         return likeRepository.save(테스트좋아요(질문, 면접관));
+    }
+
+    public QuestionMongo 테스트몽고DB질문_저장하기(IndividualQuestion 질문, Long 지원자ID) {
+        return questionMongoRepository.save(테스트몽고DB질문(질문, 지원자ID));
+    }
+
+    public QuestionMongo 테스트몽고DB질문_수정하기(QuestionMongo 질문, String 수정내용) {
+        질문.updateContent(수정내용);
+        return questionMongoRepository.save(질문);
+    }
+
+    public List<QuestionMongo> 테스트몽고DB질문_조회하기() {
+        return questionMongoRepository.findAll();
     }
 }

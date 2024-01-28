@@ -11,4 +11,6 @@ public interface IndividualQuestionRepository extends JpaRepository<IndividualQu
             + "JOIN fetch q.applicant "
             + "WHERE q.id IN :ids")
     List<IndividualQuestion> findAllWithApplicantByIdIn(@Param(value = "ids") List<Long> ids);
+
+    List<IndividualQuestion> findAllByIdIn(List<Long> ids);
 }

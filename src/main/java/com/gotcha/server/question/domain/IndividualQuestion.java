@@ -22,7 +22,7 @@ import static java.lang.Boolean.TRUE;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class IndividualQuestion extends BaseTimeEntity {
+public class IndividualQuestion extends BaseTimeEntity implements Question {
     private static final int MIN_IMPORTANCE = 3;
     private static final int MAX_IMPORTANCE = 5;
 
@@ -112,7 +112,7 @@ public class IndividualQuestion extends BaseTimeEntity {
         }
     }
 
-    public void updateContent(String content) {
+    public void updateContent(final String content) {
         this.content = content;
     }
 

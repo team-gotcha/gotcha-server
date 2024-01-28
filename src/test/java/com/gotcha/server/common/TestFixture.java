@@ -7,6 +7,7 @@ import com.gotcha.server.applicant.domain.Keyword;
 import com.gotcha.server.applicant.domain.KeywordType;
 import com.gotcha.server.evaluation.domain.Evaluation;
 import com.gotcha.server.member.domain.Member;
+import com.gotcha.server.mongo.domain.QuestionMongo;
 import com.gotcha.server.project.domain.Collaborator;
 import com.gotcha.server.project.domain.Interview;
 import com.gotcha.server.project.domain.Project;
@@ -90,5 +91,9 @@ public class TestFixture {
 
     public static Likes 테스트좋아요(IndividualQuestion 질문, Member 면접관) {
         return new Likes(면접관, 질문);
+    }
+
+    public static QuestionMongo 테스트몽고DB질문(IndividualQuestion 질문, Long 지원자ID) {
+        return QuestionMongo.from(질문, 지원자ID);
     }
 }
