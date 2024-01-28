@@ -76,6 +76,27 @@ class ApplicantServiceTest extends IntegrationTest {
     }
 
     @Test
+    @DisplayName("지원자 목록 조회시, 개별 질문 개수와 면접관 이메일 목록을 함께 조회한다")
+    void 면접의_지원자목록_조회하기() {
+        // given
+        Member 종미 = environ.테스트유저_저장하기("종미");
+        Project 테스트프로젝트 = environ.테스트프로젝트_저장하기();
+        Interview 테스트면접 = environ.테스트면접_저장하기(테스트프로젝트, "테스트면접");
+        Applicant 지원자A = environ.테스트지원자_저장하기(테스트면접, "지원자A");
+        Interviewer 종미면접관 = environ.테스트면접관_저장하기(지원자A, 종미);
+
+        IndividualQuestion 질문A = environ.테스트개별질문_저장하기(지원자A, "자기소개해주세요.", 1, true, 5, 종미);
+        IndividualQuestion 질문B = environ.테스트개별질문_저장하기(지원자A, "장점을소개해주세요.", 2, true, 5, 종미);
+
+        // when
+        List<ApplicantsResponse> 조회결과 = applicantService.listApplicantsByInterview(테스트면접.getId(), new MemberDetails(종미));
+
+        // then
+        assertEquals(2, 조회결과.get(0).getQuestionCount());
+        assertEquals(1, 조회결과.get(0).getInterviewerEmails().size());
+    }
+
+    @Test
     @DisplayName("지원자가 면접 진행 중 단계가 되었을 때 공통 질문을 저장한다")
     void 지원자에_공통질문_저장하기() {
         // given
