@@ -1,6 +1,6 @@
 package com.gotcha.server.auth.config;
 
-import com.gotcha.server.auth.infra.JwtAuthenticationFilter;
+import com.gotcha.server.auth.filter.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
