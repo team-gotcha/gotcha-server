@@ -89,7 +89,7 @@ public class ApplicantService {
         return ApplicantsResponse.generateList(applicantsWithKeywords, favoritesCheck);
     }
 
-    public Map<Applicant, Boolean> checkFavorites(final List<Applicant> applicants, final Member member) {
+    private Map<Applicant, Boolean> checkFavorites(final List<Applicant> applicants, final Member member) {
         List<Applicant> favorites = favoriteRepository.findAllByMemberAndApplicantIn(member, applicants)
                 .stream().map(Favorite::getApplicant).toList();
         return applicants.stream()
@@ -133,6 +133,7 @@ public class ApplicantService {
         applicant.changeQuestionPublicType(request.agree());
     }
 
+    @Transactional
     public void sendPassEmail(final PassEmailSendRequest request) {
         Interview interview = interviewRepository.findById(request.interviewId())
                 .orElseThrow(() -> new AppException(ErrorCode.INTERVIEW_NOT_FOUNT));

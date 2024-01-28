@@ -9,6 +9,7 @@ import com.gotcha.server.common.RepositoryTest;
 import com.gotcha.server.member.domain.Member;
 import com.gotcha.server.project.domain.Interview;
 import com.gotcha.server.project.domain.Project;
+import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,10 +26,10 @@ class FavoriteRepositoryTest extends RepositoryTest {
         Member 종미 = 테스트유저("종미");
         Project 프로젝트 = 테스트프로젝트("테스트프로젝트");
         Interview 면접 = 테스트면접(프로젝트, "테스트면접");
-        Applicant 지원자A = 테스트지원자(면접, "지원자A");
-        Applicant 지원자B = 테스트지원자(면접, "지원자B");
-        Applicant 지원자C = 테스트지원자(면접, "지원자C");
-        Applicant 지원자D = 테스트지원자(면접, "지원자D");
+        Applicant 지원자A = 테스트지원자(면접, "지원자A", LocalDate.now());
+        Applicant 지원자B = 테스트지원자(면접, "지원자B", LocalDate.now());
+        Applicant 지원자C = 테스트지원자(면접, "지원자C", LocalDate.now());
+        Applicant 지원자D = 테스트지원자(면접, "지원자D", LocalDate.now());
         Favorite 지원자B_즐겨찾기 = 테스트즐겨찾기(지원자B, 종미);
         Favorite 지원자D_즐겨찾기 = 테스트즐겨찾기(지원자D, 종미);
 

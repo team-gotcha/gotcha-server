@@ -68,7 +68,9 @@ public class Applicant extends BaseTimeEntity implements Comparable<Applicant> {
     private String portfolio;
 
     @Builder
-    public Applicant(Interview interview, String email, LocalDate date, String name, Integer age, String education, String phoneNumber, String position, String path, String resumeLink, String portfolio) {
+    public Applicant(final Interview interview, final String email, final LocalDate date,
+            final String name, final Integer age, final String education, final String phoneNumber,
+            final String position, final String path, final String resumeLink, final String portfolio) {
         this.interview = interview;
         this.email = email;
         this.date = date;
@@ -128,7 +130,6 @@ public class Applicant extends BaseTimeEntity implements Comparable<Applicant> {
 
     public void removeInterviewer(final Interviewer interviewer) {
         interviewers.remove(interviewer);
-        interviewer.setApplicant(null);
     }
 
     public void addQuestion(final IndividualQuestion question) {
@@ -138,7 +139,6 @@ public class Applicant extends BaseTimeEntity implements Comparable<Applicant> {
 
     public void removeQuestion(final IndividualQuestion question) {
         questions.remove(question);
-        question.setApplicant(null);
     }
 
     public void addKeyword(Keyword keyword) {
@@ -148,11 +148,6 @@ public class Applicant extends BaseTimeEntity implements Comparable<Applicant> {
 
     public void removeKeyword(Keyword keyword) {
         keywords.remove(keyword);
-        keyword.setApplicant(null);
-    }
-
-    public void setDate(LocalDate date) {
-        this.date = date;
     }
 
     public PreparedInterviewersResponse getPreparedInterviewerInfo() {

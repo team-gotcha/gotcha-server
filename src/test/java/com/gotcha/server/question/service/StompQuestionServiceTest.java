@@ -11,6 +11,7 @@ import com.gotcha.server.project.domain.Interview;
 import com.gotcha.server.project.domain.Project;
 import com.gotcha.server.question.domain.IndividualQuestion;
 import com.gotcha.server.question.event.QuestionPreparedEvent;
+import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,7 @@ class StompQuestionServiceTest extends IntegrationTest {
         // given
         Project 조회할프로젝트 = 테스트프로젝트("테스트프로젝트");
         Interview 조회할면접 = 테스트면접(조회할프로젝트, "테스트면접1");
-        Applicant 지원자A = 테스트지원자(조회할면접, "지원자A");
+        Applicant 지원자A = 테스트지원자(조회할면접, "지원자A", LocalDate.now());
         List<IndividualQuestion> 질문목록 = List.of(
                 테스트개별질문(지원자A, "내용1", 1, true, 5, null),
                 테스트개별질문(지원자A, "내용2", 2, true, 5, null));

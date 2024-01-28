@@ -27,6 +27,7 @@ import com.gotcha.server.question.domain.Likes;
 import com.gotcha.server.question.repository.CommonQuestionRepository;
 import com.gotcha.server.question.repository.IndividualQuestionRepository;
 import com.gotcha.server.question.repository.LikeRepository;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -60,7 +61,7 @@ public class IntegrationTestEnviron {
     }
 
     public Applicant 테스트지원자_저장하기(Interview 면접, String 이름) {
-        return applicantRepository.save(테스트지원자(면접, 이름));
+        return applicantRepository.save(테스트지원자(면접, 이름, LocalDate.now()));
     }
 
     public void 테스트지원자_질문공개하기(Applicant 지원자) {

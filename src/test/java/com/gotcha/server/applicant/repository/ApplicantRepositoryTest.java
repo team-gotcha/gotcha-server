@@ -11,6 +11,7 @@ import com.gotcha.server.common.RepositoryTest;
 import com.gotcha.server.member.domain.Member;
 import com.gotcha.server.project.domain.Interview;
 import com.gotcha.server.project.domain.Project;
+import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,10 +30,10 @@ class ApplicantRepositoryTest extends RepositoryTest {
         Project 조회할프로젝트 = 테스트프로젝트("테스트프로젝트");
         Interview 조회할면접 = 테스트면접(조회할프로젝트, "테스트면접1");
         Interview 다른면접 = 테스트면접(조회할프로젝트, "테스트면접2");
-        Applicant 지원자A = 테스트지원자(조회할면접, "지원자A");
-        Applicant 지원자B = 테스트지원자(조회할면접, "지원자B");
-        Applicant 지원자C = 테스트지원자(조회할면접, "지원자C");
-        Applicant 지원자D = 테스트지원자(다른면접, "지원자D");
+        Applicant 지원자A = 테스트지원자(조회할면접, "지원자A", LocalDate.now());
+        Applicant 지원자B = 테스트지원자(조회할면접, "지원자B", LocalDate.now());
+        Applicant 지원자C = 테스트지원자(조회할면접, "지원자C", LocalDate.now());
+        Applicant 지원자D = 테스트지원자(다른면접, "지원자D", LocalDate.now());
         Interviewer 종미면접관_지원자A = 테스트면접관(지원자A, 종미);
         Interviewer 종미면접관_지원자B = 테스트면접관(지원자B, 종미);
         Interviewer 종미면접관_지원자C = 테스트면접관(지원자C, 종미);
@@ -69,7 +70,7 @@ class ApplicantRepositoryTest extends RepositoryTest {
         Interview 조회할면접 = 테스트면접(조회할프로젝트, "테스트면접1");
         Applicant 합격지원자A = 평가된_지원자_생성하기(조회할면접, "지원자A", Outcome.PASS);
         Applicant 합격지원자B = 평가된_지원자_생성하기(조회할면접, "지원자B", Outcome.PASS);
-        Applicant 미평가지원자 = 테스트지원자(조회할면접, "지원자C");
+        Applicant 미평가지원자 = 테스트지원자(조회할면접, "지원자C", LocalDate.now());
         Applicant 불합격지원자 = 평가된_지원자_생성하기(조회할면접, "지원자D", Outcome.FAIL);
         testRepository.save(조회할프로젝트, 조회할면접, 합격지원자A, 합격지원자B, 미평가지원자, 불합격지원자);
 
@@ -81,7 +82,7 @@ class ApplicantRepositoryTest extends RepositoryTest {
     }
 
     private Applicant 평가된_지원자_생성하기(Interview 면접, String 이름, Outcome 결과) {
-        Applicant 지원자 = 테스트지원자(면접, 이름);
+        Applicant 지원자 = 테스트지원자(면접, 이름, LocalDate.now());
         지원자.setInterviewStatus(InterviewStatus.COMPLETION);
         지원자.updateOutCome(결과);
         return 지원자;
@@ -96,12 +97,12 @@ class ApplicantRepositoryTest extends RepositoryTest {
         Project 조회할프로젝트 = 테스트프로젝트("테스트프로젝트");
         Interview 조회할면접 = 테스트면접(조회할프로젝트, "테스트면접1");
         Interview 다른면접 = 테스트면접(조회할프로젝트, "테스트면접2");
-        Applicant 지원자A = 테스트지원자(조회할면접, "지원자A");
+        Applicant 지원자A = 테스트지원자(조회할면접, "지원자A", LocalDate.now());
         지원자A.setInterviewStatus(InterviewStatus.COMPLETION);
-        Applicant 지원자B = 테스트지원자(조회할면접, "지원자B");
+        Applicant 지원자B = 테스트지원자(조회할면접, "지원자B", LocalDate.now());
         지원자B.setInterviewStatus(InterviewStatus.COMPLETION);
-        Applicant 지원자C = 테스트지원자(조회할면접, "지원자C");
-        Applicant 지원자D = 테스트지원자(다른면접, "지원자D");
+        Applicant 지원자C = 테스트지원자(조회할면접, "지원자C", LocalDate.now());
+        Applicant 지원자D = 테스트지원자(다른면접, "지원자D", LocalDate.now());
 
         testRepository.save(
                 종미, 윤정,

@@ -13,6 +13,7 @@ import com.gotcha.server.applicant.dto.response.KeywordResponse;
 import com.gotcha.server.common.RepositoryTest;
 import com.gotcha.server.project.domain.Interview;
 import com.gotcha.server.project.domain.Project;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
@@ -29,8 +30,8 @@ class KeywordRepositoryTest extends RepositoryTest {
         // given
         Project 조회할프로젝트 = 테스트프로젝트("테스트프로젝트");
         Interview 조회할면접 = 테스트면접(조회할프로젝트, "테스트면접1");
-        Applicant 지원자A = 테스트지원자(조회할면접, "지원자A");
-        Applicant 지원자B = 테스트지원자(조회할면접, "지원자B");
+        Applicant 지원자A = 테스트지원자(조회할면접, "지원자A", LocalDate.now());
+        Applicant 지원자B = 테스트지원자(조회할면접, "지원자B", LocalDate.now());
         Keyword 지원자A_성실함 = 테스트키워드(지원자A, "성실함", KeywordType.TRAIT);
         Keyword 지원자A_인턴경험 = 테스트키워드(지원자A, "인턴경험", KeywordType.EXPERIENCE);
         Keyword 지원자A_SQL자격증 = 테스트키워드(지원자A, "SQL자격증", KeywordType.SKILL);
