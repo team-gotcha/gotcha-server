@@ -9,6 +9,7 @@ import com.gotcha.server.applicant.domain.Interviewer;
 import com.gotcha.server.auth.dto.request.MemberDetails;
 import com.gotcha.server.common.IntegrationTest;
 import com.gotcha.server.member.domain.Member;
+import com.gotcha.server.mongo.domain.QuestionMongo;
 import com.gotcha.server.project.domain.Interview;
 import com.gotcha.server.project.domain.Project;
 import com.gotcha.server.question.domain.IndividualQuestion;
@@ -17,6 +18,7 @@ import com.gotcha.server.question.dto.message.QuestionUpdateMessage;
 import com.gotcha.server.question.dto.response.IndividualQuestionsResponse;
 import com.gotcha.server.question.dto.response.QuestionRankResponse;
 import com.gotcha.server.question.event.QuestionPreparedEvent;
+import com.gotcha.server.question.event.QuestionUpdatedEvent;
 import com.gotcha.server.question.repository.IndividualQuestionRepository;
 import java.util.List;
 import java.util.stream.Stream;
@@ -183,5 +185,35 @@ public class QuestionServiceIntegrationTest extends IntegrationTest {
 
         // then
         assertEquals(1L, events.stream(QuestionPreparedEvent.class).count());
+    }
+
+    @Test
+    @DisplayName("Mongo Db에서 변경된 질문 정보를 MySQL에 저장한다.")
+    void 몽고DB_질문변경사항_저장하기() {
+        // given
+        Project 테스트프로젝트 = environ.테스트프로젝트_저장하기();
+        Interview 테스트면접 = environ.테스트면접_저장하기(테스트프로젝트, "테스트면접");
+        Applicant 지원자A = environ.테스트지원자_저장하기(테스트면접, "지원자A");
+        IndividualQuestion 질문A = environ.테스트개별질문_저장하기(지원자A, "자기소개해주세요.", 1, true, 5, null);
+        IndividualQuestion 질문B = environ.테스트개별질문_저장하기(지원자A, "장점을소개해주세요.", 2, true, 5, null);
+        QuestionMongo 수정된_질문A = environ.테스트몽고DB질문_저장하기(질문A, 지원자A.getId());
+        QuestionMongo 수정된_질문B = environ.테스트몽고DB질문_저장하기(질문B, 지원자A.getId());
+
+        environ.테스트몽고DB질문_수정하기(수정된_질문A, "수정된내용 A");
+        environ.테스트몽고DB질문_수정하기(수정된_질문B, "장점을소개해주세요.");
+
+        // when
+        questionService.fetchFinalModifiedQuestions(질문수정_이벤트_생성하기());
+
+        // then
+        List<IndividualQuestion> MySQL에_반영된_질문들 = questionRepository.findAllByIdIn(List.of(질문A.getId(), 질문B.getId()));
+        assertThat(MySQL에_반영된_질문들).hasSize(2)
+                .extracting(IndividualQuestion::getContent)
+                .containsAll(List.of("수정된내용 A", "장점을소개해주세요."));
+    }
+
+    private QuestionUpdatedEvent 질문수정_이벤트_생성하기() {
+        List<QuestionMongo> 수정된질문들 = environ.테스트몽고DB질문_조회하기();
+        return new QuestionUpdatedEvent(수정된질문들);
     }
 }
