@@ -31,7 +31,7 @@ public class ApplicantController {
     public ResponseEntity<InterviewProceedResponse> proceedToInterview(
             @RequestBody final InterviewProceedRequest request,
             @AuthenticationPrincipal final MemberDetails details) {
-        return ResponseEntity.ok(applicantService.proceedToInterview(request, details));
+        return ResponseEntity.ok(applicantService.prepareInterview(request, details));
     }
 
     @GetMapping

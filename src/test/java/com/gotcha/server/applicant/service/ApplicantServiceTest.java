@@ -94,7 +94,7 @@ class ApplicantServiceTest extends IntegrationTest {
         MemberDetails 로그인유저 = new MemberDetails(종미);
 
         // when
-        applicantService.proceedToInterview(면접_준비완료_요청, 로그인유저);
+        applicantService.prepareInterview(면접_준비완료_요청, 로그인유저);
 
         // then
         List<IndividualQuestion> 등록된_개별질문들 = individualQuestionRepository.findAllDuringInterview(지원자A);

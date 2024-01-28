@@ -71,7 +71,7 @@ public class ApplicantService {
     private String bucket;
 
     @Transactional
-    public InterviewProceedResponse proceedToInterview(final InterviewProceedRequest request, final MemberDetails details) {
+    public InterviewProceedResponse prepareInterview(final InterviewProceedRequest request, final MemberDetails details) {
         Applicant applicant = applicantRepository.findByIdWithInterviewAndInterviewers(request.applicantId())
                 .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
         Interviewer interviewer = applicant.pickInterviewer(details.member());
