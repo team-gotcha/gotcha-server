@@ -63,4 +63,14 @@ public class QuestionMongo implements Question {
                 .applicantId(applicantId)
                 .build();
     }
+
+    public IndividualQuestion updateQuestion(final IndividualQuestion question) {
+        question.updateOrder(questionOrder);
+        question.updateImportance(importance);
+        question.updateContent(content);
+        if(!asking) {
+            question.deleteDuringInterview();
+        }
+        return question;
+    }
 }

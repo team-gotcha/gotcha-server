@@ -3,6 +3,7 @@ package com.gotcha.server.question.service;
 import com.gotcha.server.applicant.domain.Applicant;
 import com.gotcha.server.auth.dto.request.MemberDetails;
 import com.gotcha.server.evaluation.domain.QuestionEvaluations;
+import com.gotcha.server.mongo.domain.QuestionMongo;
 import com.gotcha.server.question.domain.Likes;
 import com.gotcha.server.question.dto.request.AskingFlagsRequest;
 import com.gotcha.server.question.dto.response.IndividualQuestionsResponse;
@@ -22,6 +23,7 @@ import com.gotcha.server.question.dto.request.CommonQuestionsRequest;
 import com.gotcha.server.question.dto.response.InterviewQuestionResponse;
 import com.gotcha.server.question.dto.response.PreparatoryQuestionResponse;
 import com.gotcha.server.question.event.QuestionPreparedEvent;
+import com.gotcha.server.question.event.QuestionUpdatedEvent;
 import com.gotcha.server.question.repository.CommonQuestionRepository;
 import com.gotcha.server.question.repository.IndividualQuestionRepository;
 import com.gotcha.server.question.repository.LikeRepository;
@@ -32,6 +34,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -175,5 +178,18 @@ public class QuestionService {
         like.ifPresentOrElse(
                 likeRepository::delete,
                 () -> likeRepository.save(new Likes(member, question)));
+    }
+
+    @Transactional
+    @EventListener(QuestionUpdatedEvent.class)
+    public void fetchFinalModifiedQuestions(final QuestionUpdatedEvent event) {
+        List<QuestionMongo> mongoQuestions = event.mongoQuestions();
+        List<Long> modifiedQuestionIds = mongoQuestions.stream().map(QuestionMongo::getQuestionId).toList();
+        List<IndividualQuestion> questions = individualQuestionRepository.findAllByIdIn(modifiedQuestionIds);
+
+        Map<Long, IndividualQuestion> individualQuestionsWithId = questions.stream()
+                .collect(Collectors.toMap(question -> question.getId(), question -> question));
+        mongoQuestions
+                .forEach(question -> question.updateQuestion(individualQuestionsWithId.get(question.getQuestionId())));
     }
 }

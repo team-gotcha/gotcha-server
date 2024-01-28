@@ -6,17 +6,23 @@ import com.gotcha.server.mongo.domain.QuestionMongo;
 import com.gotcha.server.mongo.repository.QuestionMongoRepository;
 import com.gotcha.server.question.domain.IndividualQuestion;
 import com.gotcha.server.question.dto.message.QuestionUpdateMessage;
+import com.gotcha.server.question.event.QuestionDeterminedEvent;
 import com.gotcha.server.question.event.QuestionPreparedEvent;
+import com.gotcha.server.question.event.QuestionUpdatedEvent;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class StompQuestionService {
     private final QuestionMongoRepository questionMongoRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     @EventListener(QuestionPreparedEvent.class)
@@ -34,5 +40,11 @@ public class StompQuestionService {
                 .orElseThrow(() -> new AppException(ErrorCode.QUESTION_NOT_FOUNT));
         QuestionUpdateType updateType = message.type();
         updateType.update(question, message.value());
+    }
+
+    @EventListener(QuestionDeterminedEvent.class)
+    public void findAllModifiedQuestions(final QuestionDeterminedEvent event) {
+        List<QuestionMongo> mongoQuestions = questionMongoRepository.findAllByApplicantId(event.applicantId());
+        eventPublisher.publishEvent(new QuestionUpdatedEvent(mongoQuestions));
     }
 }

@@ -28,6 +28,7 @@ import com.gotcha.server.project.domain.Interview;
 import com.gotcha.server.project.repository.InterviewRepository;
 
 import com.gotcha.server.question.domain.CommonQuestion;
+import com.gotcha.server.question.event.QuestionDeterminedEvent;
 import com.gotcha.server.question.repository.CommonQuestionRepository;
 
 import java.io.IOException;
@@ -41,6 +42,7 @@ import io.micrometer.common.lang.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -61,6 +63,7 @@ public class ApplicantService {
     private final MemberRepository memberRepository;
     private final CommonQuestionRepository commonQuestionRepository;
     private final FavoriteRepository favoriteRepository;
+    private final ApplicationEventPublisher eventPublisher;
     private final AmazonS3 amazonS3;
     private final MailService mailService;
 
@@ -95,6 +98,7 @@ public class ApplicantService {
         Applicant applicant = applicantRepository.findByIdWithInterviewAndInterviewers(applicantId)
                 .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
         applicant.setInterviewStatus(InterviewStatus.IN_PROGRESS);
+        eventPublisher.publishEvent(new QuestionDeterminedEvent(applicant.getId()));
     }
 
     public List<ApplicantsResponse> listApplicantsByInterview(final Long interviewId, final MemberDetails details) {
