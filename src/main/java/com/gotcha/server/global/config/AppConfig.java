@@ -22,16 +22,30 @@ public class AppConfig {
     }
 
     @Bean
-    public WebClient webClient(){
+    public WebClient googleTokenWebClient() {
+        ExchangeStrategies strategies = determineStrategies();
+        return WebClient.builder()
+                .baseUrl("https://oauth2.googleapis.com")
+                .exchangeStrategies(strategies)
+                .build();
+    }
+
+    @Bean
+    public WebClient googleUserWebClient() {
+        ExchangeStrategies strategies = determineStrategies();
+        return WebClient.builder()
+                .baseUrl("https://www.googleapis.com/oauth2")
+                .exchangeStrategies(strategies)
+                .build();
+    }
+
+    private ExchangeStrategies determineStrategies() {
         ExchangeStrategies strategies = ExchangeStrategies.builder()
                 .codecs(configurer -> configurer.defaultCodecs()) // in-memory buffer의 기본 크기 256KB
                 .build();
         strategies.messageWriters().stream()
                 .filter(LoggingCodecSupport.class::isInstance)
                 .forEach(writer -> ((LoggingCodecSupport)writer).setEnableLoggingRequestDetails(true));
-        return WebClient.builder()
-                .baseUrl("https://oauth2.googleapis.com")
-                .exchangeStrategies(strategies)
-                .build();
+        return strategies;
     }
 }

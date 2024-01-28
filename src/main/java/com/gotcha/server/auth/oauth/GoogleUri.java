@@ -4,7 +4,7 @@ import java.util.Map;
 
 public enum GoogleUri {
     TOKEN_REQUEST("token"),
-    TOKEN_INFO_REQUEST("tokeninfo");
+    USER_INFO_REQUEST("/v1/userinfo");
 
     private final String uri;
 
