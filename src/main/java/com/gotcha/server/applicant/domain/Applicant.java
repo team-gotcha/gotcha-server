@@ -1,5 +1,6 @@
 package com.gotcha.server.applicant.domain;
 
+import com.gotcha.server.applicant.dto.response.PreparedInterviewersResponse;
 import com.gotcha.server.global.exception.AppException;
 import com.gotcha.server.global.exception.ErrorCode;
 import com.gotcha.server.member.domain.Member;
@@ -110,9 +111,10 @@ public class Applicant extends BaseTimeEntity implements Comparable<Applicant> {
         this.interviewStatus = status;
     }
 
-    public Interviewer pickInterviewer(final Member member) {
-        return interviewers.stream().filter(i -> i.hasPermission(member))
+    public void setInterviewerPrepared(final Member member) {
+         Interviewer interviewer = interviewers.stream().filter(i -> i.hasPermission(member))
                 .findAny().orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED_INTERVIEWER));
+         interviewer.setPrepared();
     }
 
     public void changeQuestionPublicType(boolean agree) {
@@ -151,6 +153,12 @@ public class Applicant extends BaseTimeEntity implements Comparable<Applicant> {
 
     public void setDate(LocalDate date) {
         this.date = date;
+    }
+
+    public PreparedInterviewersResponse getPreparedInterviewerInfo() {
+        long interviewerCount = interviewers.size();
+        long preparedInterviewerCount = interviewers.stream().filter(Interviewer::isPrepared).count();
+        return new PreparedInterviewersResponse(interviewerCount, preparedInterviewerCount);
     }
 
     @Override

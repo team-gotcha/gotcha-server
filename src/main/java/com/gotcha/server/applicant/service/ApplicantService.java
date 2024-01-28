@@ -68,20 +68,16 @@ public class ApplicantService {
     private String bucket;
 
     @Transactional
-    public InterviewProceedResponse prepareInterview(final InterviewProceedRequest request, final MemberDetails details) {
+    public PreparedInterviewersResponse prepareInterview(final InterviewProceedRequest request, final MemberDetails details) {
         Applicant applicant = applicantRepository.findByIdWithInterviewAndInterviewers(request.applicantId())
                 .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
-        Interviewer interviewer = applicant.pickInterviewer(details.member());
-        interviewer.setPrepared();
+        applicant.setInterviewerPrepared(details.member());
 
-        List<Interviewer> interviewers = applicant.getInterviewers();
-        long interviewerCount = interviewers.size();
-        long preparedInterviewerCount = interviewers.stream().filter(Interviewer::isPrepared).count();
         if (applicant.getInterviewStatus() == InterviewStatus.PREPARATION) {
             eventPublisher.publishEvent(new InterviewStartedEvent(applicant));
             applicant.setInterviewStatus(InterviewStatus.IN_PROGRESS);
         }
-        return new InterviewProceedResponse(interviewerCount, preparedInterviewerCount);
+        return applicant.getPreparedInterviewerInfo();
     }
 
     @Transactional
