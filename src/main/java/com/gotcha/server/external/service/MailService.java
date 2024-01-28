@@ -1,4 +1,4 @@
-package com.gotcha.server.mail.service;
+package com.gotcha.server.external.service;
 
 import com.gotcha.server.global.exception.AppException;
 import com.gotcha.server.global.exception.ErrorCode;
@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service

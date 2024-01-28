@@ -1,4 +1,4 @@
-package com.gotcha.server.mail.config;
+package com.gotcha.server.external.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

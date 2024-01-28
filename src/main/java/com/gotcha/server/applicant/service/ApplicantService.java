@@ -18,18 +18,15 @@ import com.gotcha.server.evaluation.dto.response.OneLinerResponse;
 import com.gotcha.server.evaluation.repository.OneLinerRepository;
 import com.gotcha.server.global.exception.AppException;
 import com.gotcha.server.global.exception.ErrorCode;
-import com.gotcha.server.mail.service.MailService;
+import com.gotcha.server.external.service.MailService;
 import com.gotcha.server.member.domain.Member;
 import com.gotcha.server.member.repository.MemberRepository;
 import com.gotcha.server.mongo.domain.ApplicantMongo;
 import com.gotcha.server.mongo.repository.ApplicantMongoRepository;
-import com.gotcha.server.mongo.repository.BookRepository;
 import com.gotcha.server.project.domain.Interview;
 import com.gotcha.server.project.repository.InterviewRepository;
 
-import com.gotcha.server.question.domain.CommonQuestion;
 import com.gotcha.server.question.event.QuestionDeterminedEvent;
-import com.gotcha.server.question.repository.CommonQuestionRepository;
 
 import java.io.IOException;
 import java.io.InputStream;
