@@ -80,8 +80,9 @@ public class ApplicantService {
         List<Interviewer> interviewers = applicant.getInterviewers();
         long interviewerCount = interviewers.size();
         long preparedInterviewerCount = interviewers.stream().filter(Interviewer::isPrepared).count();
-        if (interviewerCount <= preparedInterviewerCount) {
+        if (applicant.getInterviewStatus() == InterviewStatus.PREPARATION) {
             saveCommonQuestionsTo(applicant);
+            applicant.setInterviewStatus(InterviewStatus.IN_PROGRESS);
         }
         return new InterviewProceedResponse(interviewerCount, preparedInterviewerCount);
     }
@@ -97,7 +98,6 @@ public class ApplicantService {
     public void enterInterviewProcess(final Long applicantId) {
         Applicant applicant = applicantRepository.findByIdWithInterviewAndInterviewers(applicantId)
                 .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
-        applicant.setInterviewStatus(InterviewStatus.IN_PROGRESS);
         eventPublisher.publishEvent(new QuestionDeterminedEvent(applicant.getId()));
     }
 
