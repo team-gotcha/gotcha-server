@@ -1,5 +1,6 @@
 package com.gotcha.server;
 
+import com.gotcha.server.mongo.repository.ApplicantMongoRepository;
 import com.gotcha.server.mongo.repository.BookRepository;
 import com.gotcha.server.mongo.repository.QuestionMongoRepository;
 import org.springframework.boot.SpringApplication;
@@ -14,8 +15,8 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 @SpringBootApplication
 @EnableJpaRepositories(excludeFilters = @ComponentScan.Filter(
 		type = FilterType.ASSIGNABLE_TYPE,
-		classes = {BookRepository.class, QuestionMongoRepository.class}))
-@EnableMongoRepositories(basePackageClasses = {BookRepository.class, QuestionMongoRepository.class})
+		classes = {BookRepository.class, ApplicantMongoRepository.class, QuestionMongoRepository.class}))
+@EnableMongoRepositories(basePackageClasses = {BookRepository.class, ApplicantMongoRepository.class, QuestionMongoRepository.class})
 public class ServerApplication {
 
 	public static void main(String[] args) {
