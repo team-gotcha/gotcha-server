@@ -36,13 +36,6 @@ public class MemberController {
         return ResponseEntity.ok(memberService.countTodayInterview(details));
     }
 
-    @PostMapping("/api/logout")
-    @Operation(description = "로그아웃한다.")
-    public ResponseEntity<Void> logout(@AuthenticationPrincipal final MemberDetails details) {
-        memberService.logout(details);
-        return ResponseEntity.ok().build();
-    }
-
     @PatchMapping("/api/user/email")
     @Operation(description = "유저의 이메일을 수정한다.")
     public ResponseEntity<Void> modifyEmail(

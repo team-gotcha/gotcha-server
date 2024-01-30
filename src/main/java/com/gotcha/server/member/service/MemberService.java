@@ -72,12 +72,6 @@ public class MemberService {
         return null;
     }
 
-    @Transactional
-    public void logout(final MemberDetails details) {
-        Member member = details.member();
-        memberRepository.save(member);
-    }
-
     public TodayInterviewResponse countTodayInterview(final MemberDetails details) {
         long count = interviewerRepository.countTodayInterview(details.member());
         return new TodayInterviewResponse(count);

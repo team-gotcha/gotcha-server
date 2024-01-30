@@ -1,14 +1,17 @@
 package com.gotcha.server.auth.service;
 
 import com.gotcha.server.auth.domain.RefreshToken;
+import com.gotcha.server.auth.dto.request.MemberDetails;
 import com.gotcha.server.auth.dto.response.RefreshTokenResponse;
 import com.gotcha.server.auth.repository.RefreshTokenRepository;
 import com.gotcha.server.global.exception.AppException;
 import com.gotcha.server.global.exception.ErrorCode;
 import com.gotcha.server.member.dto.request.RefreshTokenRequest;
 import com.gotcha.server.member.event.LoginEvent;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationContext;
@@ -33,7 +36,7 @@ public class TokenService {
         invokeProxySave(newToken);
     }
 
-    public RefreshToken invokeProxySave(RefreshToken newToken) {
+    private RefreshToken invokeProxySave(RefreshToken newToken) {
         return getSpringProxy().saveRefreshTokenToCache(newToken);
     }
 
@@ -57,7 +60,7 @@ public class TokenService {
         }
     }
 
-    public RefreshToken invokeProxyGet(String socialId) {
+    private RefreshToken invokeProxyGet(String socialId) {
         return getSpringProxy().getRefreshToken(socialId);
     }
 
@@ -65,6 +68,17 @@ public class TokenService {
     public RefreshToken getRefreshToken(final String socialId) {
         return refreshTokenRepository.findBySocialId(socialId)
                 .orElseThrow(() -> new AppException(ErrorCode.INVALID_REFRESH_TOKEN));
+    }
+
+    @Transactional
+    public void removeRefreshToken(final MemberDetails details) {
+        String socialId = details.member().getSocialId();
+        refreshTokenRepository.deleteBySocialId(socialId);
+        getSpringProxy().removeRefreshTokenInCache(socialId);
+    }
+
+    @CacheEvict(value = "refreshToken")
+    public void removeRefreshTokenInCache(final String socialId) {
     }
 
     private TokenService getSpringProxy() {
