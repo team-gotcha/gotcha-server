@@ -27,7 +27,7 @@ public class AuthController {
     @PostMapping("/api/logout")
     @Operation(description = "로그아웃한다.")
     public ResponseEntity<Void> logout(@AuthenticationPrincipal final MemberDetails details) {
-        authService.removeRefreshToken(details);
+        authService.logout(details);
         return ResponseEntity.ok().build();
     }
 }

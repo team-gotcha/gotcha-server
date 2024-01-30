@@ -62,7 +62,7 @@ public class AuthService {
     }
 
     @Transactional
-    public void removeRefreshToken(final MemberDetails details) {
+    public void logout(final MemberDetails details) {
         String socialId = details.member().getSocialId();
         refreshTokenRepository.deleteBySocialId(socialId);
         getSpringProxy().removeRefreshTokenInCache(socialId);
