@@ -39,7 +39,7 @@ public class InterviewService {
         emails.add(member.getEmail());
 
         createSubcollaborator(interview, emails);
-        sendInterviewInvitation(request);
+        sendInterviewInvitation(request, interview.getId());
     }
 
     @Transactional
@@ -59,28 +59,28 @@ public class InterviewService {
         }
     }
 
-    public void sendInterviewInvitation(InterviewRequest request) {
+    public void sendInterviewInvitation(InterviewRequest request, Long id) {
         for(String toEmail : request.getEmails()){
             boolean isMember = memberRepository.existsByEmail(toEmail);
 
-            String title = "[Gotcha] GOTCHA에서 " + request.getName() + " 세부 면접에 대한 초대 이메일이 도착했어요!";
+            String title = "GOTCHA에서 '" + request.getName() + "' 세부 면접에 대한 초대 이메일이 도착했어요!";
             String text;
 
             if (isMember) {
                 Member member = memberRepository.findByEmail(toEmail)
                         .orElseThrow(() -> new AppException(ErrorCode.MEMBER_NOT_FOUND));
 
-                text = "안녕하세요 [" + member.getName() + "]님. GOTCHA에서 " + request.getName() + " 세부 면접에 대한 초대 이메일이 발송되었습니다.\n" +
+                text = "안녕하세요 '" + member.getName() + "'님. GOTCHA에서 '" + request.getName() + "' 세부 면접에 대한 초대 이메일이 발송되었습니다.\n" +
                         "\n" +
-                        "하단의 링크를 클릭하여 " + request.getName() + " 세부 면접에 함께 참여해보세요.\n" +
+                        "하단의 링크를 클릭하여 '" + request.getName() + "' 세부 면접에 함께 참여해보세요.\n" +
                         "\n" +
-                        "(링크첨부)";
+                        "https://gotcha-front.vercel.app/main/interview/" + id;
             } else {
-                text = "안녕하세요. GOTCHA에서 " + request.getName() + " 세부 면접에 대한 초대 이메일이 발송되었습니다.\n" +
+                text = "안녕하세요. GOTCHA에서 '" + request.getName() + "' 세부 면접에 대한 초대 이메일이 발송되었습니다.\n" +
                         "\n" +
-                        "하단의 링크를 클릭하여 GOTCHA에 가입한 후 " + request.getName() + " 세부 면접에 함께 참여해보세요.\n" +
+                        "하단의 링크를 클릭하여 GOTCHA에 가입한 후 '" + request.getName() + "' 세부 면접에 함께 참여해보세요.\n" +
                         "\n" +
-                        "(링크첨부)";
+                        "https://gotcha-front.vercel.app/";
             }
             mailService.sendEmail(toEmail, title, text);
         }

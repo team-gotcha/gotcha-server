@@ -1,5 +1,6 @@
 package com.gotcha.server.question.controller;
 
+import com.gotcha.server.global.aop.ExeTimer;
 import com.gotcha.server.question.dto.message.QuestionUpdateMessage;
 import com.gotcha.server.question.service.QuestionService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,6 +19,7 @@ public class StompQuestionController {
     @MessageMapping("/question/{question-id}")
     @SendTo("/sub/question/{question-id}")
     @Operation(description = "실시간으로 질문을 수정 및 삭제한다.")
+    @ExeTimer
     public QuestionUpdateMessage updateQuestion(
             @DestinationVariable(value = "question-id") Long questionId, @Payload QuestionUpdateMessage message) {
         questionService.updateQuestion(questionId, message);
