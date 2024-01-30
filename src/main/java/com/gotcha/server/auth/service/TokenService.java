@@ -8,7 +8,6 @@ import com.gotcha.server.global.exception.AppException;
 import com.gotcha.server.global.exception.ErrorCode;
 import com.gotcha.server.member.dto.request.RefreshTokenRequest;
 import com.gotcha.server.member.event.LoginEvent;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
@@ -56,7 +55,7 @@ public class TokenService {
         }
     }
 
-    @Cacheable(value = "refreshToken", key = "#socialId")
+    @Cacheable(value = "refreshToken")
     public RefreshToken getRefreshToken(final String socialId) {
         return refreshTokenRepository.findBySocialId(socialId)
                 .orElseThrow(() -> new AppException(ErrorCode.INVALID_REFRESH_TOKEN));
