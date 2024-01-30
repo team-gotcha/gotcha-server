@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class TokenService {
+public class AuthService {
     private final ApplicationContext applicationContext;
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
@@ -77,7 +77,7 @@ public class TokenService {
     public void removeUserInCache(final String socialId) {
     }
 
-    private TokenService getSpringProxy() {
-        return applicationContext.getBean(TokenService.class);
+    private AuthService getSpringProxy() {
+        return applicationContext.getBean(AuthService.class);
     }
 }
