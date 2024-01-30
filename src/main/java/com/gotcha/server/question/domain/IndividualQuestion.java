@@ -147,7 +147,7 @@ public class IndividualQuestion extends BaseTimeEntity implements Question {
     public double calculateEvaluationScore() {
         BigDecimal evaluationCount = new BigDecimal(evaluations.size()); // 질문 평가자 수
         BigDecimal totalSumWithWeight = calculateTotalSumWithWeight();
-        return totalSumWithWeight.divide(evaluationCount).doubleValue();
+        return totalSumWithWeight.divide(evaluationCount, 2, BigDecimal.ROUND_HALF_UP).doubleValue();
     }
 
     public BigDecimal calculateTotalSumWithWeight(){

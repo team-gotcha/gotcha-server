@@ -28,7 +28,7 @@ public class QuestionEvaluations {
                 .mapToDouble(question -> question.calculatePerfectScore().doubleValue()) // BigDecimal을 double로 변환
                 .sum());
 
-        return totalSum.divide(BigDecimal.valueOf(questions.size())).doubleValue();
+        return totalSum.divide(BigDecimal.valueOf(questions.size()), 2, BigDecimal.ROUND_HALF_UP).doubleValue();
     }
 
     public List<IndividualQuestion> calculateQuestionsRank() {
