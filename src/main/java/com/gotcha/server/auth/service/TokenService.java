@@ -66,10 +66,15 @@ public class TokenService {
         String socialId = details.member().getSocialId();
         refreshTokenRepository.deleteBySocialId(socialId);
         getSpringProxy().removeRefreshTokenInCache(socialId);
+        getSpringProxy().removeUserInCache(socialId);
     }
 
     @CacheEvict(value = "refreshToken")
     public void removeRefreshTokenInCache(final String socialId) {
+    }
+
+    @CacheEvict(value = "user")
+    public void removeUserInCache(final String socialId) {
     }
 
     private TokenService getSpringProxy() {
