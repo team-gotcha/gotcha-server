@@ -293,13 +293,4 @@ public class ApplicantService {
 
         applicant.updateOutCome(message.value());
     }
-
-    @Transactional
-    public void updateMongoOutcome(Long applicantId, OutcomeUpdateMessage message) {
-        final ApplicantMongo applicant = applicantMongoRepository.findByApplicantId(applicantId)
-                .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
-
-        applicant.updateOutCome(message.value());
-        applicantMongoRepository.save(applicant);
-    }
 }
