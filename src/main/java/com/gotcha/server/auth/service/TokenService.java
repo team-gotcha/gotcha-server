@@ -33,11 +33,7 @@ public class TokenService {
     public void saveRefreshToken(final LoginEvent event) {
         RefreshToken newToken = new RefreshToken(event.socialId(), event.refreshToken());
         refreshTokenRepository.save(newToken);
-        invokeProxySave(newToken);
-    }
-
-    private RefreshToken invokeProxySave(RefreshToken newToken) {
-        return getSpringProxy().saveRefreshTokenToCache(newToken);
+        getSpringProxy().saveRefreshTokenToCache(newToken);
     }
 
     @CachePut(value = "refreshToken", key = "#token.socialId")
@@ -54,14 +50,10 @@ public class TokenService {
     }
 
     private void validateRefreshTokenRequest(final String socialId, final String refreshToken) {
-        RefreshToken cachedToken = invokeProxyGet(socialId);
+        RefreshToken cachedToken = getSpringProxy().getRefreshToken(socialId);
         if(!cachedToken.getRefreshToken().equals(refreshToken)) {
             throw new AppException(ErrorCode.INVALID_REFRESH_TOKEN);
         }
-    }
-
-    private RefreshToken invokeProxyGet(String socialId) {
-        return getSpringProxy().getRefreshToken(socialId);
     }
 
     @Cacheable(value = "refreshToken", key = "#socialId")
