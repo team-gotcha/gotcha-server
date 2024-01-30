@@ -36,9 +36,6 @@ public class Member extends BaseTimeEntity {
     @Column
     private String profileUrl;
 
-    @Column
-    private String refreshToken;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
@@ -51,12 +48,7 @@ public class Member extends BaseTimeEntity {
         this.email = email;
         this.name = name;
         this.profileUrl = profileUrl;
-        this.refreshToken = refreshToken;
         this.role = Role.ROLE_USER;
-    }
-
-    public void updateRefreshToken(final String refreshToken) {
-        this.refreshToken = refreshToken;
     }
 
     public void updateEmail(final String email) {

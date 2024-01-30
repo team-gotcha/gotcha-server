@@ -1,4 +1,4 @@
-package com.gotcha.server.auth.infra;
+package com.gotcha.server.auth.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gotcha.server.auth.controller.AuthorizationResolver;
