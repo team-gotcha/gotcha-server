@@ -4,22 +4,19 @@ import com.gotcha.server.auth.service.JwtTokenProvider;
 import com.gotcha.server.member.dto.request.EmailModifyRequest;
 import com.gotcha.server.member.dto.response.TodayInterviewResponse;
 import com.gotcha.server.applicant.repository.InterviewerRepository;
-import com.gotcha.server.auth.dto.response.RefreshTokenResponse;
 import com.gotcha.server.auth.oauth.GoogleOAuth;
 import com.gotcha.server.auth.dto.request.MemberDetails;
-import com.gotcha.server.global.exception.AppException;
-import com.gotcha.server.global.exception.ErrorCode;
 import com.gotcha.server.member.domain.Member;
+import com.gotcha.server.member.event.LoginEvent;
 import com.gotcha.server.member.repository.MemberRepository;
 import com.gotcha.server.auth.dto.response.GoogleTokenResponse;
 import com.gotcha.server.auth.dto.response.GoogleUserResponse;
 import com.gotcha.server.member.dto.response.LoginResponse;
-import com.gotcha.server.member.dto.request.RefreshTokenRequest;
 import com.gotcha.server.project.domain.Collaborator;
-import com.gotcha.server.project.domain.Project;
 import com.gotcha.server.project.repository.CollaboratorRepository;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,19 +29,7 @@ public class MemberService {
     private final CollaboratorRepository collaboratorRepository;
     private final GoogleOAuth googleOAuth;
     private final JwtTokenProvider jwtTokenProvider;
-
-    public RefreshTokenResponse refresh(RefreshTokenRequest request) {
-        String refreshToken = request.refreshToken();
-        jwtTokenProvider.validateRefreshToken(refreshToken);
-        String socialId = jwtTokenProvider.getPayload(request.refreshToken());
-        validateRefreshRequest(socialId, refreshToken);
-        return new RefreshTokenResponse(jwtTokenProvider.createAccessToken(socialId));
-    }
-
-    private void validateRefreshRequest(final String socialId, final String refreshToken) {
-        memberRepository.findBySocialIdAndRefreshToken(socialId, refreshToken)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-    }
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public LoginResponse login(String code, String redirectUri) {
@@ -58,7 +43,7 @@ public class MemberService {
 
         String accessToken = jwtTokenProvider.createAccessToken(member.getSocialId());
         String refreshToken = jwtTokenProvider.createRefreshToken(member.getSocialId());
-        member.updateRefreshToken(refreshToken);
+        eventPublisher.publishEvent(new LoginEvent(member.getSocialId(), refreshToken));
 
         Long projectId = findFirstProjectId(member);
 
@@ -90,7 +75,6 @@ public class MemberService {
     @Transactional
     public void logout(final MemberDetails details) {
         Member member = details.member();
-        member.updateRefreshToken(null);
         memberRepository.save(member);
     }
 

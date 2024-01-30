@@ -2,10 +2,8 @@ package com.gotcha.server.member.controller;
 
 import com.gotcha.server.member.dto.request.EmailModifyRequest;
 import com.gotcha.server.member.dto.response.TodayInterviewResponse;
-import com.gotcha.server.auth.dto.response.RefreshTokenResponse;
 import com.gotcha.server.auth.dto.request.MemberDetails;
 import com.gotcha.server.member.dto.response.LoginResponse;
-import com.gotcha.server.member.dto.request.RefreshTokenRequest;
 import com.gotcha.server.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -29,13 +27,6 @@ public class MemberController {
             @RequestParam final String code,
             @RequestParam(value = "redirect-uri") final String redirectUri) {
         return ResponseEntity.ok(memberService.login(code, redirectUri));
-    }
-
-    @PostMapping("/api/refresh")
-    @Operation(description = "access token을 재발급 받는다.")
-    public ResponseEntity<RefreshTokenResponse> refreshToken(
-            @RequestBody final RefreshTokenRequest request) {
-        return ResponseEntity.ok(memberService.refresh(request));
     }
 
     @GetMapping("/api/todays-interview")
