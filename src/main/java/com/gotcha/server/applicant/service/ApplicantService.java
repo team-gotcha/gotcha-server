@@ -58,7 +58,7 @@ public class ApplicantService {
     private final ApplicantMongoRepository applicantMongoRepository;
 
     @Transactional
-    public ApplicantIdResponse createApplicant(ApplicantRequest request) {
+    public ApplicantIdResponse createApplicant(final ApplicantRequest request) {
         List<Keyword> keywords = createKeywords(request.getKeywords());
         List<Interviewer> interviewers = createInterviewers(request.getInterviewers());
 
@@ -80,18 +80,18 @@ public class ApplicantService {
         return new ApplicantIdResponse(applicant.getId());
     }
 
-    private Interview findInterviewById(Long interviewId){
+    private Interview findInterviewById(final Long interviewId){
         return interviewRepository.findById(interviewId)
                 .orElseThrow(() -> new AppException(ErrorCode.INTERVIEW_NOT_FOUNT));
     }
 
-    private List<Keyword> createKeywords(List<KeywordRequest> keywordRequests) {
+    private List<Keyword> createKeywords(final List<KeywordRequest> keywordRequests) {
         return keywordRequests.stream()
                 .map(request -> request.toEntity())
                 .toList();
     }
 
-    private List<Interviewer> createInterviewers(List<InterviewerRequest> interviewerRequests) {
+    private List<Interviewer> createInterviewers(final List<InterviewerRequest> interviewerRequests) {
         Set<Long> existingMemberIds = new HashSet<>();
         return interviewerRequests.stream()
                 .map(request -> {
@@ -105,7 +105,7 @@ public class ApplicantService {
     }
 
     @Transactional
-    public void addApplicantFiles(MultipartFile resume, MultipartFile portfolio, Long applicantId) throws IOException {
+    public void addApplicantFiles(final MultipartFile resume, final MultipartFile portfolio, final Long applicantId) throws IOException {
         Applicant applicant = applicantRepository.findById(applicantId)
                 .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
 
@@ -192,7 +192,7 @@ public class ApplicantService {
     }
 
     @Transactional
-    public List<CompletedApplicantsResponse> getCompletedApplicants(Long interviewId) {
+    public List<CompletedApplicantsResponse> getCompletedApplicants(final Long interviewId) {
         final Interview interview = interviewRepository.findById(interviewId)
                 .orElseThrow(() -> new AppException(ErrorCode.INTERVIEW_NOT_FOUNT));
 
@@ -202,7 +202,7 @@ public class ApplicantService {
         return CompletedApplicantsResponse.generateList(applicants, keywordMap, oneLinerMap);
     }
 
-    private List<Applicant> resetCompletedApplicants(Interview interview) {
+    private List<Applicant> resetCompletedApplicants(final Interview interview) {
         final List<Applicant> applicants = applicantRepository.findByInterviewAndInterviewStatus(interview, InterviewStatus.COMPLETION);
         setTotalScore(applicants);
         applicants.sort(Collections.reverseOrder()); // 점수 순으로 정렬
@@ -211,7 +211,7 @@ public class ApplicantService {
         return applicants;
     }
 
-    private void setTotalScore(List<Applicant> applicants) {
+    private void setTotalScore(final List<Applicant> applicants) {
         for (Applicant applicant : applicants) {
             List<IndividualQuestion> questions = individualQuestionRepository.findAllAfterEvaluation(applicant);
 
@@ -233,7 +233,7 @@ public class ApplicantService {
         }
     }
 
-    private void setRanking(List<Applicant> applicants) {
+    private void setRanking(final List<Applicant> applicants) {
         int currentRank = 1;
         Double currentScore = applicants.get(0).getTotalScore();
 
@@ -249,7 +249,7 @@ public class ApplicantService {
     }
 
     @Transactional
-    public void updateCompletedApplicants(Long interviewId) {
+    public void updateCompletedApplicants(final Long interviewId) {
         final Interview interview = interviewRepository.findById(interviewId)
                 .orElseThrow(() -> new AppException(ErrorCode.INTERVIEW_NOT_FOUNT));
         final List<Applicant> applicants = applicantRepository.findByInterviewAndInterviewStatus(interview, InterviewStatus.COMPLETION);
@@ -261,7 +261,7 @@ public class ApplicantService {
         }
     }
 
-    public CompletedApplicantDetailsResponse getCompletedApplicantDetails(Long applicantId) {
+    public CompletedApplicantDetailsResponse getCompletedApplicantDetails(final Long applicantId) {
         final Applicant applicant = applicantRepository.findById(applicantId)
                 .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
 
@@ -286,7 +286,7 @@ public class ApplicantService {
     }
 
     @Transactional
-    public void updateOutcome(Long applicantId, OutcomeUpdateMessage message) {
+    public void updateOutcome(final Long applicantId, final OutcomeUpdateMessage message) {
         final Applicant applicant = applicantRepository.findById(applicantId)
                 .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
 
