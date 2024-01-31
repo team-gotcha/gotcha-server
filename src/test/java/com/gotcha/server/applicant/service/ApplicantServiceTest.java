@@ -89,7 +89,7 @@ class ApplicantServiceTest extends IntegrationTest {
         IndividualQuestion 질문B = environ.테스트개별질문_저장하기(지원자A, "장점을소개해주세요.", 2, true, 5, 종미);
 
         // when
-        List<ApplicantsResponse> 조회결과 = applicantService.listApplicantsByInterview(테스트면접.getId(), new MemberDetails(종미));
+        List<ApplicantsResponse> 조회결과 = applicantService.findAllApplicantByInterview(테스트면접.getId(), new MemberDetails(종미));
 
         // then
         assertEquals(2, 조회결과.get(0).getQuestionCount());
@@ -194,7 +194,7 @@ class ApplicantServiceTest extends IntegrationTest {
         environ.테스트즐겨찾기_저장하기(지원자D, 종미);
 
         // when
-        List<ApplicantsResponse> 지원자목록 = applicantService.listApplicantsByInterview(테스트면접.getId(), new MemberDetails(종미));
+        List<ApplicantsResponse> 지원자목록 = applicantService.findAllApplicantByInterview(테스트면접.getId(), new MemberDetails(종미));
 
         // then
         assertThat(지원자목록).hasSize(4)
