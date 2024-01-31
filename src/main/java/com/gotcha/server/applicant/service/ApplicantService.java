@@ -16,7 +16,6 @@ import com.gotcha.server.evaluation.repository.OneLinerRepository;
 import com.gotcha.server.external.service.S3Service;
 import com.gotcha.server.global.exception.AppException;
 import com.gotcha.server.global.exception.ErrorCode;
-import com.gotcha.server.external.service.MailService;
 import com.gotcha.server.member.domain.Member;
 import com.gotcha.server.member.repository.MemberRepository;
 import com.gotcha.server.mongo.domain.ApplicantMongo;
@@ -59,97 +58,7 @@ public class ApplicantService {
     private final ApplicantMongoRepository applicantMongoRepository;
 
     @Transactional
-    public PreparedInterviewersResponse prepareInterview(final InterviewProceedRequest request, final MemberDetails details) {
-        Applicant applicant = applicantRepository.findByIdWithInterviewAndInterviewers(request.applicantId())
-                .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
-        applicant.setInterviewerPrepared(details.member());
-
-        if (applicant.getInterviewStatus() == InterviewStatus.PREPARATION) {
-            eventPublisher.publishEvent(new InterviewStartedEvent(applicant));
-            applicant.setInterviewStatus(InterviewStatus.IN_PROGRESS);
-        }
-        return applicant.getPreparedInterviewerInfo();
-    }
-
-    @Transactional
-    public void enterInterviewProcess(final Long applicantId) {
-        Applicant applicant = applicantRepository.findByIdWithInterviewAndInterviewers(applicantId)
-                .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
-        eventPublisher.publishEvent(new QuestionDeterminedEvent(applicant.getId()));
-    }
-
-    public List<ApplicantsResponse> listApplicantsByInterview(final Long interviewId, final MemberDetails details) {
-        Interview interview = interviewRepository.findById(interviewId)
-                .orElseThrow(() -> new AppException(ErrorCode.INTERVIEW_NOT_FOUNT));
-        List<Applicant> applicants = applicantRepository.findAllByInterviewWithInterviewer(interview);
-
-        Map<Applicant, List<KeywordResponse>> applicantsWithKeywords = keywordRepository.findAllByApplicants(applicants);
-        Map<Applicant, Boolean> favoritesCheck = checkFavorites(applicants, details.member());
-
-        return ApplicantsResponse.generateList(applicantsWithKeywords, favoritesCheck);
-    }
-
-    private Map<Applicant, Boolean> checkFavorites(final List<Applicant> applicants, final Member member) {
-        List<Applicant> favorites = favoriteRepository.findAllByMemberAndApplicantIn(member, applicants)
-                .stream().map(Favorite::getApplicant).toList();
-        return applicants.stream()
-                .collect(Collectors.toMap(applicant -> applicant, applicant -> favorites.contains(applicant)));
-    }
-
-    public ApplicantResponse findApplicantDetailsById(final Long applicantId) {
-        Applicant applicant = applicantRepository.findByIdWithInterviewer(applicantId)
-                .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
-        List<Keyword> keywords = keywordRepository.findAllByApplicant(applicant);
-        return ApplicantResponse.from(applicant, keywords);
-    }
-
-    @Transactional
-    public void updateFavorite(final Long applicantId, final MemberDetails details) {
-        Member member = details.member();
-        Applicant applicant = applicantRepository.findById(applicantId)
-                .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
-        Optional<Favorite> favorite = favoriteRepository.findByApplicantAndMember(applicant, member);
-
-        favorite.ifPresentOrElse(
-                favoriteRepository::delete,
-                () -> favoriteRepository.save(new Favorite(member, applicant)));
-    }
-
-    public List<PassedApplicantsResponse> listPassedApplicantsByInterview(final Long interviewId,  final MemberDetails details) {
-        Interview interview = interviewRepository.findById(interviewId)
-                .orElseThrow(() -> new AppException(ErrorCode.INTERVIEW_NOT_FOUNT));
-        List<Applicant> applicants = applicantRepository.findAllPassedApplicants(interview);
-
-        Map<Applicant, List<KeywordResponse>> applicantsWithKeywords = keywordRepository.findAllByApplicants(applicants);
-        Map<Applicant, Boolean> favoritesCheck = checkFavorites(applicants, details.member());
-
-        return PassedApplicantsResponse.generateList(applicantsWithKeywords, favoritesCheck);
-    }
-
-    @Transactional
-    public void makeQuestionsPublic(final Long applicantId, final GoQuestionPublicRequest request) {
-        Applicant applicant = applicantRepository.findById(applicantId)
-                .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
-        applicant.changeQuestionPublicType(request.agree());
-    }
-
-    @Transactional
-    public void sendPassEmail(final PassEmailSendRequest request) {
-        Interview interview = interviewRepository.findById(request.interviewId())
-                .orElseThrow(() -> new AppException(ErrorCode.INTERVIEW_NOT_FOUNT));
-        String interviewName = interview.getName();
-        String positionName = interview.getPosition().getValue();
-        String projectName = interview.getProject().getName();
-
-        List<Applicant> applicants = applicantRepository.findAllByInterview(interview);
-        for (Applicant applicant : applicants) {
-            applicant.setInterviewStatus(InterviewStatus.ANNOUNCED);
-            eventPublisher.publishEvent(new OutcomePublishedEvent(applicant, projectName, interviewName, positionName));
-        }
-    }
-
-    @Transactional
-    public ApplicantIdResponse createApplicant(ApplicantRequest request, Member member) {
+    public ApplicantIdResponse createApplicant(ApplicantRequest request) {
         List<Keyword> keywords = createKeywords(request.getKeywords());
         List<Interviewer> interviewers = createInterviewers(request.getInterviewers());
 
@@ -171,9 +80,28 @@ public class ApplicantService {
         return new ApplicantIdResponse(applicant.getId());
     }
 
-    public Interview findInterviewById(Long interviewId){
+    private Interview findInterviewById(Long interviewId){
         return interviewRepository.findById(interviewId)
                 .orElseThrow(() -> new AppException(ErrorCode.INTERVIEW_NOT_FOUNT));
+    }
+
+    private List<Keyword> createKeywords(List<KeywordRequest> keywordRequests) {
+        return keywordRequests.stream()
+                .map(request -> request.toEntity())
+                .toList();
+    }
+
+    private List<Interviewer> createInterviewers(List<InterviewerRequest> interviewerRequests) {
+        Set<Long> existingMemberIds = new HashSet<>();
+        return interviewerRequests.stream()
+                .map(request -> {
+                    if (!existingMemberIds.add(request.getId())) {
+                        throw new AppException(ErrorCode.DUPLICATE_INTERVIEWER);
+                    }
+                    return request.toEntity(memberRepository.findById(request.getId())
+                            .orElseThrow(() -> new AppException(ErrorCode.MEMBER_NOT_FOUND)));}
+                )
+                .toList();
     }
 
     @Transactional
@@ -185,26 +113,82 @@ public class ApplicantService {
         String portfolioLink = s3Service.saveUploadFile(portfolio);
 
         applicant.updateResumeLink(resumeLink);
-        applicant.updatePortfolio(portfolioLink); // save 없어도 jpa에 의해 db update
+        applicant.updatePortfolio(portfolioLink);
     }
 
-    public List<Keyword> createKeywords(List<KeywordRequest> keywordRequests) {
-        return keywordRequests.stream()
-                .map(request -> request.toEntity())
-                .collect(Collectors.toList());
+    public ApplicantResponse findApplicantDetailsById(final Long applicantId) {
+        Applicant applicant = applicantRepository.findByIdWithInterviewer(applicantId)
+                .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
+        List<Keyword> keywords = keywordRepository.findAllByApplicant(applicant);
+        return ApplicantResponse.from(applicant, keywords);
     }
 
-    public List<Interviewer> createInterviewers(List<InterviewerRequest> interviewerRequests) {
-        Set<Long> existingMemberIds = new HashSet<>();
-        return interviewerRequests.stream()
-                .map(request -> {
-                    if (!existingMemberIds.add(request.getId())) {
-                        throw new AppException(ErrorCode.DUPLICATE_INTERVIEWER);
-                    }
-                    return request.toEntity(memberRepository.findById(request.getId())
-                            .orElseThrow(() -> new AppException(ErrorCode.MEMBER_NOT_FOUND)));}
-                )
-                .collect(Collectors.toList());
+    public List<ApplicantsResponse> findAllApplicantByInterview(final Long interviewId, final MemberDetails details) {
+        Interview interview = interviewRepository.findById(interviewId)
+                .orElseThrow(() -> new AppException(ErrorCode.INTERVIEW_NOT_FOUNT));
+        List<Applicant> applicants = applicantRepository.findAllByInterviewWithInterviewer(interview);
+
+        Map<Applicant, List<KeywordResponse>> applicantsWithKeywords = keywordRepository.findAllByApplicants(applicants);
+        Map<Applicant, Boolean> favoritesCheck = checkFavorites(applicants, details.member());
+
+        return ApplicantsResponse.generateList(applicantsWithKeywords, favoritesCheck);
+    }
+
+    @Transactional
+    public void updateFavorite(final Long applicantId, final MemberDetails details) {
+        Member member = details.member();
+        Applicant applicant = applicantRepository.findById(applicantId)
+                .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
+        Optional<Favorite> favorite = favoriteRepository.findByApplicantAndMember(applicant, member);
+
+        favorite.ifPresentOrElse(
+                favoriteRepository::delete,
+                () -> favoriteRepository.save(new Favorite(member, applicant)));
+    }
+
+    @Transactional
+    public PreparedInterviewersResponse prepareInterview(final InterviewProceedRequest request, final MemberDetails details) {
+        Applicant applicant = applicantRepository.findByIdWithInterviewAndInterviewers(request.applicantId())
+                .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
+        applicant.setInterviewerPrepared(details.member());
+
+        if (applicant.getInterviewStatus() == InterviewStatus.PREPARATION) {
+            eventPublisher.publishEvent(new InterviewStartedEvent(applicant));
+            applicant.setInterviewStatus(InterviewStatus.IN_PROGRESS);
+        }
+        return applicant.getPreparedInterviewerInfo();
+    }
+
+    @Transactional
+    public void enterInterviewProcess(final Long applicantId) {
+        Applicant applicant = applicantRepository.findByIdWithInterviewAndInterviewers(applicantId)
+                .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
+        eventPublisher.publishEvent(new QuestionDeterminedEvent(applicant.getId()));
+    }
+
+    private Map<Applicant, Boolean> checkFavorites(final List<Applicant> applicants, final Member member) {
+        List<Applicant> favorites = favoriteRepository.findAllByMemberAndApplicantIn(member, applicants)
+                .stream().map(Favorite::getApplicant).toList();
+        return applicants.stream()
+                .collect(Collectors.toMap(applicant -> applicant, applicant -> favorites.contains(applicant)));
+    }
+
+    public List<PassedApplicantsResponse> listPassedApplicantsByInterview(final Long interviewId,  final MemberDetails details) {
+        Interview interview = interviewRepository.findById(interviewId)
+                .orElseThrow(() -> new AppException(ErrorCode.INTERVIEW_NOT_FOUNT));
+        List<Applicant> applicants = applicantRepository.findAllPassedApplicants(interview);
+
+        Map<Applicant, List<KeywordResponse>> applicantsWithKeywords = keywordRepository.findAllByApplicants(applicants);
+        Map<Applicant, Boolean> favoritesCheck = checkFavorites(applicants, details.member());
+
+        return PassedApplicantsResponse.generateList(applicantsWithKeywords, favoritesCheck);
+    }
+
+    @Transactional
+    public void makeQuestionsPublic(final Long applicantId, final GoQuestionPublicRequest request) {
+        Applicant applicant = applicantRepository.findById(applicantId)
+                .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
+        applicant.changeQuestionPublicType(request.agree());
     }
 
     @Transactional
@@ -218,20 +202,7 @@ public class ApplicantService {
         return CompletedApplicantsResponse.generateList(applicants, keywordMap, oneLinerMap);
     }
 
-    @Transactional
-    public void updateCompletedApplicants(Long interviewId) {
-        final Interview interview = interviewRepository.findById(interviewId)
-                .orElseThrow(() -> new AppException(ErrorCode.INTERVIEW_NOT_FOUNT));
-        final List<Applicant> applicants = applicantRepository.findByInterviewAndInterviewStatus(interview, InterviewStatus.COMPLETION);
-
-        for(Applicant applicant : applicants){
-            if (applicant.getOutcome() == PENDING){
-                applicant.updateOutCome(FAIL);
-            }
-        }
-    }
-
-    public List<Applicant> resetCompletedApplicants(Interview interview) {
+    private List<Applicant> resetCompletedApplicants(Interview interview) {
         final List<Applicant> applicants = applicantRepository.findByInterviewAndInterviewStatus(interview, InterviewStatus.COMPLETION);
         setTotalScore(applicants);
         applicants.sort(Collections.reverseOrder()); // 점수 순으로 정렬
@@ -240,22 +211,7 @@ public class ApplicantService {
         return applicants;
     }
 
-    public void setRanking(List<Applicant> applicants) {
-        int currentRank = 1;
-        Double currentScore = applicants.get(0).getTotalScore();
-
-        for (int i = 0; i < applicants.size(); i++) {
-            Applicant applicant = applicants.get(i);
-            if (applicant.getTotalScore() < currentScore) {
-                currentRank++;
-                currentScore = applicant.getTotalScore();
-            }
-
-            applicant.updateRanking(currentRank);
-        }
-    }
-
-    public void setTotalScore(List<Applicant> applicants) {
+    private void setTotalScore(List<Applicant> applicants) {
         for (Applicant applicant : applicants) {
             List<IndividualQuestion> questions = individualQuestionRepository.findAllAfterEvaluation(applicant);
 
@@ -277,6 +233,34 @@ public class ApplicantService {
         }
     }
 
+    private void setRanking(List<Applicant> applicants) {
+        int currentRank = 1;
+        Double currentScore = applicants.get(0).getTotalScore();
+
+        for (int i = 0; i < applicants.size(); i++) {
+            Applicant applicant = applicants.get(i);
+            if (applicant.getTotalScore() < currentScore) {
+                currentRank++;
+                currentScore = applicant.getTotalScore();
+            }
+
+            applicant.updateRanking(currentRank);
+        }
+    }
+
+    @Transactional
+    public void updateCompletedApplicants(Long interviewId) {
+        final Interview interview = interviewRepository.findById(interviewId)
+                .orElseThrow(() -> new AppException(ErrorCode.INTERVIEW_NOT_FOUNT));
+        final List<Applicant> applicants = applicantRepository.findByInterviewAndInterviewStatus(interview, InterviewStatus.COMPLETION);
+
+        for(Applicant applicant : applicants){
+            if (applicant.getOutcome() == PENDING){
+                applicant.updateOutCome(FAIL);
+            }
+        }
+    }
+
     public CompletedApplicantDetailsResponse getCompletedApplicantDetails(Long applicantId) {
         final Applicant applicant = applicantRepository.findById(applicantId)
                 .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
@@ -284,6 +268,21 @@ public class ApplicantService {
         final List<Keyword> keywords = keywordRepository.findAllByApplicant(applicant);
         final List<OneLinerResponse> oneLiners = oneLinerRepository.getOneLinersForApplicant(applicant);
         return CompletedApplicantDetailsResponse.from(applicant, keywords, oneLiners);
+    }
+
+    @Transactional
+    public void sendPassEmail(final PassEmailSendRequest request) {
+        Interview interview = interviewRepository.findById(request.interviewId())
+                .orElseThrow(() -> new AppException(ErrorCode.INTERVIEW_NOT_FOUNT));
+        String interviewName = interview.getName();
+        String positionName = interview.getPosition().getValue();
+        String projectName = interview.getProject().getName();
+
+        List<Applicant> applicants = applicantRepository.findAllByInterview(interview);
+        for (Applicant applicant : applicants) {
+            applicant.setInterviewStatus(InterviewStatus.ANNOUNCED);
+            eventPublisher.publishEvent(new OutcomePublishedEvent(applicant, projectName, interviewName, positionName));
+        }
     }
 
     @Transactional
