@@ -19,12 +19,12 @@ public class ExecutionTimer {
     private void timer(){};
 
     @Around("timer()")
-    public void AssumeExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
+    public Object AssumeExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
 
         StopWatch stopWatch = new StopWatch();
 
         stopWatch.start();
-        joinPoint.proceed();
+        Object result = joinPoint.proceed();
         stopWatch.stop();
 
         long totalTimeMillis = stopWatch.getTotalTimeMillis();
@@ -33,5 +33,6 @@ public class ExecutionTimer {
         String methodName = signature.getMethod().getName();
 
         log.info("실행 메서드: {}, 실행시간 = {}ms", methodName, totalTimeMillis);
+        return result;
     }
 }
