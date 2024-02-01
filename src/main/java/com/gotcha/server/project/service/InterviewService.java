@@ -39,10 +39,8 @@ public class InterviewService {
         emails.add(member.getEmail());
 
         createSubcollaborator(interview, emails);
-        sendInterviewInvitation(request, interview.getId());
     }
 
-    @Transactional
     public void createSubcollaborator(Interview interview, List<String> emails){
         for(String email : emails){
             Subcollaborator subcollaborator = Subcollaborator.builder()
@@ -59,6 +57,7 @@ public class InterviewService {
         }
     }
 
+    // 메일 용량 초과로 세부 면접 초대 이메일은 생략
     public void sendInterviewInvitation(InterviewRequest request, Long id) {
         for(String toEmail : request.getEmails()){
             boolean isMember = memberRepository.existsByEmail(toEmail);
