@@ -42,7 +42,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,"/swagger-ui/**", "/api-docs/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/login/google").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/refresh", "/api/logout").permitAll()
-                        .anyRequest().authenticated()
+                        .requestMatchers("/**").authenticated()
+                        .anyRequest().permitAll()
                 );
 
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
