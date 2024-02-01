@@ -181,6 +181,7 @@ public class QuestionService {
                 () -> likeRepository.save(new Likes(member, question)));
     }
 
+    // Todo: 동일한 event가 여러 번 발생해도, 한 번만 실행되어야 함 (최적화)
     @Transactional
     @EventListener(QuestionUpdatedEvent.class)
     public void fetchFinalModifiedQuestions(final QuestionUpdatedEvent event) {
