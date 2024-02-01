@@ -24,11 +24,11 @@ public class InterviewController {
     private final InterviewService interviewService;
 
     @PostMapping
-    @Operation(description = "세부 면접을 생성하고 초대 이메일을 발송한다.")
+    @Operation(description = "세부 면접을 생성한다.")
     public ResponseEntity<String> createInterview(@RequestBody final InterviewRequest request,
                                                   @AuthenticationPrincipal final MemberDetails details) {
         interviewService.createInterview(request, details.member());
-        return ResponseEntity.status(HttpStatus.CREATED).body("세부 면접 생성 및 초대 이메일 발송이 완료되었습니다.");
+        return ResponseEntity.status(HttpStatus.CREATED).body("세부 면접 생성이 완료되었습니다.");
     }
 
     @GetMapping("/{interviewId}/names")

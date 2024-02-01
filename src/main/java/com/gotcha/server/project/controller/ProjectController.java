@@ -1,6 +1,7 @@
 package com.gotcha.server.project.controller;
 
 import com.gotcha.server.auth.dto.request.MemberDetails;
+import com.gotcha.server.project.domain.Project;
 import com.gotcha.server.project.dto.request.ProjectRequest;
 import com.gotcha.server.project.dto.response.ProjectResponse;
 import com.gotcha.server.project.dto.response.SidebarResponse;
@@ -24,7 +25,8 @@ public class ProjectController {
     @Operation(description = "프로젝트를 생성하고 초대 이메일을 발송한다.")
     public ResponseEntity<String> createProject(@RequestBody final ProjectRequest request,
                                                 @AuthenticationPrincipal final MemberDetails details) {
-        projectService.createProject(request, details.member());
+        final Project project = projectService.createProject(request, details.member());
+        projectService.sendProjectInvitation(request, project.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body("프로젝트 생성 및 초대 이메일 발송이 완료되었습니다.");
     }
 

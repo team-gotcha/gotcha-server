@@ -13,9 +13,11 @@ import com.gotcha.server.project.dto.response.ProjectResponse;
 import com.gotcha.server.project.dto.response.SidebarResponse;
 import com.gotcha.server.project.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,19 +34,20 @@ public class ProjectService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public void createProject(ProjectRequest request, Member member) {
+    public Project createProject(ProjectRequest request, Member member) {
         validProject(request);
+
         Project project = request.toEntity();
         projectRepository.save(project);
 
-        List<String> emails = request.getEmails();
+        List<String> emails = new ArrayList<>(request.getEmails());
         emails.add(member.getEmail());
 
         createCollaborator(project, emails);
-        sendProjectInvitation(request, project.getId());
+
+        return project;
     }
 
-    @Transactional
     public void createCollaborator(Project project, List<String> emails) {
         for (String email : emails) {
             Collaborator collaborator = Collaborator.builder()
@@ -77,6 +80,7 @@ public class ProjectService {
         return email.matches(emailRegex);
     }
 
+    @Async
     public void sendProjectInvitation(ProjectRequest request, Long id) {
         for (String toEmail : request.getEmails()) {
             boolean isMember = memberRepository.existsByEmail(toEmail);
