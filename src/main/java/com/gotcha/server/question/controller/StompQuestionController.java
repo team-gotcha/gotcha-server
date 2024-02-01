@@ -3,6 +3,7 @@ package com.gotcha.server.question.controller;
 import com.gotcha.server.global.aop.ExeTimer;
 import com.gotcha.server.question.dto.message.QuestionUpdateMessage;
 import com.gotcha.server.question.service.QuestionService;
+import com.gotcha.server.question.service.StompQuestionService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Controller;
 @Controller
 @RequiredArgsConstructor
 public class StompQuestionController {
-    private final QuestionService questionService;
+    private final StompQuestionService questionService;
 
     @MessageMapping("/question/{question-id}")
     @SendTo("/sub/question/{question-id}")
