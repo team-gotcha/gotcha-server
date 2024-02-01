@@ -8,4 +8,5 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 public interface QuestionMongoRepository extends MongoRepository<QuestionMongo, String> {
     Optional<QuestionMongo> findByQuestionId(Long questionId);
     List<QuestionMongo> findAllByApplicantId(Long applicantId);
+    List<QuestionMongo> findAllByApplicantIdAndAskingOrderByQuestionOrderAsc(Long applicantId, Boolean asking);
 }

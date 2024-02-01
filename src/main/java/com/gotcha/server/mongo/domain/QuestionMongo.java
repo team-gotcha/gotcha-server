@@ -53,6 +53,10 @@ public class QuestionMongo implements Question {
         this.asking = false;
     }
 
+    public boolean isCommon() {
+        return this.isCommon;
+    }
+
     public static QuestionMongo from(final IndividualQuestion individualQuestion, final Long applicantId) {
         return QuestionMongo.builder()
                 .questionId(individualQuestion.getId())

@@ -99,16 +99,7 @@ public class QuestionService {
         Applicant applicant = applicantRepository.findById(applicantId)
                 .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
         List<IndividualQuestion> questions = individualQuestionRepository.findAllDuringInterview(applicant);
-        determinePublicType(applicant, questions);
         return InterviewQuestionResponse.generateList(questions);
-    }
-
-    private void determinePublicType(final Applicant applicant, final List<IndividualQuestion> questions) {
-        if(questions.size() > 0
-                && !applicant.getQuestionPublicType().equals(QuestionPublicType.PENDING)
-                && questions.get(0).getPublicType().equals(QuestionPublicType.PENDING)) {
-            questions.stream().forEach(question -> question.changePublicType(applicant));
-        }
     }
 
     @Transactional
@@ -181,6 +172,7 @@ public class QuestionService {
                 () -> likeRepository.save(new Likes(member, question)));
     }
 
+    // Todo: 동일한 event가 여러 번 발생해도, 한 번만 실행되어야 함 (최적화)
     @Transactional
     @EventListener(QuestionUpdatedEvent.class)
     public void fetchFinalModifiedQuestions(final QuestionUpdatedEvent event) {

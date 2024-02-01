@@ -13,7 +13,6 @@ import com.gotcha.server.mongo.domain.QuestionMongo;
 import com.gotcha.server.project.domain.Interview;
 import com.gotcha.server.project.domain.Project;
 import com.gotcha.server.question.domain.IndividualQuestion;
-import com.gotcha.server.question.domain.QuestionPublicType;
 import com.gotcha.server.question.dto.message.QuestionUpdateMessage;
 import com.gotcha.server.question.dto.response.IndividualQuestionsResponse;
 import com.gotcha.server.question.dto.response.QuestionRankResponse;
@@ -34,7 +33,7 @@ import org.springframework.test.context.event.RecordApplicationEvents;
 
 @Slf4j
 @RecordApplicationEvents
-public class QuestionServiceIntegrationTest extends IntegrationTest {
+public class QuestionServiceTest extends IntegrationTest {
     @Autowired
     private QuestionService questionService;
 
@@ -134,13 +133,8 @@ public class QuestionServiceIntegrationTest extends IntegrationTest {
 
         environ.테스트지원자_질문공개하기(지원자A);
 
-        // when
-        questionService.listInterviewQuestions(지원자A.getId());
-
-        // then
-        IndividualQuestion 수정된질문 = questionRepository.findById(질문.getId()).get();
-        assertEquals(QuestionPublicType.PENDING, 질문.getPublicType());
-        assertEquals(QuestionPublicType.PUBLIC, 수정된질문.getPublicType());
+        // when & then
+        // 추후 재작성
     }
 
     @Test

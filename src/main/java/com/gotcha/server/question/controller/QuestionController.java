@@ -8,6 +8,7 @@ import com.gotcha.server.auth.dto.request.MemberDetails;
 import com.gotcha.server.question.dto.request.CommonQuestionsRequest;
 import com.gotcha.server.question.dto.response.InterviewQuestionResponse;
 import com.gotcha.server.question.dto.response.PreparatoryQuestionResponse;
+import com.gotcha.server.question.service.QuestionMongoService;
 import com.gotcha.server.question.service.QuestionService;
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class QuestionController {
     private final QuestionService questionService;
+    private final QuestionMongoService questionMongoService;
 
     @PostMapping("/common")
     @Operation(description = "공통 질문을 생성한다.")
@@ -44,7 +46,7 @@ public class QuestionController {
     @Operation(description = "지원자의 면접 중 질문 목록을 순서대로 조회한다.")
     public ResponseEntity<List<InterviewQuestionResponse>> findAllInterviewQuestions(
             @RequestParam(name = "applicant-id") final Long applicantId) {
-        return ResponseEntity.ok(questionService.listInterviewQuestions(applicantId));
+        return ResponseEntity.ok(questionMongoService.findAllDuringInterview(applicantId));
     }
 
     @PostMapping("/individual")
