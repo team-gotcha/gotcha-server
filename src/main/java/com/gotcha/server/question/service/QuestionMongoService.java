@@ -6,6 +6,7 @@ import com.gotcha.server.mongo.domain.QuestionMongo;
 import com.gotcha.server.mongo.repository.QuestionMongoRepository;
 import com.gotcha.server.question.domain.IndividualQuestion;
 import com.gotcha.server.question.dto.message.QuestionUpdateMessage;
+import com.gotcha.server.question.dto.response.InterviewQuestionResponse;
 import com.gotcha.server.question.event.QuestionDeterminedEvent;
 import com.gotcha.server.question.event.QuestionPreparedEvent;
 import com.gotcha.server.question.event.QuestionUpdatedEvent;
@@ -44,5 +45,11 @@ public class QuestionMongoService {
     public void findAllModifiedQuestions(final QuestionDeterminedEvent event) {
         List<QuestionMongo> mongoQuestions = questionMongoRepository.findAllByApplicantId(event.applicantId());
         eventPublisher.publishEvent(new QuestionUpdatedEvent(mongoQuestions));
+    }
+
+    public List<InterviewQuestionResponse> findAllDuringInterview(final Long applicantId) {
+        List<QuestionMongo> questions =
+                questionMongoRepository.findAllByApplicantIdAndAskingOrderByQuestionOrderAsc(applicantId, true);
+        return InterviewQuestionResponse.generateListFromMongo(questions);
     }
 }

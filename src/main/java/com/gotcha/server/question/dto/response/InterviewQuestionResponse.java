@@ -1,5 +1,6 @@
 package com.gotcha.server.question.dto.response;
 
+import com.gotcha.server.mongo.domain.QuestionMongo;
 import com.gotcha.server.question.domain.IndividualQuestion;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -16,10 +17,22 @@ public class InterviewQuestionResponse {
     private Boolean isCommon;
     private String content;
 
-    public static List<InterviewQuestionResponse> generateList(final List<IndividualQuestion> questions) {
+    public static List<InterviewQuestionResponse> generateList(
+            final List<IndividualQuestion> questions) {
         return questions.stream()
                 .map(q -> InterviewQuestionResponse.builder()
                         .id(q.getId())
+                        .isCommon(q.isCommon())
+                        .content(q.getContent())
+                        .build())
+                .toList();
+    }
+
+    public static List<InterviewQuestionResponse> generateListFromMongo(
+            final List<QuestionMongo> questions) {
+        return questions.stream()
+                .map(q -> InterviewQuestionResponse.builder()
+                        .id(q.getQuestionId())
                         .isCommon(q.isCommon())
                         .content(q.getContent())
                         .build())
