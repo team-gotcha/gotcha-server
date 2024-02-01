@@ -13,7 +13,6 @@ import com.gotcha.server.mongo.domain.QuestionMongo;
 import com.gotcha.server.project.domain.Interview;
 import com.gotcha.server.project.domain.Project;
 import com.gotcha.server.question.domain.IndividualQuestion;
-import com.gotcha.server.question.domain.QuestionPublicType;
 import com.gotcha.server.question.dto.message.QuestionUpdateMessage;
 import com.gotcha.server.question.dto.response.IndividualQuestionsResponse;
 import com.gotcha.server.question.dto.response.QuestionRankResponse;
@@ -34,7 +33,7 @@ import org.springframework.test.context.event.RecordApplicationEvents;
 
 @Slf4j
 @RecordApplicationEvents
-public class QuestionServiceIntegrationTest extends IntegrationTest {
+public class QuestionServiceTest extends IntegrationTest {
     @Autowired
     private QuestionService questionService;
 

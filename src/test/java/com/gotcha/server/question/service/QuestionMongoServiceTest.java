@@ -16,7 +16,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-class StompQuestionServiceTest extends IntegrationTest {
+class QuestionMongoServiceTest extends IntegrationTest {
     @Autowired
     private QuestionMongoService questionMongoService;
 
