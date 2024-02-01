@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class StompQuestionService {
+public class QuestionMongoService {
     private final QuestionMongoRepository questionMongoRepository;
     private final ApplicationEventPublisher eventPublisher;
 

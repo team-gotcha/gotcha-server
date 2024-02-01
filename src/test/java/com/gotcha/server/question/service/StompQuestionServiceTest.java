@@ -18,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 class StompQuestionServiceTest extends IntegrationTest {
     @Autowired
-    private StompQuestionService stompQuestionService;
+    private QuestionMongoService questionMongoService;
 
     @Autowired
     private QuestionMongoRepository questionMongoRepository;
@@ -35,7 +35,7 @@ class StompQuestionServiceTest extends IntegrationTest {
 
         // when
         QuestionPreparedEvent 이벤트 = new QuestionPreparedEvent(질문목록, 지원자A.getId());
-        stompQuestionService.migrateQuestions(이벤트);
+        questionMongoService.migrateQuestions(이벤트);
 
         // then
         List<QuestionMongo> 이전된_질문목록 = questionMongoRepository.findAll();
