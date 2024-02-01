@@ -63,6 +63,28 @@ class ApplicantRepositoryTest extends RepositoryTest {
     }
 
     @Test
+    @DisplayName("면접 프로젝트 별 지원자 목록 조회 시 면접일 순으로 정렬하기")
+    void 면접일순으로_지원자_정렬하기() {
+        // given
+        Project 조회할프로젝트 = 테스트프로젝트("테스트프로젝트");
+        Interview 조회할면접 = 테스트면접(조회할프로젝트, "테스트면접");
+        Applicant 지원자A = 테스트지원자(조회할면접, "지원자A", LocalDate.now().plusDays(1L));
+        Applicant 지원자B = 테스트지원자(조회할면접, "지원자B", LocalDate.now().plusDays(5L));
+        Applicant 지원자C = 테스트지원자(조회할면접, "지원자C", LocalDate.now().plusDays(2L));
+        Applicant 지원자D = 테스트지원자(조회할면접, "지원자D", LocalDate.now());
+        testRepository.save(조회할프로젝트, 조회할면접, 지원자A, 지원자B, 지원자C, 지원자D);
+
+
+        // when
+        List<Applicant> 조회결과 = applicantRepository.findAllByInterviewWithInterviewer(조회할면접);
+
+        // then
+        assertThat(조회결과).hasSize(4)
+                .extracting(Applicant::getName)
+                .containsExactly("지원자D", "지원자A", "지원자C", "지원자B");
+    }
+
+    @Test
     @DisplayName("합격한 지원자들을 조회한다.")
     void 합격한_지원자목록_조회하기() {
         // given
