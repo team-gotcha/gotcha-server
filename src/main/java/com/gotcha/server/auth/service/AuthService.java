@@ -30,7 +30,12 @@ public class AuthService {
     @EventListener(LoginEvent.class)
     @Transactional
     public void saveRefreshToken(final LoginEvent event) {
-        RefreshToken newToken = new RefreshToken(event.socialId(), event.refreshToken());
+        String socialId = event.socialId();
+        RefreshToken newToken = new RefreshToken(socialId, event.refreshToken());
+
+        refreshTokenRepository.deleteBySocialId(socialId);
+        getSpringProxy().removeRefreshTokenInCache(socialId);
+
         refreshTokenRepository.save(newToken);
         getSpringProxy().saveRefreshTokenToCache(newToken);
     }
