@@ -4,8 +4,6 @@ import com.gotcha.server.applicant.dto.message.OutcomeUpdateMessage;
 import com.gotcha.server.applicant.service.ApplicantService;
 import com.gotcha.server.global.aop.ExeTimer;
 import com.gotcha.server.mongo.service.ApplicantMongoService;
-import com.gotcha.server.question.dto.message.QuestionUpdateMessage;
-import com.gotcha.server.question.service.QuestionService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;

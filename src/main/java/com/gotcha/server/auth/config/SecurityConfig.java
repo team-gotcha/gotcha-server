@@ -35,8 +35,6 @@ public class SecurityConfig {
                 )
 
                 .authorizeHttpRequests((authorizeRequests) -> authorizeRequests
-//                        .requestMatchers("/post").authenticated()
-//                        .requestMatchers(HttpMethod.DELETE, "/post/*").authenticated()
                                 .requestMatchers(HttpMethod.GET,"/swagger-ui/**", "/api-docs/**").permitAll()
                                 .anyRequest().permitAll()
                 );

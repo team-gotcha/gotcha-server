@@ -2,12 +2,9 @@ package com.gotcha.server.project.controller;
 
 import com.gotcha.server.auth.dto.request.MemberDetails;
 import com.gotcha.server.project.dto.request.InterviewRequest;
-import com.gotcha.server.project.dto.request.ProjectRequest;
 import com.gotcha.server.project.dto.response.InterviewerNamesResponse;
-import com.gotcha.server.project.dto.response.ProjectResponse;
 import com.gotcha.server.project.service.InterviewService;
 import io.swagger.v3.oas.annotations.Operation;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,5 +33,4 @@ public class InterviewController {
     public ResponseEntity<List<InterviewerNamesResponse>> getNames(@PathVariable final Long interviewId){
         return ResponseEntity.status(HttpStatus.OK).body(interviewService.getInterviewerNames(interviewId));
     }
-
 }

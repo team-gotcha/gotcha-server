@@ -1,5 +1,8 @@
 package com.gotcha.server.applicant.service;
 
+import static com.gotcha.server.applicant.domain.Outcome.FAIL;
+import static com.gotcha.server.applicant.domain.Outcome.PENDING;
+
 import com.gotcha.server.applicant.domain.*;
 import com.gotcha.server.applicant.dto.message.OutcomeUpdateMessage;
 import com.gotcha.server.applicant.dto.request.*;
@@ -37,9 +40,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import static com.gotcha.server.applicant.domain.Outcome.FAIL;
-import static com.gotcha.server.applicant.domain.Outcome.PENDING;
 
 @Slf4j
 @Service

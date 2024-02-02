@@ -42,8 +42,7 @@ public class S3Service {
             }
 
             return amazonS3.getUrl(bucket, key).toString();
-        } else {
-            return null;
         }
+        return null;
     }
 }

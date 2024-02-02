@@ -1,7 +1,6 @@
 package com.gotcha.server.project.dto.response;
 
 import com.gotcha.server.member.domain.Member;
-import jakarta.persistence.Column;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

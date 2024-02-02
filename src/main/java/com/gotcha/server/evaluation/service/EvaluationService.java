@@ -36,7 +36,7 @@ public class EvaluationService {
     @Transactional
     public void evaluate(final MemberDetails details, final List<EvaluateRequest> requests) {
         List<IndividualQuestion> questions = getQuestionsBeingEvaluated(requests);
-        Applicant applicant = validateApplicantOfQuestions(questions);
+        validateApplicantOfQuestions(questions);
 
         Map<Long, IndividualQuestion> questionMap = questions.stream().collect(Collectors.toMap(IndividualQuestion::getId, q->q));
         List<Evaluation> evaluations = requests.stream()

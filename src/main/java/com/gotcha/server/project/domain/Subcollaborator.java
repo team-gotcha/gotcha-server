@@ -1,7 +1,5 @@
 package com.gotcha.server.project.domain;
 
-import com.gotcha.server.global.domain.BaseTimeEntity;
-import com.gotcha.server.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
