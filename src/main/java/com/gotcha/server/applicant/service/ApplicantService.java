@@ -126,12 +126,12 @@ public class ApplicantService {
     public List<ApplicantsResponse> findAllApplicantByInterview(final Long interviewId, final MemberDetails details) {
         Interview interview = interviewRepository.findById(interviewId)
                 .orElseThrow(() -> new AppException(ErrorCode.INTERVIEW_NOT_FOUNT));
-        List<Applicant> applicants = applicantRepository.findAllByInterviewWithInterviewer(interview);
+        List<Applicant> orderedApplicants = applicantRepository.findAllByInterviewWithInterviewer(interview);
 
-        Map<Applicant, List<KeywordResponse>> applicantsWithKeywords = keywordRepository.findAllByApplicants(applicants);
-        Map<Applicant, Boolean> favoritesCheck = checkFavorites(applicants, details.member());
+        Map<Applicant, List<KeywordResponse>> applicantsWithKeywords = keywordRepository.findAllByApplicants(orderedApplicants);
+        Map<Applicant, Boolean> favoritesCheck = checkFavorites(orderedApplicants, details.member());
 
-        return ApplicantsResponse.generateList(applicantsWithKeywords, favoritesCheck);
+        return ApplicantsResponse.generateList(orderedApplicants, applicantsWithKeywords, favoritesCheck);
     }
 
     @Transactional
@@ -176,12 +176,12 @@ public class ApplicantService {
     public List<PassedApplicantsResponse> listPassedApplicantsByInterview(final Long interviewId,  final MemberDetails details) {
         Interview interview = interviewRepository.findById(interviewId)
                 .orElseThrow(() -> new AppException(ErrorCode.INTERVIEW_NOT_FOUNT));
-        List<Applicant> applicants = applicantRepository.findAllPassedApplicants(interview);
+        List<Applicant> orderedApplicants = applicantRepository.findAllPassedApplicants(interview);
 
-        Map<Applicant, List<KeywordResponse>> applicantsWithKeywords = keywordRepository.findAllByApplicants(applicants);
-        Map<Applicant, Boolean> favoritesCheck = checkFavorites(applicants, details.member());
+        Map<Applicant, List<KeywordResponse>> applicantsWithKeywords = keywordRepository.findAllByApplicants(orderedApplicants);
+        Map<Applicant, Boolean> favoritesCheck = checkFavorites(orderedApplicants, details.member());
 
-        return PassedApplicantsResponse.generateList(applicantsWithKeywords, favoritesCheck);
+        return PassedApplicantsResponse.generateList(orderedApplicants, applicantsWithKeywords, favoritesCheck);
     }
 
     @Transactional
