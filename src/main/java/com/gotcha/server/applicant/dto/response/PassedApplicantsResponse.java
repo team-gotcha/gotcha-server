@@ -21,15 +21,17 @@ public class PassedApplicantsResponse {
     private Boolean favorite;
 
     public static List<PassedApplicantsResponse> generateList(
+            final List<Applicant> orderedApplicants,
             final Map<Applicant, List<KeywordResponse>> applicantsWithKeywords,
             final Map<Applicant, Boolean> favoritesCheck) {
-        return applicantsWithKeywords.keySet().stream()
+        return orderedApplicants.stream()
                 .map(applicant -> PassedApplicantsResponse.builder()
                         .id(applicant.getId())
                         .name(applicant.getName())
                         .score(applicant.getTotalScore())
                         .rank(applicant.getRanking())
-                        .keywords(applicantsWithKeywords.get(applicant).stream().map(KeywordResponse::name).toList())
+                        .keywords(applicantsWithKeywords.get(applicant).stream()
+                                .map(KeywordResponse::name).toList())
                         .favorite(favoritesCheck.get(applicant))
                         .build())
                 .toList();

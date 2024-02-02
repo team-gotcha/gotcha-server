@@ -1,7 +1,6 @@
 package com.gotcha.server;
 
 import com.gotcha.server.mongo.repository.ApplicantMongoRepository;
-import com.gotcha.server.mongo.repository.BookRepository;
 import com.gotcha.server.mongo.repository.QuestionMongoRepository;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -17,8 +16,9 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @SpringBootApplication
 @EnableJpaRepositories(excludeFilters = @ComponentScan.Filter(
 		type = FilterType.ASSIGNABLE_TYPE,
-		classes = {BookRepository.class, ApplicantMongoRepository.class, QuestionMongoRepository.class}))
-@EnableMongoRepositories(basePackageClasses = {BookRepository.class, ApplicantMongoRepository.class, QuestionMongoRepository.class})
+		classes = {ApplicantMongoRepository.class, QuestionMongoRepository.class}))
+@EnableMongoRepositories(basePackageClasses = {
+		ApplicantMongoRepository.class, QuestionMongoRepository.class})
 public class ServerApplication {
 
 	public static void main(String[] args) {

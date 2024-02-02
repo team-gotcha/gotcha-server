@@ -64,6 +64,10 @@ public class IntegrationTestEnviron {
         return applicantRepository.save(테스트지원자(면접, 이름, LocalDate.now()));
     }
 
+    public Applicant 테스트지원자_저장하기(Interview 면접, String 이름, LocalDate 면접일) {
+        return applicantRepository.save(테스트지원자(면접, 이름, 면접일));
+    }
+
     public void 테스트지원자_질문공개하기(Applicant 지원자) {
         지원자.changeQuestionPublicType(true);
         applicantRepository.save(지원자);

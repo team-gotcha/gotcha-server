@@ -39,9 +39,10 @@ public class ApplicantsResponse {
     private Boolean favorite;
 
     public static List<ApplicantsResponse> generateList(
+            final List<Applicant> orderedApplicants,
             final Map<Applicant, List<KeywordResponse>> applicantsWithKeywords,
             final Map<Applicant, Boolean> favoritesCheck) {
-        return applicantsWithKeywords.keySet().stream()
+        return orderedApplicants.stream()
                         .map(applicant -> ApplicantsResponse.builder()
                                 .id(applicant.getId())
                                 .name(applicant.getName())
@@ -54,6 +55,6 @@ public class ApplicantsResponse {
                                 .keywords(applicantsWithKeywords.get(applicant))
                                 .favorite(favoritesCheck.get(applicant))
                                 .build())
-                                .toList();
+                .toList();
     }
 }
