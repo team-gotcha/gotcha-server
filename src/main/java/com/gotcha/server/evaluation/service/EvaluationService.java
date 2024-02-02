@@ -37,7 +37,6 @@ public class EvaluationService {
     public void evaluate(final MemberDetails details, final List<EvaluateRequest> requests) {
         List<IndividualQuestion> questions = getQuestionsBeingEvaluated(requests);
         Applicant applicant = validateApplicantOfQuestions(questions);
-        applicant.setInterviewStatus(InterviewStatus.COMPLETION);
 
         Map<Long, IndividualQuestion> questionMap = questions.stream().collect(Collectors.toMap(IndividualQuestion::getId, q->q));
         List<Evaluation> evaluations = requests.stream()
@@ -78,6 +77,7 @@ public class EvaluationService {
     public void createOneLiner(final MemberDetails details, final OneLinerRequest request) {
         Applicant applicant = applicantRepository.findById(request.applicantId())
                 .orElseThrow(() -> new AppException(ErrorCode.APPLICANT_NOT_FOUNT));
+        applicant.setInterviewStatus(InterviewStatus.COMPLETION);
         oneLinerRepository.save(new OneLiner(applicant, request.content(), details.member()));
     }
 
