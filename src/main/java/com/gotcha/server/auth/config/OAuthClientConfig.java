@@ -1,26 +1,13 @@
-package com.gotcha.server.global.config;
+package com.gotcha.server.auth.config;
 
-import com.querydsl.jpa.impl.JPAQueryFactory;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.codec.LoggingCodecSupport;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 
-@Slf4j
 @Configuration
-public class AppConfig {
-    @PersistenceContext
-    private EntityManager em;
-
-    @Bean
-    public JPAQueryFactory jpaQueryFactory() {
-        return new JPAQueryFactory(em);
-    }
-
+public class OAuthClientConfig {
     @Bean
     public WebClient googleTokenWebClient() {
         ExchangeStrategies strategies = determineStrategies();
