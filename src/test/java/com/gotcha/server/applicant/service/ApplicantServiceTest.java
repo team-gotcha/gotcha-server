@@ -26,6 +26,7 @@ import com.gotcha.server.project.domain.Project;
 import com.gotcha.server.question.domain.IndividualQuestion;
 import com.gotcha.server.question.domain.QuestionPublicType;
 import com.gotcha.server.question.repository.IndividualQuestionRepository;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
@@ -94,6 +95,27 @@ class ApplicantServiceTest extends IntegrationTest {
         // then
         assertEquals(2, 조회결과.get(0).getQuestionCount());
         assertEquals(1, 조회결과.get(0).getInterviewerEmails().size());
+    }
+
+    @Test
+    @DisplayName("지원자 목록 조회시, 면접일 순으로 정렬한다")
+    void 면접의_지원자목록_정렬해_조회하기() {
+        // given
+        Member 종미 = environ.테스트유저_저장하기("종미");
+        Project 테스트프로젝트 = environ.테스트프로젝트_저장하기();
+        Interview 테스트면접 = environ.테스트면접_저장하기(테스트프로젝트, "테스트면접");
+        Applicant 지원자A = environ.테스트지원자_저장하기(테스트면접, "지원자A", LocalDate.now().plusDays(1L));
+        Applicant 지원자B = environ.테스트지원자_저장하기(테스트면접, "지원자B", LocalDate.now().plusDays(5L));
+        Applicant 지원자C = environ.테스트지원자_저장하기(테스트면접, "지원자C", LocalDate.now().plusDays(2L));
+        Applicant 지원자D = environ.테스트지원자_저장하기(테스트면접, "지원자D", LocalDate.now());
+
+        // when
+        List<ApplicantsResponse> 조회결과 = applicantService.findAllApplicantByInterview(테스트면접.getId(), new MemberDetails(종미));
+
+        // then
+        assertThat(조회결과).hasSize(4)
+                .extracting(ApplicantsResponse::getName)
+                .containsExactly("지원자D", "지원자A", "지원자C", "지원자B");
     }
 
     @Test

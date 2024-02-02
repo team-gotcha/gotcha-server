@@ -63,7 +63,7 @@ class ApplicantRepositoryTest extends RepositoryTest {
     }
 
     @Test
-    @DisplayName("면접 프로젝트 별 지원자 목록 조회 시 면접일 순으로 정렬하기")
+    @DisplayName("면접 프로젝트 별 지원자 목록 조회 시 면접일 순으로 정렬한다")
     void 면접일순으로_지원자_정렬하기() {
         // given
         Project 조회할프로젝트 = 테스트프로젝트("테스트프로젝트");
