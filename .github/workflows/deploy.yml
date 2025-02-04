@@ -39,12 +39,24 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_PASSWORD }}
 
-
-      - name : Build Docker Image & Push to Docker Hub
-        run: |
-          docker build . -t ${{ secrets.DOCKER_HUB_USERNAME }}/gotcha
-          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/gotcha
           
+      - name: Build and push API
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile.api
+          push: true
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/gotcha:latest
+
+
+      - name: Build and push Nginx
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile.nginx
+          push: true
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/gotcha-nginx:latest
+
 
       - name: executing remote ssh commands using password
         uses: appleboy/ssh-action@v1.0.0
@@ -59,5 +71,6 @@ jobs:
             sudo chmod 666 /var/run/docker.sock
             sudo docker rm -f $(docker ps -qa)
             sudo docker pull nzeong/gotcha
+            sudo docker pull nzeong/gotcha-nginx
             docker-compose -f docker-compose-prod.yml --env-file ./.env up -d
             docker image prune -f
